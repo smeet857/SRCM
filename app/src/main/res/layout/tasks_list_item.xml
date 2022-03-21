@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/_12sdp"
+    android:background="@drawable/list_item"
+    android:paddingStart="@dimen/_10sdp"
+    android:paddingTop="@dimen/_8sdp"
+    android:paddingEnd="@dimen/_10sdp"
+    android:paddingBottom="@dimen/_8sdp">
+
+
+    <TextView
+        android:id="@+id/tvProjectName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_3sdp"
+        android:layout_marginTop="@dimen/_2sdp"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:text="School Connect"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/ivProject"
+        app:layout_constraintTop_toTopOf="@+id/ivProject" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvActivityUnderProject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_3sdp"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:text="KGBV Project"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/ivActivity"
+        app:layout_constraintStart_toEndOf="@+id/ivActivity"
+        app:layout_constraintTop_toBottomOf="@+id/tvProjectName"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/tvReportPerson"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_3sdp"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:text="Shilpaben"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/ivVisit"
+        app:layout_constraintStart_toEndOf="@+id/ivVisit" />
+
+    <TextView
+        android:id="@+id/tvSchoolName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_3sdp"
+        android:layout_marginTop="@dimen/_2sdp"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:text="KGBV"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/ivSchool"
+        app:layout_constraintTop_toTopOf="@+id/ivSchool" />
+
+    <TextView
+        android:id="@+id/tvVisitDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_3sdp"
+        android:layout_marginTop="@dimen/_2sdp"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:text="Wed"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/ivDate"
+        app:layout_constraintTop_toTopOf="@+id/ivDate" />
+
+
+    <TextView
+        android:id="@+id/tvSchoolLocation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_3sdp"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:text="Mangrol"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/ivLocation"
+        app:layout_constraintStart_toEndOf="@+id/ivLocation" />
+
+
+    <TextView
+        android:id="@+id/tvCPersonNo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:layout_marginStart="@dimen/_3sdp"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:text="+91 99999 88888"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/tvCPerson"
+        app:layout_constraintStart_toEndOf="@+id/ivCPersonNo" />
+    <TextView
+        android:id="@+id/tvCPerson"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:text="XYZ ABC"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/tvSchoolLocation"
+        app:layout_constraintStart_toStartOf="@+id/tvSchoolLocation" />
+
+
+    <TextView
+        android:id="@+id/tvCheckIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:background="@drawable/rounded_active_button"
+        android:drawableEnd="@drawable/ic_start_activity"
+        android:drawablePadding="@dimen/_5sdp"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:gravity="center"
+        android:padding="@dimen/_5sdp"
+        android:src="@drawable/ic_start_activity"
+        android:text="@string/check_in"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCPersonNo" />
+    <TextView
+        android:id="@+id/tvCheckOut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:background="@drawable/rounded_active_button"
+        android:drawableEnd="@drawable/ic_start_activity"
+        android:drawablePadding="@dimen/_5sdp"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:gravity="center"
+        android:padding="@dimen/_5sdp"
+        android:visibility="gone"
+        android:src="@drawable/ic_start_activity"
+        android:text="@string/check_out"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCPersonNo" />
+
+    <ImageView
+        android:id="@+id/ivDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:tint="@color/black"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/ivSchool"
+        app:srcCompat="@drawable/ic_calendar" />
+
+    <ImageView
+        android:id="@+id/ivSchool"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_2sdp"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/tvSchoolLocation"
+        app:srcCompat="@drawable/ic_school" />
+
+    <ImageView
+        android:id="@+id/ivLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_3sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvSchoolLocation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvReportPerson"
+        app:srcCompat="@drawable/ic_location" />
+
+    <ImageView
+        android:id="@+id/ivVisit"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_2sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvReportPerson"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvActivityUnderProject"
+        app:srcCompat="@drawable/ic_visit" />
+
+    <ImageView
+        android:id="@+id/ivActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivProject"
+        app:srcCompat="@drawable/ic_activity" />
+
+    <ImageView
+        android:id="@+id/ivProject"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_project" />
+    <ImageView
+        android:id="@+id/ivCPerson"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_3sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSchoolLocation"
+        app:srcCompat="@drawable/ic_reportperson" />
+    <ImageView
+        android:id="@+id/ivCPersonNo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivCPerson"
+        app:srcCompat="@drawable/ic_phone" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.55" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

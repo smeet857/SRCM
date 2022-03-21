@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="activities">Select Activity</string-array>
+    <string-array name="locations">Select Location</string-array>
+    <string-array name="visit_type">
+        <item>Meeting</item>
+        <item>Program</item>
+    </string-array>
+    <string-array name="visit_mode">
+        <item>Online</item>
+        <item>Offline</item>
+    </string-array>
+</resources>
