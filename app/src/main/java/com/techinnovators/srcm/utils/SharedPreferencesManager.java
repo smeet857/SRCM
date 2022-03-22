@@ -33,6 +33,7 @@ public class SharedPreferencesManager {
     public final static String CHECKED_OUT = "checked_out";
     public final static String VISIT_REQUESTS = "visit_requests";
     public final static String VISIT_REQUEST_CHECK_IN = "visit_request_check_in";
+    public final static String VISIT_REQUEST_CHECK_OUT = "visit_request_check_out";
     public final static String PROJECT_NAME = "project_name";
     public final static String PROJECT_TYPE = "project_type";
     public final static String ORG_NAME = "org_name";
@@ -297,6 +298,15 @@ public class SharedPreferencesManager {
         Gson gson = new Gson();
         String json = gson.toJson(visitRequests);
         editor.putString(VISIT_REQUEST_CHECK_IN, json);
+        editor.apply();
+    }
+
+    public void setVisitRequestCheckOut(ArrayList<VisitRequest> visitRequests) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(visitRequests);
+        editor.putString(VISIT_REQUEST_CHECK_OUT, json);
         editor.apply();
     }
 

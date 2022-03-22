@@ -1177,6 +1177,7 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
                     progressDialog.dismiss();
                 }
             };
+
             apiUrl += endpoint;
             JSONObject jsonObject = new JSONObject();
             try {
@@ -1207,6 +1208,9 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
                 }
                 //Pass all the values from Task model above to JSON object to create visit request.
                 mVolleyService = new VolleyService(mResultCallback, AddVisitRequestActivity.this);
+
+               String json = new Gson().toJson(visitRequest);
+
                 mVolleyService.postDataVolley(apiUrl, jsonObject);
                 progressDialog.show();
             } catch (Exception e) {
@@ -1216,8 +1220,10 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
             visitRequests.clear();
             Tasks visitRequest = new Tasks();
             visitRequest.setVisitRequestAddedLocally(false);
+
             SimpleDateFormat simpleDateFormat_response = new SimpleDateFormat(getString(R.string.dateFormat_display), Locale.getDefault());
             SimpleDateFormat simpleDateFormatRequest = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault());
+
             try {
                 Date visitDay = simpleDateFormat_response.parse(strDate);
                 if (visitDay != null) {
@@ -1235,6 +1241,10 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
             visitRequest.setProject_type(strProjectType[0]);
             visitRequest.setProject_name(strProjectName[0]);
             visitRequest.setVisit_place(strOrgName[0]);
+
+            visitRequest.setVisit_checkin("");
+            visitRequest.setVisit_checkout("");
+
             if (!TextUtils.isEmpty(strPersonPhNo)) {
                 visitRequest.setContact_person_mobile_no(strPersonPhNo);
             } else {
@@ -1247,7 +1257,10 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
             }
             visitRequests.add(visitRequest);
             storeVisitRequestInLocal();
-            AppUtils.showSnackBar(AddVisitRequestActivity.this, csMain, getString(R.string.internet_off));
+
+            /// go back
+
+            finish();
         }
     }
 

@@ -1,6 +1,7 @@
 package com.techinnovators.srcm;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -268,7 +269,7 @@ public class TasksActivity extends AppCompatActivity {
         ImageView ivAddActivity = toolbar.findViewById(R.id.ivAdd);
         ivAddActivity.setOnClickListener(view -> {
             Intent intent = new Intent(TasksActivity.this, AddVisitRequestActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent,50);
         });
 
         //Show Hide check in, check out by checking if current date matches with local storage date
@@ -375,6 +376,7 @@ public class TasksActivity extends AppCompatActivity {
                 }
             }
         }
+
         ivCheckIn.setOnClickListener(view -> {
             if (NetworkUtils.isNetworkConnected(TasksActivity.this)) {
                 checkIn(strCompanyName, strEmployeeId, ivCheckIn, ivCheckOut);
@@ -1828,6 +1830,20 @@ public class TasksActivity extends AppCompatActivity {
             progressDialog.show();
         } catch (Exception e) {
             AppUtils.displayAlertMessage(TasksActivity.this, "TASKS", e.getMessage());
+        }
+    }
+
+    private void refreshTask(){
+        tasksList = getVisitRequests();
+        tasksAdapter.updateList(tasksList);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 50) {
+            refreshTask();
         }
     }
 }

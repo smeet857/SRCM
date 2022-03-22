@@ -19,5 +19,17 @@ public class VisitRequest {
         this.visit_checkin = visit_checkin;
     }
 
+    public String getVisit_checkout() {
+        return visit_checkout;
+    }
+
+    public void setVisit_checkout(String visit_checkout) {
+        this.visit_checkin = visit_checkout;
+    }
+
+
+
     String visit_checkin;
+
+    String visit_checkout;
 }

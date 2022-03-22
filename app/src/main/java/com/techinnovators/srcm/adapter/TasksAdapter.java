@@ -50,11 +50,13 @@ import static com.techinnovators.srcm.utils.SharedPreferencesManager.ACTIVITY_DE
 import static com.techinnovators.srcm.utils.SharedPreferencesManager.PREFS_NAME;
 import static com.techinnovators.srcm.utils.SharedPreferencesManager.VISIT_REQUESTS;
 import static com.techinnovators.srcm.utils.SharedPreferencesManager.VISIT_REQUEST_CHECK_IN;
+import static com.techinnovators.srcm.utils.SharedPreferencesManager.VISIT_REQUEST_CHECK_OUT;
 
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> {
     Context context;
     ArrayList<Tasks> tasks;
     ArrayList<VisitRequest> visitRequestCheckIns;
+    ArrayList<VisitRequest> visitRequestCheckOuts;
     ArrayList<Tasks> tasksArrayList;
 
     public TasksAdapter(Context context, ArrayList<Tasks> tasksArrayList) {
@@ -183,7 +185,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             tvCPerson = itemView.findViewById(R.id.tvCPerson);
             tvCPersonNo = itemView.findViewById(R.id.tvCPersonNo);
 
-
             tvCheckIn.setOnClickListener(view -> {
                 if (NetworkUtils.isNetworkConnected(context)) {
                     if (getAdapterPosition() >= 0) {
@@ -192,13 +193,39 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                 } else {
                     SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(context.getString(R.string.timeFormat), Locale.getDefault());
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(context.getString(R.string.dateFormat), Locale.getDefault());
+
                     String strCurrentDate = simpleDateFormat.format(new Date());
                     String strCurrentTime = simpleTimeFormat.format(new Date());
+
                     String strVisitCheckIn = strCurrentDate + " " + strCurrentTime;
+
                     if (getAdapterPosition() >= 0) {
                         storeVisitRequestCheckInData(tasks.get(getAdapterPosition()).getName(), strVisitCheckIn, tvCheckIn, tvCheckOut);
                     }
                     AppUtils.displayAlertMessage(context, "VISIT REQUEST CHECK IN", context.getString(R.string.internet_off));
+                }
+            });
+
+            tvCheckOut.setOnClickListener(view -> {
+                if(!tasks.get(getAdapterPosition()).getVisit_checkout().isEmpty()){
+                    if (NetworkUtils.isNetworkConnected(context)) {
+//                    if (getAdapterPosition() >= 0) {
+//                        visitRequestCheckIn(tasks.get(getAdapterPosition()).getName(), tvCheckIn, tvCheckOut);
+//                    }
+                    } else {
+                        SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(context.getString(R.string.timeFormat), Locale.getDefault());
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(context.getString(R.string.dateFormat), Locale.getDefault());
+
+                        String strCurrentDate = simpleDateFormat.format(new Date());
+                        String strCurrentTime = simpleTimeFormat.format(new Date());
+
+                        String strVisitCheckOut = strCurrentDate + " " + strCurrentTime;
+
+                        if (getAdapterPosition() >= 0) {
+                            storeVisitRequestCheckOutData(tasks.get(getAdapterPosition()).getName(), strVisitCheckOut, tvCheckIn, tvCheckOut);
+                        }
+                        AppUtils.displayAlertMessage(context, "VISIT REQUEST CHECK Out", context.getString(R.string.internet_off));
+                    }
                 }
             });
         }
@@ -206,9 +233,9 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         @Override
         public void onClick(View view) {
             if (view.getId() == itemView.getId()) {
-                Intent intent = new Intent(context, ActivityDetails.class);
-                intent.putExtra(context.getString(R.string.intent_visit_request_key), tasks.get(getAdapterPosition()).getName());
-                context.startActivity(intent);
+//                Intent intent = new Intent(context, ActivityDetails.class);
+//                intent.putExtra(context.getString(R.string.intent_visit_request_key), tasks.get(getAdapterPosition()).getName());
+//                context.startActivity(intent);
             }
         }
     }
@@ -241,21 +268,42 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         return visitRequestCheckIns;
     }
 
+    private ArrayList<VisitRequest> getVisitRequestCheckOuts() {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+        Gson gson = new Gson();
+        String json = prefs.getString(VISIT_REQUEST_CHECK_OUT, null);
+        Type type = new TypeToken<ArrayList<VisitRequest>>() {
+        }.getType();
+        visitRequestCheckOuts = gson.fromJson(json, type);
+        if (visitRequestCheckOuts == null) {
+            visitRequestCheckOuts = new ArrayList<>();
+        }
+
+        return visitRequestCheckOuts;
+    }
+
     private void storeVisitRequestCheckInData(String name, String visitCheckIn, TextView tvCheckIn, TextView tvCheckOut) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
         ArrayList<VisitRequest> visitRequestCheckIns = new ArrayList<>();
         VisitRequest visitRequest = new VisitRequest();
+
         visitRequest.setName(name);
         visitRequest.setVisit_checkin(visitCheckIn);
+
         visitRequestCheckIns.add(visitRequest);
+
         sharedPreferencesManager.setVisitRequestCheckIn(visitRequestCheckIns);
+
         visitRequestCheckIns.clear();
+
         visitRequestCheckIns.addAll(getVisitRequestCheckIns());
+
         if (!visitRequestCheckIns.isEmpty()) {
             Toast.makeText(context, "Visit Request" + " " + name + "check in time stored in local successfully", Toast.LENGTH_LONG).show();
             tvCheckIn.setVisibility(View.GONE);
             tvCheckOut.setVisibility(View.VISIBLE);
         }
+
         ArrayList<Tasks> tasks = new ArrayList<>(getVisitRequests());
         if (!tasks.isEmpty()) {
             for (int index = 0; index < tasks.size(); index++) {
@@ -269,6 +317,40 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         }
     }
 
+    private void storeVisitRequestCheckOutData(String name, String visitCheckOut, TextView tvCheckIn, TextView tvCheckOut) {
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+        ArrayList<VisitRequest> visitRequestCheckOuts = new ArrayList<>();
+        VisitRequest visitRequest = new VisitRequest();
+
+        visitRequest.setName(name);
+        visitRequest.setVisit_checkout(visitCheckOut);
+
+        visitRequestCheckOuts.add(visitRequest);
+
+        sharedPreferencesManager.setVisitRequestCheckOut(visitRequestCheckOuts);
+
+        visitRequestCheckOuts.clear();
+
+        visitRequestCheckOuts.addAll(getVisitRequestCheckOuts());
+
+        if (!visitRequestCheckOuts.isEmpty()) {
+            Toast.makeText(context, "Visit Request" + " " + name + "check out time stored in local successfully", Toast.LENGTH_LONG).show();
+            tvCheckIn.setVisibility(View.GONE);
+            tvCheckOut.setVisibility(View.GONE);
+        }
+
+        ArrayList<Tasks> tasks = new ArrayList<>(getVisitRequests());
+        if (!tasks.isEmpty()) {
+            for (int index = 0; index < tasks.size(); index++) {
+                String strName = tasks.get(index).getName();
+                if (strName.equals(name)) {
+                    tasks.get(index).setVisit_checkout(visitCheckOut);
+                    break;
+                }
+            }
+            sharedPreferencesManager.saveVisitRequests(tasks);
+        }
+    }
 
     private void visitRequestCheckIn(String fsVisitRequestNo, TextView fTvCheckIn, TextView fTvCheckout) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
