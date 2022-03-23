@@ -88,14 +88,20 @@ public class TasksActivity extends AppCompatActivity {
     private static final int LOCATION_PERMISSIONS_CODE = 100;
     private static final String VISIT_REQUESTS = "visit_requests";
     private static final long SPLASH_SCREEN_TIME = 5000;
+
     ArrayList<Tasks> tasksList;
     ConstraintLayout csMain;
+
     TasksAdapter tasksAdapter;
     VolleyService mVolleyService;
     APIVInterface mResultCallback;
+
     FusedLocationProviderClient fusedLocationProviderClient;
+
     String msLat = "", msLong = "";
+
     ImageView ivCheckIn;
+
     Thread thread;
     SwipeRefreshLayout mSwipeRefreshLayout;
     ArrayList<VisitRequest> visitRequestCheckIns;
@@ -193,6 +199,7 @@ public class TasksActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tasks);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(TasksActivity.this);
+
         tasksList = new ArrayList<>();
         tasksNotAdded = new ArrayList<>();
         visitLocations = new ArrayList<>();
@@ -267,6 +274,7 @@ public class TasksActivity extends AppCompatActivity {
         String strEmployeeId = sharedPreferencesManager.getEmployee();
         ImageView ivCheckOut = toolbar.findViewById(R.id.ivCheckOut);
         ImageView ivAddActivity = toolbar.findViewById(R.id.ivAdd);
+
         ivAddActivity.setOnClickListener(view -> {
             Intent intent = new Intent(TasksActivity.this, AddVisitRequestActivity.class);
             startActivityForResult(intent,50);

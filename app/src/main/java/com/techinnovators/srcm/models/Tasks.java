@@ -4,6 +4,57 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Tasks {
+    @SerializedName("project_name")
+    @Expose
+    String project_name;
+    @SerializedName("name")
+    @Expose
+    String name;
+    @SerializedName("visit_place")
+    @Expose
+    String visit_place;
+    @SerializedName("visit_location")
+    @Expose
+    String visit_location;
+    @SerializedName("visit_date")
+    @Expose
+    String visit_date;
+    @SerializedName("project_type")
+    @Expose
+    String project_type;
+    @SerializedName("visit_checkin")
+    @Expose
+    String visit_checkin;
+    @SerializedName("visit_state")
+    @Expose
+    String visit_state;
+    @SerializedName("contact_person_mobile_no")
+    @Expose
+    String contact_person_mobile_no;
+    @SerializedName("visit_district")
+    @Expose
+    String visit_district;
+    @SerializedName("visit_taluka")
+    @Expose
+    String visit_taluka;
+    @SerializedName("contact_person_name")
+    @Expose
+    String contact_person_name;
+
+    //    visit_type\",\"visit_mode\",\"visit_expiry_date\",\"visit_checkin\",\"visit_checkout
+    @SerializedName("visit_type")
+    @Expose
+    String visit_type;
+    @SerializedName("visit_mode")
+    @Expose
+    String visit_mode;
+    @SerializedName("visit_expiry_date")
+    @Expose
+    String visit_expiry_date;
+    @SerializedName("visit_checkout")
+    @Expose
+    String visit_checkout;
+
     public String getProject_name() {
         return project_name;
     }
@@ -51,26 +102,6 @@ public class Tasks {
     public void setProject_type(String project_type) {
         this.project_type = project_type;
     }
-
-    @SerializedName("project_name")
-    @Expose
-    String project_name;
-    @SerializedName("name")
-    @Expose
-    String name;
-    @SerializedName("visit_place")
-    @Expose
-    String visit_place;
-    @SerializedName("visit_location")
-    @Expose
-    String visit_location;
-    @SerializedName("visit_date")
-    @Expose
-    String visit_date;
-    @SerializedName("project_type")
-    @Expose
-    String project_type;
-
     public String getVisit_checkin() {
         return visit_checkin;
     }
@@ -118,24 +149,6 @@ public class Tasks {
     public void setContact_person_name(String contact_person_name) {
         this.contact_person_name = contact_person_name;
     }
-    @SerializedName("visit_checkin")
-    @Expose
-    String visit_checkin;
-    @SerializedName("visit_state")
-    @Expose
-    String visit_state;
-    @SerializedName("contact_person_mobile_no")
-    @Expose
-    String contact_person_mobile_no;
-    @SerializedName("visit_district")
-    @Expose
-    String visit_district;
-    @SerializedName("visit_taluka")
-    @Expose
-    String visit_taluka;
-    @SerializedName("contact_person_name")
-    @Expose
-    String contact_person_name;
 
     public boolean isVisitRequestAdded() {
         return visitRequestAdded;
@@ -179,17 +192,4 @@ public class Tasks {
         this.visit_checkout = visit_checkout;
     }
 
-    //    visit_type\",\"visit_mode\",\"visit_expiry_date\",\"visit_checkin\",\"visit_checkout
-    @SerializedName("visit_type")
-    @Expose
-    String visit_type;
-    @SerializedName("visit_mode")
-    @Expose
-    String visit_mode;
-    @SerializedName("visit_expiry_date")
-    @Expose
-    String visit_expiry_date;
-    @SerializedName("visit_checkout")
-    @Expose
-    String visit_checkout;
 }
