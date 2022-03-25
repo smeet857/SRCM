@@ -1,21 +1,28 @@
 package com.techinnovators.srcm;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
-import android.os.Bundle;
+
+import com.techinnovators.srcm.Database.DbClient;
+import com.techinnovators.srcm.models.UserModel;
+import com.techinnovators.srcm.utils.LocationUtils;
 
 public class Application extends android.app.Application {
 
-    private static Context context;
+    private static UserModel userModel;
+    public static Context context;
+
+    public static UserModel getUserModel(){
+        return userModel;
+    }
+    public static void setUserModel (UserModel newValue){
+        userModel = newValue;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
-         context= getApplicationContext();
-    }
+        context = getApplicationContext();
 
-    public static Context getAppContext() {
-        return context;
+        LocationUtils.init();
     }
 }

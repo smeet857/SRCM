@@ -23,7 +23,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -33,7 +32,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -49,11 +47,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.techinnovators.srcm.Activity.LoginActivity;
+import com.techinnovators.srcm.Database.DbClient;
 import com.techinnovators.srcm.adapter.TasksAdapter;
 import com.techinnovators.srcm.models.Taluka;
 import com.techinnovators.srcm.models.TalukaResponse;
 import com.techinnovators.srcm.models.Tasks;
 import com.techinnovators.srcm.models.TasksReponse;
+import com.techinnovators.srcm.models.TasksVo;
 import com.techinnovators.srcm.models.VisitDistrict;
 import com.techinnovators.srcm.models.VisitDistrictResponse;
 import com.techinnovators.srcm.models.VisitLocation;
@@ -61,6 +62,7 @@ import com.techinnovators.srcm.models.VisitLocationResponse;
 import com.techinnovators.srcm.models.VisitRequest;
 import com.techinnovators.srcm.utils.AppUtils;
 import com.techinnovators.srcm.utils.NetworkUtils;
+import com.techinnovators.srcm.utils.PermissionUtils;
 import com.techinnovators.srcm.utils.SharedPreferencesManager;
 import com.techinnovators.srcm.volleyhelper.APIVInterface;
 import com.techinnovators.srcm.volleyhelper.VolleyService;
@@ -79,7 +81,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.LongFunction;
 
 import static com.techinnovators.srcm.utils.SharedPreferencesManager.PREFS_NAME;
 import static com.techinnovators.srcm.utils.SharedPreferencesManager.VISIT_REQUEST_CHECK_IN;
@@ -95,8 +96,6 @@ public class TasksActivity extends AppCompatActivity {
     TasksAdapter tasksAdapter;
     VolleyService mVolleyService;
     APIVInterface mResultCallback;
-
-    FusedLocationProviderClient fusedLocationProviderClient;
 
     String msLat = "", msLong = "";
 
@@ -130,51 +129,51 @@ public class TasksActivity extends AppCompatActivity {
     }
 
     private void getCurrentLocation() {
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            if (checkAllPermission()) {
-                fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Location> task) {
-                        Location location = task.getResult();
-                        if (location != null) {
-                            msLat = String.valueOf(location.getLatitude());
-                            msLong = String.valueOf(location.getLongitude());
-                        } else {
-                            LocationRequest locationRequest = LocationRequest.create();
-                            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-                            locationRequest.setInterval(30 * 1000);
-                            locationRequest.setFastestInterval(5 * 1000);
-                            locationRequest.setNumUpdates(1);
-                            LocationCallback locationCallback = new LocationCallback() {
-                                @Override
-                                public void onLocationResult(LocationResult locationResult) {
-                                    Location location = locationResult.getLastLocation();
-                                    msLat = String.valueOf(location.getLatitude());
-                                    msLong = String.valueOf(location.getLongitude());
-                                    super.onLocationResult(locationResult);
-                                }
-                            };
-                            if (checkAllPermission()) {
-                                fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-                            }else{
-                                showPermissions();
-                            }
-                        }
-                    }
-                });
-            }else{
-                showPermissions();
-            }
-        } else {
-            new AlertDialog.Builder(TasksActivity.this).setTitle(R.string.location_title).setMessage(R.string.location_service_msg).setPositiveButton("SETTINGS", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                }
-            }).setCancelable(false).show();
-        }
+//        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+//                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+//            if (checkAllPermission()) {
+//                fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<Location> task) {
+//                        Location location = task.getResult();
+//                        if (location != null) {
+//                            msLat = String.valueOf(location.getLatitude());
+//                            msLong = String.valueOf(location.getLongitude());
+//                        } else {
+//                            LocationRequest locationRequest = LocationRequest.create();
+//                            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//                            locationRequest.setInterval(30 * 1000);
+//                            locationRequest.setFastestInterval(5 * 1000);
+//                            locationRequest.setNumUpdates(1);
+//                            LocationCallback locationCallback = new LocationCallback() {
+//                                @Override
+//                                public void onLocationResult(LocationResult locationResult) {
+//                                    Location location = locationResult.getLastLocation();
+//                                    msLat = String.valueOf(location.getLatitude());
+//                                    msLong = String.valueOf(location.getLongitude());
+//                                    super.onLocationResult(locationResult);
+//                                }
+//                            };
+//                            if (checkAllPermission()) {
+////                                fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+//                            }else{
+//                                showPermissions();
+//                            }
+//                        }
+//                    }
+//                });
+//            }else{
+//                showPermissions();
+//            }
+//        } else {
+//            new AlertDialog.Builder(TasksActivity.this).setTitle(R.string.location_title).setMessage(R.string.location_service_msg).setPositiveButton("SETTINGS", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialogInterface, int i) {
+//                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+//                }
+//            }).setCancelable(false).show();
+//        }
     }
 
     @Override
@@ -198,56 +197,20 @@ public class TasksActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tasks);
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(TasksActivity.this);
-
         tasksList = new ArrayList<>();
         tasksNotAdded = new ArrayList<>();
         visitLocations = new ArrayList<>();
         visitTaluka = new ArrayList<>();
         visitRequestCheckIns = new ArrayList<>();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!checkAllPermission()) {
-                showPermissions();
-                if (ActivityCompat.checkSelfPermission(
-                        TasksActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED &&
-                        ActivityCompat.checkSelfPermission(TasksActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                                == PackageManager.PERMISSION_GRANTED) {
-                    getCurrentLocation();
-                }
-            } else {
-                getCurrentLocation();
-            }
-        }
-
         csMain = findViewById(R.id.csMain);
         mSwipeRefreshLayout = findViewById(R.id.swipeRefresh);
-        mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.black));
-        mSwipeRefreshLayout.setOnRefreshListener(() -> {
-            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(TasksActivity.this);
-            mSwipeRefreshLayout.setRefreshing(false);
-            if (NetworkUtils.isNetworkConnected(TasksActivity.this)) {
-                getTasksList(sharedPreferencesManager.getEmployee());
-                getProjectName();
-                getProjectType();
-                getOrganisationName();
-                getVisitState();
-                getDistrict();
-                getTaluka();
-                getLocationOfVisit();
-            } else { ;
-                tasksList = getVisitRequests();
-                tasksAdapter.updateList(tasksList);
-
-                AppUtils.showSnackBar(TasksActivity.this, csMain, getString(R.string.internet_off));
-            }
-        });
 
         rvTasks = findViewById(R.id.rvTasks);
         rvTasks.setLayoutManager(new LinearLayoutManager(TasksActivity.this));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+
         ImageView ivSync = toolbar.findViewById(R.id.ivSync);
         ivSync.setOnClickListener(view -> {
             if (NetworkUtils.isNetworkConnected(TasksActivity.this)) {
@@ -262,16 +225,10 @@ public class TasksActivity extends AppCompatActivity {
         ivLogout.setOnClickListener(view -> logout());
 
         ivCheckIn = toolbar.findViewById(R.id.ivCheckIn);
+
         ImageView ivWorkHour = findViewById(R.id.ivWorkHour);
         TextView tvWorkHours = findViewById(R.id.tvWorkingHours);
 
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(TasksActivity.this);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault());
-        String strCurrentDate = simpleDateFormat.format(new Date());
-        SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(getString(R.string.timeFormat), Locale.getDefault());
-        String strCurrentTime = simpleTimeFormat.format(new Date());
-        String strCompanyName = "SRCM";
-        String strEmployeeId = sharedPreferencesManager.getEmployee();
         ImageView ivCheckOut = toolbar.findViewById(R.id.ivCheckOut);
         ImageView ivAddActivity = toolbar.findViewById(R.id.ivAdd);
 
@@ -280,12 +237,23 @@ public class TasksActivity extends AppCompatActivity {
             startActivityForResult(intent,50);
         });
 
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(TasksActivity.this);
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault());
+        String strCurrentDate = simpleDateFormat.format(new Date());
+        SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(getString(R.string.timeFormat), Locale.getDefault());
+
+        String strCurrentTime = simpleTimeFormat.format(new Date());
+        String strCompanyName = "SRCM";
+        String strEmployeeId = sharedPreferencesManager.getEmployee();
+
         //Show Hide check in, check out by checking if current date matches with local storage date
         //if current date not matches with local storage date, clear first checkin, last checkout, clear date, clear attendance name(ID), clear checked In, clear checked out
         //If user checked in already hide check in, if user checked out already hide checkout
         if (!TextUtils.isEmpty(sharedPreferencesManager.getAttendanceDate())) {
             ivCheckOut.setVisibility(View.VISIBLE);
             String strAttendanceDate = sharedPreferencesManager.getAttendanceDate();
+
             if (!strAttendanceDate.equals(strCurrentDate)) {
                 sharedPreferencesManager.clearAttendanceDate();
                 sharedPreferencesManager.clearName();
@@ -464,6 +432,28 @@ public class TasksActivity extends AppCompatActivity {
         }
     }
 
+    private void setRefreshIndicator(){
+        mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.black));
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(TasksActivity.this);
+            mSwipeRefreshLayout.setRefreshing(false);
+            if (NetworkUtils.isNetworkConnected(TasksActivity.this)) {
+                getTasksList(sharedPreferencesManager.getEmployee());
+                getProjectName();
+                getProjectType();
+                getOrganisationName();
+                getVisitState();
+                getDistrict();
+                getTaluka();
+                getLocationOfVisit();
+            } else { ;
+                tasksList = getVisitRequests();
+                tasksAdapter.updateList(tasksList);
+
+                AppUtils.showSnackBar(TasksActivity.this, csMain, getString(R.string.internet_off));
+            }
+        });
+    }
     private void setTasksList(ArrayList<Tasks> data){
         if(tasksAdapter == null){
             tasksAdapter = new TasksAdapter(TasksActivity.this, tasksList);
@@ -472,6 +462,7 @@ public class TasksActivity extends AppCompatActivity {
             tasksAdapter.updateList(data);
         }
     }
+
     private void createVisitRequest(Tasks visitRequest) {
         String apiUrl = getString(R.string.api_url);
         String endpoint = getString(R.string.api_methodname_createVisit);
@@ -545,65 +536,6 @@ public class TasksActivity extends AppCompatActivity {
             AppUtils.displayAlertMessage(TasksActivity.this, getString(R.string.create_Visit), e.getMessage());
         }
     }
-//    private void checkInLocal(ImageView ivCheckIn, ImageView ivCheckOut) {
-//        SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(getString(R.string.timeFormat), Locale.getDefault());
-//        String strCurrentTime = simpleTimeFormat.format(new Date());
-//        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(TasksActivity.this);
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault());
-//        String strCurrentDate = simpleDateFormat.format(new Date());
-//        JSONObject jsonObject = new JSONObject();
-//        try {
-//            jsonObject.put(getString(R.string.attendance_date_param_key), strCurrentDate);
-//            sharedPreferencesManager.setAttendanceDate(strCurrentDate);
-//            sharedPreferencesManager.clearLastCheckout();
-//            ivCheckIn.setVisibility(View.GONE);
-//            ivCheckOut.setVisibility(View.VISIBLE);
-//            jsonObject.put(getString(R.string.first_checkin_param_key), strCurrentTime);
-//            sharedPreferencesManager.setFirstCheckIn(strCurrentTime);
-//            sharedPreferencesManager.setCheckedIn("1");
-//        } catch (JSONException jsonException) {
-//            jsonException.printStackTrace();
-//        }
-//    }
-//
-//    private void checkOutLocal(double totalWorkingHours, ImageView ivCheckIn, ImageView ivCheckout) {
-//        long timeDiff;
-//        long hours;
-//        long minutes;
-//        double hoursFromMinutes;
-//        SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(getString(R.string.timeFormat), Locale.getDefault());
-//        String strCurrentTime = simpleTimeFormat.format(new Date());
-//        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(TasksActivity.this);
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault());
-//        String strCurrentDate = simpleDateFormat.format(new Date());
-//        JSONObject jsonObject = new JSONObject();
-//        try {
-//            jsonObject.put(getString(R.string.attendance_date_param_key), strCurrentDate);
-//            sharedPreferencesManager.setAttendanceDate(strCurrentDate);
-//            jsonObject.put(getString(R.string.first_checkin_param_key), strCurrentTime);
-//            Log.v("WORK HOURS", "" + totalWorkingHours);
-//            sharedPreferencesManager.setLastCheckOut(strCurrentTime);
-//            sharedPreferencesManager.setCheckedOut("1");
-//            Date firstCheckInDate = simpleTimeFormat.parse(sharedPreferencesManager.getFirstCheckIn());
-//            Date currentDateTime = simpleTimeFormat.parse(sharedPreferencesManager.getLastCheckOut());
-//            if (firstCheckInDate != null && currentDateTime != null) {
-//                timeDiff = currentDateTime.getTime() - firstCheckInDate.getTime();
-//                hours = (timeDiff / (60 * 60 * 1000)) % 24;
-//                minutes = (timeDiff / (60 * 1000)) % 60;
-//                hoursFromMinutes = (double) minutes / 60;
-//                totalWorkingHours = hours + hoursFromMinutes;
-//                DecimalFormat df = new DecimalFormat("#.#");
-//                totalWorkingHours = Double.parseDouble(df.format(totalWorkingHours));
-//                Log.v("WORK HOURS FINAL", "" + totalWorkingHours);
-//            }
-//            sharedPreferencesManager.clearFirstCheckIn();
-//            ivCheckIn.setVisibility(View.VISIBLE);
-//            ivCheckout.setVisibility(View.GONE);
-//        } catch (ParseException | JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
 
     private void submitActivity(String fsActivityData) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(TasksActivity.this);
@@ -612,25 +544,22 @@ public class TasksActivity extends AppCompatActivity {
 
     private void visitRequestCheckIn(String fsVisitRequestNo, String fsVisitCheckIn) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(TasksActivity.this);
+
         String apiUrl = getString(R.string.api_url);
         String endPoint = getString(R.string.api_methodname_visit_request);
+
         endPoint += "/" + fsVisitRequestNo;
         apiUrl += endPoint;
+
         JSONObject jsonRequest = new JSONObject();
-        ProgressDialog progressDialog;
-        progressDialog = new ProgressDialog(TasksActivity.this);
-        progressDialog.setMax(100);
-        progressDialog.setMessage(getString(R.string.prog_dialog_title));
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setCancelable(false);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
         try {
 
             RequestQueue queue = Volley.newRequestQueue(TasksActivity.this);
             jsonRequest.put(getString(R.string.visit_checkin_param_key), fsVisitCheckIn);
             JsonObjectRequest putRequest = new JsonObjectRequest(Request.Method.PUT, apiUrl, jsonRequest,
                     (JSONObject response) -> {
-                        progressDialog.dismiss();
+                        AppUtils.dismissProgrees();
                         try {
                             JSONObject dataResponse = response.getJSONObject(getString(R.string.data_param_key));
                             if (!dataResponse.toString().isEmpty()) {
@@ -731,9 +660,9 @@ public class TasksActivity extends AppCompatActivity {
                 }
             };
             queue.add(putRequest);
-            progressDialog.show();
+            AppUtils.showProgress(this,getString(R.string.prog_dialog_title));
         } catch (JSONException e) {
-            progressDialog.dismiss();
+            AppUtils.dismissProgrees();
             AppUtils.displayAlertMessage(TasksActivity.this, "VISIT REQUEST CHECK IN", e.getMessage());
             e.printStackTrace();
         }
@@ -1060,19 +989,14 @@ public class TasksActivity extends AppCompatActivity {
     }
 
     private void getUserDetails() {
-        ProgressDialog progressDialog;
-        progressDialog = new ProgressDialog(TasksActivity.this);
-        progressDialog.setMax(100);
-        progressDialog.setMessage(getString(R.string.prog_dialog_title));
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setCancelable(false);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         String apiUrl = getString(R.string.api_url);
         String endpoint = getString(R.string.api_method_fieldwork_tracking_get_user_details);
+
         mResultCallback = new APIVInterface() {
             @Override
             public void notifySuccess(JSONObject response) {
-                progressDialog.dismiss();
+                AppUtils.dismissProgrees();
+
                 ArrayList<String> appModules = new ArrayList<>();
                 SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(TasksActivity.this);
                 try {
@@ -1118,7 +1042,8 @@ public class TasksActivity extends AppCompatActivity {
 
             @Override
             public void notifyError(VolleyError error) {
-                progressDialog.dismiss();
+                AppUtils.dismissProgrees();
+
                 if (error.networkResponse != null) {
                     switch (error.networkResponse.statusCode) {
                         case 401:
@@ -1148,18 +1073,21 @@ public class TasksActivity extends AppCompatActivity {
 
             @Override
             public void notifyNetworkParseResponse(NetworkResponse response) {
-                progressDialog.dismiss();
+                AppUtils.dismissProgrees();
             }
         };
         apiUrl += endpoint;
         try {
             mVolleyService = new VolleyService(mResultCallback, TasksActivity.this);
             SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(TasksActivity.this);
+
+            /// Params
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put(getString(R.string.login_req_api_param_usr), sharedPreferencesManager.getUserName());
+            jsonObject.put(getString(R.string.login_req_api_param_usr), Application.getUserModel().userName);
             jsonObject.put(getString(R.string.app_auth_key_param_key), getString(R.string.app_auth_key));
+
             mVolleyService.postDataVolley(apiUrl, jsonObject);
-            progressDialog.show();
+            AppUtils.showProgress(this,getString(R.string.prog_dialog_title));
         } catch (Exception e) {
             AppUtils.displayAlertMessage(TasksActivity.this, "TASKS", e.getMessage());
         }
@@ -1734,10 +1662,11 @@ public class TasksActivity extends AppCompatActivity {
     }
 
     private void logout() {
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(TasksActivity.this);
+        DbClient.getInstance().clearAllTables();
+
         Intent intent = new Intent(TasksActivity.this, LoginActivity.class);
-        sharedPreferencesManager.clear();
         startActivity(intent);
+        finish();
     }
 
     private void getTasksList(String fsEmpName) {
@@ -1767,10 +1696,12 @@ public class TasksActivity extends AppCompatActivity {
                 //clear local list variable, load API response,store in local list and refresh list, get visit requests from local storage,
                 // clear visit requests from local storage, save visit requests in local storage,
                 try {
+                    Gson gson = new Gson();
+                    TasksVo tasksVo = gson.fromJson(response.toString(), TasksVo.class);
+
                     tasks = response.getJSONArray(getString(R.string.data_param_key));
                     if (tasks.length() > 0) {
                         Log.v("S", tasks.toString());
-                        Gson gson = new Gson();
                         Type listType = new TypeToken<TasksReponse>() {
                         }.getType();
 

@@ -135,7 +135,7 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
         etVisitDate.setText(AppUtils.dispCurrentDateFirst());
         etVisitDate.setOnClickListener(view -> {
             AppUtils.setDate(AddVisitRequestActivity.this, etVisitDate);
-            AppUtils.hideKeyboard(AddVisitRequestActivity.this);
+            AppUtils.hideKeyboard(this);
         });
 
         ArrayList<String> projectName;
@@ -229,7 +229,7 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
         });
         acProjectType.setOnItemClickListener((adapterView, view, i, l) -> {
             strProjectType[0] = acProjectType.getText().toString();
-            AppUtils.hideKeyboard(AddVisitRequestActivity.this);
+            AppUtils.hideKeyboard(this);
         });
         acProjectType.setOnFocusChangeListener((view, hasFocus) -> {
             if (hasFocus) {
@@ -254,7 +254,7 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
         });
         acProjectName.setOnItemClickListener((adapterView, view, i, l) -> {
             strProjectName[0] = acProjectName.getText().toString();
-            AppUtils.hideKeyboard(AddVisitRequestActivity.this);
+            AppUtils.hideKeyboard(this);
         });
         acProjectName.setOnFocusChangeListener((view, hasFocus) -> {
             if (hasFocus) {
@@ -344,7 +344,7 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
         });
         acOrganizationName.setOnItemClickListener((adapterView, view, i, l) -> {
             strOrgName[0] = acOrganizationName.getText().toString();
-            AppUtils.hideKeyboard(AddVisitRequestActivity.this);
+            AppUtils.hideKeyboard(this);
         });
         acOrganizationName.setOnFocusChangeListener((view, hasFocus) -> {
             if (hasFocus) {
@@ -353,7 +353,7 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
         });
         acVisitState.setOnItemClickListener((adapterView, view, i, l) -> {
             strVisitState[0] = acVisitState.getText().toString();
-            AppUtils.hideKeyboard(AddVisitRequestActivity.this);
+            AppUtils.hideKeyboard(this);
         });
         acVisitState.setOnFocusChangeListener((view, hasFocus) -> {
             if (hasFocus) {
@@ -362,7 +362,7 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
         });
         acDistrict.setOnItemClickListener((adapterView, view, i, l) -> {
             strVisitDistrict[0] = acDistrict.getText().toString();
-            AppUtils.hideKeyboard(AddVisitRequestActivity.this);
+            AppUtils.hideKeyboard(this);
         });
         acDistrict.setOnFocusChangeListener((view, hasFocus) -> {
             if (hasFocus) {
@@ -371,7 +371,7 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
         });
         acTaluka.setOnItemClickListener((adapterView, view, i, l) -> {
             strVisitTaluka[0] = acTaluka.getText().toString();
-            AppUtils.hideKeyboard(AddVisitRequestActivity.this);
+            AppUtils.hideKeyboard(this);
         });
         acTaluka.setOnFocusChangeListener((view, hasFocus) -> {
             if (hasFocus) {
@@ -380,7 +380,7 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
         });
         acLocation.setOnItemClickListener((adapterView, view, i, l) -> {
             strVisitLocation[0] = acLocation.getText().toString();
-            AppUtils.hideKeyboard(AddVisitRequestActivity.this);
+            AppUtils.hideKeyboard(this);
         });
         acLocation.setOnFocusChangeListener((view, hasFocus) -> {
             if (hasFocus) {

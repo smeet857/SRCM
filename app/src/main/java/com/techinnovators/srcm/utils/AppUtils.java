@@ -2,6 +2,7 @@ package com.techinnovators.srcm.utils;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.text.Html;
 import android.view.View;
@@ -13,11 +14,28 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.techinnovators.srcm.Application;
 import com.techinnovators.srcm.R;
 
 import java.util.Calendar;
 
 public class AppUtils {
+    private static ProgressDialog progressDialog;
+
+    public static void showProgress(Context context,String message){
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setMax(100);
+        progressDialog.setMessage(message);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.show();
+    }
+
+    public static void dismissProgrees(){
+        progressDialog.dismiss();
+    }
+
     public static void showSnackBar(Context fContext, View foView, String fsMsg) {
         Snackbar snackbar = Snackbar.make(foView, Html.fromHtml("<font color='#ffffff' >" +
                 fsMsg + "</font>"), BaseTransientBottomBar.LENGTH_LONG);
@@ -48,7 +66,7 @@ public class AppUtils {
             imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         }
         //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
+        View view = ((Activity) activity).getCurrentFocus();
         //If no view currently has focus, create a new one, just so we can grab a window token from it
         if (view == null) {
             view = new View(activity);
