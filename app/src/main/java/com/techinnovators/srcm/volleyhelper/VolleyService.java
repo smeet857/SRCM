@@ -11,6 +11,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.techinnovators.srcm.Application;
 import com.techinnovators.srcm.utils.SharedPreferencesManager;
 
 import org.json.JSONObject;
@@ -54,10 +55,9 @@ public class VolleyService {
                 @Override
                 public Map<String, String> getHeaders() {
                     Map<String, String> params = new HashMap<>();
-                    SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(mContext);
                     //..add other headers
-                    if (!sharedPreferencesManager.getToken().equals("")) {
-                        params.put("Authorization", sharedPreferencesManager.getToken());
+                    if (!Application.getUserModel().token.isEmpty()) {
+                        params.put("Authorization", Application.getUserModel().token);
                     }
                     params.put("Content-Type", "application/json");
                     params.put("Accept", "application/json");
@@ -97,9 +97,9 @@ public class VolleyService {
                     @Override
                     public Map<String, String> getHeaders() {
                         Map<String, String> params = new HashMap<>();
-                        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(mContext);
-                        //..add other headers
-                        params.put("Authorization", sharedPreferencesManager.getToken());
+                        if (!Application.getUserModel().token.isEmpty()) {
+                            params.put("Authorization", Application.getUserModel().token);
+                        }
                         params.put("Content-Type", "application/json");
                         params.put("Accept", "application/json");
                         return params;
@@ -129,9 +129,9 @@ public class VolleyService {
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         Map<String, String> params = new HashMap<>();
-                        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(mContext);
-                        //..add other headers
-                        params.put("Authorization", sharedPreferencesManager.getToken());
+                        if (!Application.getUserModel().token.isEmpty()) {
+                            params.put("Authorization", Application.getUserModel().token);
+                        }
                         params.put("Content-Type", "application/json");
                         params.put("Accept", "application/json");
                         return params;

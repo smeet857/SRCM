@@ -356,6 +356,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
         String apiUrl = context.getString(R.string.api_url);
         String endPoint = context.getString(R.string.api_methodname_visit_request);
+
         endPoint += "/" + fsVisitRequestNo;
         apiUrl += endPoint;
         SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(context.getString(R.string.timeFormat), Locale.getDefault());

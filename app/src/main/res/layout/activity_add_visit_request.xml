@@ -117,6 +117,7 @@
                 android:drawableTint="@color/black"
                 android:fontFamily="@font/poppins_regular"
                 android:lines="1"
+                android:focusable="false"
                 android:padding="@dimen/_8sdp"
                 android:singleLine="true"
                 android:textColor="@color/black"

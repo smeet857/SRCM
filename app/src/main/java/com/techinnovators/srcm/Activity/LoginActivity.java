@@ -15,7 +15,6 @@ import com.google.gson.Gson;
 import com.techinnovators.srcm.Application;
 import com.techinnovators.srcm.Database.DbClient;
 import com.techinnovators.srcm.R;
-import com.techinnovators.srcm.TasksActivity;
 import com.techinnovators.srcm.models.UserModel;
 import com.techinnovators.srcm.utils.AppUtils;
 import com.techinnovators.srcm.utils.NetworkUtils;
@@ -27,11 +26,11 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     RelativeLayout rlMain;
-    VolleyService mVolleyService;
     TextView tvLogin;
 
     AppCompatEditText etUserName, etPassword;
@@ -42,35 +41,29 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
 
         if (hasUserData()) {
-            Intent intent = new Intent(LoginActivity.this, TasksActivity.class);
+            Intent intent = new Intent(LoginActivity.this, TaskActivity2.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
         } else {
-            rlMain = findViewById(R.id.rlMain);
-            tvLogin = findViewById(R.id.tvLogin);
-            etUserName = findViewById(R.id.etUserName);
-            etPassword = findViewById(R.id.etPassword);
-
+            init();
             tvLogin.setOnClickListener(this);
         }
-
     }
-//        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(LoginActivity.this);
-//        if (!sharedPreferencesManager.getUserName().isEmpty()) {
-//            AppUtils.hideKeyboard(this);
-//
-//            rlMain.setVisibility(View.GONE);
-//
-//            Intent intent = new Intent(LoginActivity.this, TasksActivity.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//            startActivity(intent);
-//            finish();
-//
-//        } else {
-//            rlMain.setVisibility(View.VISIBLE);
-//        }
-//    }
+
+    private void init(){
+        rlMain = findViewById(R.id.rlMain);
+        tvLogin = findViewById(R.id.tvLogin);
+        etUserName = findViewById(R.id.etUserName);
+        etPassword = findViewById(R.id.etPassword);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.tvLogin){
+            onLoginTap();
+        }
+    }
 
     private boolean hasUserData(){
         ArrayList<UserModel> data = (ArrayList<UserModel>) DbClient.getInstance().userDao().getAll();
@@ -82,38 +75,36 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             return false;
         }
     }
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        if (requestCode == LOCATION_PERMISSIONS_CODE && grantResults.length > 0 && (grantResults[0] + grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
-//            getCurrentLocation();
-//        } else {
-//            new AlertDialog.Builder(LoginActivity.this).setTitle(R.string.location_title).
-//                    setMessage(R.string.location_service_msg)
-//                    .setPositiveButton("SETTINGS", (dialogInterface, i)
-//                            -> startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).
-//                            setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))).
-//                    setCancelable(false).show();
-//        }
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//    }
+
+    private void onLoginTap(){
+        final String strUsername = Objects.requireNonNull(etUserName.getText()).toString().trim();
+        final String strPass = Objects.requireNonNull(etPassword.getText()).toString().trim();
+
+        if (strUsername.isEmpty()) {
+            AppUtils.showSnackBar(LoginActivity.this, rlMain, "Username can't be empty");
+            return;
+        }
+        if (strPass.isEmpty()) {
+            AppUtils.showSnackBar(LoginActivity.this, rlMain, "Password can't be empty");
+            return;
+        }
+        if (NetworkUtils.isNetworkConnected(LoginActivity.this)) {
+            login(strUsername, strPass);
+        } else {
+            AppUtils.showSnackBar(LoginActivity.this, rlMain, getString(R.string.internet_off));
+        }
+    }
 
     private void login(String strUsername, String strPass) {
-
-        String apiUrl = getString(R.string.api_url);
-        String endpoint = getString(R.string.api_methodname_login);
-        apiUrl += endpoint;
-
-        JSONObject jsonObject = new JSONObject();
-
         try {
-            jsonObject.put(getString(R.string.login_req_api_param_usr), strUsername);
-            jsonObject.put(getString(R.string.login_req_api_param_pwd), strPass);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(getString(R.string.param_usr), strUsername);
+            jsonObject.put(getString(R.string.param_pwd), strPass);
 
-            mVolleyService = new VolleyService(new APIVInterface() {
+            final APIVInterface callback = new APIVInterface() {
                 @Override
                 public void notifySuccess(JSONObject response) {
-                    AppUtils.dismissProgrees();
-                    //RESPONSE_SUCCESS_PARAM IS XXXXX
+                    AppUtils.dismissProgress();
 
                     final UserModel userModel = new Gson().fromJson(response.toString(),UserModel.class);
 
@@ -124,7 +115,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Application.setUserModel(userModel);
                             DbClient.getInstance().userDao().insert(userModel);
 
-                            Intent intent = new Intent(LoginActivity.this, TasksActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, TaskActivity2.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                             finish();
@@ -136,7 +127,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 @Override
                 public void notifyError(VolleyError error) {
-                    AppUtils.dismissProgrees();
+                    AppUtils.dismissProgress();
                     if (error.networkResponse != null) {
                         switch (error.networkResponse.statusCode) {
                             case 401:
@@ -164,41 +155,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 @Override
                 public void notifyNetworkParseResponse(NetworkResponse response) {
-                    AppUtils.dismissProgrees();
+                    AppUtils.dismissProgress();
                 }
-            }, LoginActivity.this);
+            };
 
-            mVolleyService.postDataVolley(apiUrl, jsonObject);
+            final VolleyService volleyService = new VolleyService(callback, LoginActivity.this);
+            volleyService.postDataVolley(getString(R.string.api_login),jsonObject);
+
             AppUtils.showProgress(this,getString(R.string.prog_dialog_title));
 
         } catch (Exception e) {
             AppUtils.displayAlertMessage(LoginActivity.this, "LOGIN", e.getMessage());
-        }
-    }
-
-    private void onLoginTap(){
-        final String strUsername = etUserName.getText().toString().trim();
-        final String strPass = etPassword.getText().toString().trim();
-
-        if (strUsername.isEmpty()) {
-            AppUtils.showSnackBar(LoginActivity.this, rlMain, "Username can't be empty");
-            return;
-        }
-        if (strPass.isEmpty()) {
-            AppUtils.showSnackBar(LoginActivity.this, rlMain, "Password can't be empty");
-            return;
-        }
-        if (NetworkUtils.isNetworkConnected(LoginActivity.this)) {
-            login(strUsername, strPass);
-        } else {
-            AppUtils.showSnackBar(LoginActivity.this, rlMain, getString(R.string.internet_off));
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        if(v.getId() == R.id.tvLogin){
-            onLoginTap();
         }
     }
 }

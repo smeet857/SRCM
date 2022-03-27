@@ -133,6 +133,7 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
 
         etVisitAssignedTo.setText(sharedPreferencesManager.getEmployee());
         etVisitDate.setText(AppUtils.dispCurrentDateFirst());
+
         etVisitDate.setOnClickListener(view -> {
             AppUtils.setDate(AddVisitRequestActivity.this, etVisitDate);
             AppUtils.hideKeyboard(this);
@@ -652,10 +653,13 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
     private void getTaluka() {
         String apiUrl = getString(R.string.api_url);
         String endpoint = getString(R.string.api_method_visittaluka);
+
         String limit_page_length_key = "limit_page_length=None";
         endpoint += limit_page_length_key + "&";
+
         String fields = getString(R.string.fields_param_key);
         fields += getString(R.string.fields_value_taluka);
+
         mResultCallback = new APIVInterface() {
             @Override
             public void notifySuccess(JSONObject response) {
@@ -967,10 +971,13 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
     private void getProjectName() {
         ArrayList<String> projectName = new ArrayList<>();
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(AddVisitRequestActivity.this);
+
         String apiUrl = getString(R.string.api_url);
         String endpoint = getString(R.string.api_method_project);
+
         String limit_page_length_key = "limit_page_length=None";
         endpoint += limit_page_length_key;
+
         apiUrl += endpoint;
         try {
             mResultCallback = new APIVInterface() {

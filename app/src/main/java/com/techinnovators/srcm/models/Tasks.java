@@ -6,6 +6,10 @@ import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.techinnovators.srcm.Application;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 @Entity(tableName = "Tasks")
 public class Tasks {
@@ -83,6 +87,11 @@ public class Tasks {
     @ColumnInfo(name = "visit_request_added")
     @Expose
     public boolean visitRequestAdded = false;
+
+    @SerializedName("isSync")
+    @ColumnInfo(name = "isSync")
+    @Expose
+    public boolean isSync = false;
 
     public String getProject_name() {
         return project_name;
@@ -219,4 +228,31 @@ public class Tasks {
         this.visit_checkout = visit_checkout;
     }
 
+
+    public JSONObject createTaskJson(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+        jsonObject.put("visit_location",this.visit_location);
+        jsonObject.put("project_type",this.project_type);
+        jsonObject.put("visit_place",this.visit_place);
+        jsonObject.put("employee", Application.getUserModel().employeeId);
+        jsonObject.put("project_name", this.project_name);
+        jsonObject.put("visit_date", this.visit_date);
+        jsonObject.put("visit_type", this.visit_type);
+        jsonObject.put("visit_mode", this.visit_mode);
+        jsonObject.put("visit_state", this.visit_state);
+        jsonObject.put("visit_district", this.visit_district);
+        jsonObject.put("visit_taluka", this.visit_taluka);
+        jsonObject.put("contact_person_mobile_no", this.contact_person_mobile_no);
+        jsonObject.put("contact_person_name", this.contact_person_name);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+//        jsonObject.put("visit_taluka", this.per);
+//        jsonObject.put("visit_taluka", this.visit_taluka);
+
+        return jsonObject;
+    }
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="param_usr">usr</string>
+    <string name="param_pwd">pwd</string>
+
+    <string name="param_app_auth_key">app_auth_key</string>
+
+    <string name="param_message">message</string>
+    <string name="param_enabled">enabled</string>
+    <string name="param_api_key">api_key</string>
+    <string name="param_api_secret">api_secret</string>
+    <string name="param_employee_id">employee_id</string>
+    <string name="param_user_app_module">user_app_module</string>
+    <string name="param_token_value">token\u0020%s:%s</string>
+
+    <string name="param_visit_request_key">\"Visit Request\"</string>
+    <string name="param_visit_request_value">Visit Request</string>
+
+    <string name="param_fields">fields=</string>
+    <string name="param_filters">filters=</string>
+    <string name="param_data">data</string>
+    <string name="param_name">name</string>
+
+</resources>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE resources [
+    <!ENTITY baseUrl "https://srcm.techinnovators.co.in/">
+    ]>
+
+<resources>
+<!--    Auth-->
+    <string name="auth_key">536aa3df73a76dcdf6c64a3919f4a0d3</string>
+
+    <string name="api_login">&baseUrl;api/method/login</string>
+    <string name="api_track_user_details">&baseUrl;api/method/field_work_tracking.api.get_user_details</string>
+
+    <string name="api_visit_requests">&baseUrl;api/resource/Visit%20Request?</string>
+    <string name="api_visit_request">&baseUrl;api/resource/Visit%20Request</string>
+
+    <string name="api_project_name">&baseUrl;api/resource/Event Type</string>
+    <string name="api_project_type">&baseUrl;api/resource/Event Category</string>
+    <string name="api_organization_name">&baseUrl;api/resource/Visit%20Place</string>
+    <string name="api_visit_state">&baseUrl;api/resource/Visit%20State</string>
+    <string name="api_district">&baseUrl;api/resource/Visit%20District</string>
+    <string name="api_taluka">&baseUrl;api/resource/Visit%20Taluka</string>
+    <string name="api_visit_location">&baseUrl;api/resource/Visit%20Location</string>
+    <string name="api_create_task">&baseUrl;api/resource/Visit%20Request</string>
+
+</resources>

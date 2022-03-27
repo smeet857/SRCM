@@ -12,7 +12,7 @@ public class Application extends android.app.Application {
     public static Context context;
 
     public static UserModel getUserModel(){
-        return userModel;
+        return userModel == null ? new UserModel() : userModel;
     }
     public static void setUserModel (UserModel newValue){
         userModel = newValue;

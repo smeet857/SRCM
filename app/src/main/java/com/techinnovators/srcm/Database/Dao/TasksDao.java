@@ -3,6 +3,7 @@ package com.techinnovators.srcm.Database.Dao;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import com.techinnovators.srcm.models.Tasks;
@@ -17,10 +18,13 @@ public interface TasksDao {
     @Query("SELECT * FROM Tasks WHERE id IN (:taskId)")
     List<Tasks> getById(int[] taskId);
 
-    @Insert
-    void insertAll(Tasks... tasks);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<Tasks> tasks);
 
-    @Delete
-    void delete(Tasks task);
+    @Insert
+    void insert(Tasks tasks);
+
+    @Query("DELETE FROM Tasks")
+    void deleteAll();
 }
 

@@ -17,6 +17,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.techinnovators.srcm.Application;
 import com.techinnovators.srcm.R;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 
 public class AppUtils {
@@ -32,8 +34,10 @@ public class AppUtils {
         progressDialog.show();
     }
 
-    public static void dismissProgrees(){
-        progressDialog.dismiss();
+    public static void dismissProgress(){
+        if(progressDialog.isShowing()){
+            progressDialog.dismiss();
+        }
     }
 
     public static void showSnackBar(Context fContext, View foView, String fsMsg) {
@@ -167,5 +171,18 @@ public class AppUtils {
             }
         }, year, month, day);
         datePickerDialog.show();
+    }
+
+    public static ArrayList<String> stringToArray(String text) {
+        if(text.isEmpty()){
+            return new ArrayList<>();
+        }else{
+            text = text.replaceAll("\\[","");
+            text = text.replaceAll("]","");
+
+            final String[] str = text.split(",");
+
+            return new ArrayList<>(Arrays.asList(str));
+        }
     }
 }
