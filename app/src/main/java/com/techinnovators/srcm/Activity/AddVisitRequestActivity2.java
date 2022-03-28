@@ -276,17 +276,20 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         visitRequest.setContact_person_mobile_no(etContPersonNo.getText().toString());
         visitRequest.setContact_person_name(etContPersonName.getText().toString());
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault());
-        Date visitDate = null;
+        SimpleDateFormat displayDateFormat = new SimpleDateFormat(getString(R.string.dateFormat_display), Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault());
+
         try {
-            visitDate = simpleDateFormat.parse(etVisitDate.getText().toString());
+           final Date visitDate = displayDateFormat.parse(etVisitDate.getText().toString());
+           final String strDate = dateFormat.format(visitDate);
+
+            visitRequest.setVisit_date(strDate);
+
         } catch (ParseException e) {
+            Log.e("Error on parsing date",e.getMessage());
             e.printStackTrace();
         }
 
-        if (visitDate != null) {
-            visitRequest.setVisit_date(visitDate.toString());
-        }
 
         if(NetworkUtils.isNetworkConnected(this)){
             AppUtils.showProgress(this,getString(R.string.prog_dialog_title));
@@ -339,7 +342,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                 final VolleyService mVolleyService = new VolleyService(callback, this);
                 mVolleyService.postDataVolley(apiUrl, visitRequest.createTaskJson());
-Log.e("kkknk","");
+
             } catch (Exception e) {
                 AppUtils.displayAlertMessage(this, getString(R.string.create_Visit), e.getMessage());
             }

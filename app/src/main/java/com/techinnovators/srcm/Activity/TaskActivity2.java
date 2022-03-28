@@ -38,6 +38,8 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class TaskActivity2 extends AppCompatActivity {
 
@@ -332,6 +334,11 @@ public class TaskActivity2 extends AppCompatActivity {
 
     private void setTasksList(ArrayList<Tasks> data){
         if(tasksAdapter == null){
+            Collections.sort(data, new Comparator<Tasks>() {
+                public int compare(Tasks o1, Tasks o2) {
+                    return o1.getDateTime().compareTo(o2.getDateTime());
+                }
+            });
             tasksAdapter = new TasksAdapter(this, data);
             rvTasks.setAdapter(tasksAdapter);
         }else{

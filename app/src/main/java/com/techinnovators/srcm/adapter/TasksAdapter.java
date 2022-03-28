@@ -17,13 +17,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.techinnovators.srcm.ActivityDetails;
+import com.techinnovators.srcm.Database.DbClient;
 import com.techinnovators.srcm.R;
 import com.techinnovators.srcm.models.Tasks;
 import com.techinnovators.srcm.models.VisitRequest;
@@ -41,6 +44,7 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -124,10 +128,17 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             }
 
         }
-        if (!TextUtils.isEmpty(tasks.get(position).getVisit_checkin())) {
+        if(!TextUtils.isEmpty(tasks.get(position).visit_checkin) && !TextUtils.isEmpty(tasks.get(position).visit_checkout)){
+            holder.tvCheckIn.setVisibility(View.GONE);
+            holder.tvCheckOut.setVisibility(View.GONE);
+        }else if (TextUtils.isEmpty(tasks.get(position).visit_checkin)) {
+            holder.tvCheckIn.setVisibility(View.VISIBLE);
+            holder.tvCheckOut.setVisibility(View.GONE);
+        }else {
             holder.tvCheckIn.setVisibility(View.GONE);
             holder.tvCheckOut.setVisibility(View.VISIBLE);
         }
+
         if (!TextUtils.isEmpty(tasks.get(position).getContact_person_name())) {
             holder.tvCPerson.setVisibility(View.VISIBLE);
             holder.ivCPerson.setVisibility(View.VISIBLE);
@@ -185,47 +196,17 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             tvCPerson = itemView.findViewById(R.id.tvCPerson);
             tvCPersonNo = itemView.findViewById(R.id.tvCPersonNo);
 
-            tvCheckIn.setOnClickListener(view -> {
-                if (NetworkUtils.isNetworkConnected(context)) {
-                    if (getAdapterPosition() >= 0) {
-                        visitRequestCheckIn(tasks.get(getAdapterPosition()).getName(), tvCheckIn, tvCheckOut);
-                    }
-                } else {
-                    SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(context.getString(R.string.timeFormat), Locale.getDefault());
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(context.getString(R.string.dateFormat), Locale.getDefault());
-
-                    String strCurrentDate = simpleDateFormat.format(new Date());
-                    String strCurrentTime = simpleTimeFormat.format(new Date());
-
-                    String strVisitCheckIn = strCurrentDate + " " + strCurrentTime;
-
-                    if (getAdapterPosition() >= 0) {
-                        storeVisitRequestCheckInData(tasks.get(getAdapterPosition()).getName(), strVisitCheckIn, tvCheckIn, tvCheckOut);
-                    }
-                    AppUtils.displayAlertMessage(context, "VISIT REQUEST CHECK IN", context.getString(R.string.internet_off));
+            tvCheckIn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    checkIn();
                 }
             });
 
-            tvCheckOut.setOnClickListener(view -> {
-                if(!tasks.get(getAdapterPosition()).getVisit_checkout().isEmpty()){
-                    if (NetworkUtils.isNetworkConnected(context)) {
-//                    if (getAdapterPosition() >= 0) {
-//                        visitRequestCheckIn(tasks.get(getAdapterPosition()).getName(), tvCheckIn, tvCheckOut);
-//                    }
-                    } else {
-                        SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(context.getString(R.string.timeFormat), Locale.getDefault());
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(context.getString(R.string.dateFormat), Locale.getDefault());
-
-                        String strCurrentDate = simpleDateFormat.format(new Date());
-                        String strCurrentTime = simpleTimeFormat.format(new Date());
-
-                        String strVisitCheckOut = strCurrentDate + " " + strCurrentTime;
-
-                        if (getAdapterPosition() >= 0) {
-                            storeVisitRequestCheckOutData(tasks.get(getAdapterPosition()).getName(), strVisitCheckOut, tvCheckIn, tvCheckOut);
-                        }
-                        AppUtils.displayAlertMessage(context, "VISIT REQUEST CHECK Out", context.getString(R.string.internet_off));
-                    }
+            tvCheckOut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    checkOut();
                 }
             });
         }
@@ -238,235 +219,130 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 //                context.startActivity(intent);
             }
         }
-    }
 
-    private ArrayList<Tasks> getVisitRequests() {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-        Gson gson = new Gson();
-        String json = prefs.getString(VISIT_REQUESTS, null);
-        Type type = new TypeToken<ArrayList<Tasks>>() {
-        }.getType();
-        tasksArrayList = gson.fromJson(json, type);
-        if (tasksArrayList == null) {
-            tasksArrayList = new ArrayList<>();
-        }
+        private void checkIn(){
+            try{
 
-        return tasksArrayList;
-    }
+                Tasks tasksModel = new Tasks();
+                tasksModel.visit_checkin = getCheckInCheckOutDate();
 
-    private ArrayList<VisitRequest> getVisitRequestCheckIns() {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-        Gson gson = new Gson();
-        String json = prefs.getString(VISIT_REQUEST_CHECK_IN, null);
-        Type type = new TypeToken<ArrayList<VisitRequest>>() {
-        }.getType();
-        visitRequestCheckIns = gson.fromJson(json, type);
-        if (visitRequestCheckIns == null) {
-            visitRequestCheckIns = new ArrayList<>();
-        }
+                if(NetworkUtils.isNetworkConnected(context)){
+                    AppUtils.showProgress(context,context.getString(R.string.prog_dialog_title));
 
-        return visitRequestCheckIns;
-    }
+                    String api = context.getString(R.string.api_check_in);
+                    api += "/" + tvRPName.getText().toString();
 
-    private ArrayList<VisitRequest> getVisitRequestCheckOuts() {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-        Gson gson = new Gson();
-        String json = prefs.getString(VISIT_REQUEST_CHECK_OUT, null);
-        Type type = new TypeToken<ArrayList<VisitRequest>>() {
-        }.getType();
-        visitRequestCheckOuts = gson.fromJson(json, type);
-        if (visitRequestCheckOuts == null) {
-            visitRequestCheckOuts = new ArrayList<>();
-        }
+                    final APIVInterface callback = new APIVInterface() {
+                        @Override
+                        public void notifySuccess(JSONObject response) {
+                            AppUtils.dismissProgress();
 
-        return visitRequestCheckOuts;
-    }
+                            /// set data local
+                            final Tasks t = tasks.get(getAdapterPosition());
+                            t.visit_checkin = tasksModel.visit_checkin;
+                            t.isCheckInSync = true;
+                            DbClient.getInstance().tasksDao().update(t);
 
-    private void storeVisitRequestCheckInData(String name, String visitCheckIn, TextView tvCheckIn, TextView tvCheckOut) {
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-        ArrayList<VisitRequest> visitRequestCheckIns = new ArrayList<>();
-        VisitRequest visitRequest = new VisitRequest();
+                            tvCheckIn.setVisibility(View.GONE);
+                            tvCheckOut.setVisibility(View.VISIBLE);
+                        }
 
-        visitRequest.setName(name);
-        visitRequest.setVisit_checkin(visitCheckIn);
+                        @Override
+                        public void notifyError(VolleyError error) {
+                            AppUtils.dismissProgress();
+                        }
 
-        visitRequestCheckIns.add(visitRequest);
+                        @Override
+                        public void notifyNetworkParseResponse(NetworkResponse response) {
+                            AppUtils.dismissProgress();
+                        }
+                    };
 
-        sharedPreferencesManager.setVisitRequestCheckIn(visitRequestCheckIns);
+                    final VolleyService volleyService = new VolleyService(callback,context);
+                    volleyService.putDataVolley(api,tasksModel.checkInJson());
+                }else{
+                    /// set data local
+                    final Tasks t = tasks.get(getAdapterPosition());
+                    t.visit_checkin = tasksModel.visit_checkin;
+                    t.isCheckInSync = false;
+                    DbClient.getInstance().tasksDao().update(t);
 
-        visitRequestCheckIns.clear();
-
-        visitRequestCheckIns.addAll(getVisitRequestCheckIns());
-
-        if (!visitRequestCheckIns.isEmpty()) {
-            Toast.makeText(context, "Visit Request" + " " + name + "check in time stored in local successfully", Toast.LENGTH_LONG).show();
-            tvCheckIn.setVisibility(View.GONE);
-            tvCheckOut.setVisibility(View.VISIBLE);
-        }
-
-        ArrayList<Tasks> tasks = new ArrayList<>(getVisitRequests());
-        if (!tasks.isEmpty()) {
-            for (int index = 0; index < tasks.size(); index++) {
-                String strName = tasks.get(index).getName();
-                if (strName.equals(name)) {
-                    tasks.get(index).setVisit_checkin(visitCheckIn);
-                    break;
+                    tvCheckIn.setVisibility(View.GONE);
+                    tvCheckOut.setVisibility(View.VISIBLE);
                 }
+            }catch (Exception e){
+                AppUtils.dismissProgress();
+                AppUtils.displayAlertMessage(context,"Error Exception",e.getMessage());
+                Log.e("Error on api check in",e.getMessage());
             }
-            sharedPreferencesManager.saveVisitRequests(tasks);
-        }
-    }
-
-    private void storeVisitRequestCheckOutData(String name, String visitCheckOut, TextView tvCheckIn, TextView tvCheckOut) {
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-        ArrayList<VisitRequest> visitRequestCheckOuts = new ArrayList<>();
-        VisitRequest visitRequest = new VisitRequest();
-
-        visitRequest.setName(name);
-        visitRequest.setVisit_checkout(visitCheckOut);
-
-        visitRequestCheckOuts.add(visitRequest);
-
-        sharedPreferencesManager.setVisitRequestCheckOut(visitRequestCheckOuts);
-
-        visitRequestCheckOuts.clear();
-
-        visitRequestCheckOuts.addAll(getVisitRequestCheckOuts());
-
-        if (!visitRequestCheckOuts.isEmpty()) {
-            Toast.makeText(context, "Visit Request" + " " + name + "check out time stored in local successfully", Toast.LENGTH_LONG).show();
-            tvCheckIn.setVisibility(View.GONE);
-            tvCheckOut.setVisibility(View.GONE);
         }
 
-        ArrayList<Tasks> tasks = new ArrayList<>(getVisitRequests());
-        if (!tasks.isEmpty()) {
-            for (int index = 0; index < tasks.size(); index++) {
-                String strName = tasks.get(index).getName();
-                if (strName.equals(name)) {
-                    tasks.get(index).setVisit_checkout(visitCheckOut);
-                    break;
+        private void checkOut(){
+            try{
+                Tasks tasksModel = new Tasks();
+                tasksModel.visit_checkout = getCheckInCheckOutDate();
+                tasksModel.visitCompleted = 1;
+                tasksModel.visitMapLocation = "https://maps.google.com";
+
+                if(NetworkUtils.isNetworkConnected(context)){
+                    AppUtils.showProgress(context,context.getString(R.string.prog_dialog_title));
+
+                    String api = context.getString(R.string.api_check_out);
+                    api += "/" + tvRPName.getText().toString();
+
+                    final APIVInterface callback = new APIVInterface() {
+                        @Override
+                        public void notifySuccess(JSONObject response) {
+                            AppUtils.dismissProgress();
+
+                            /// set data local
+                            final Tasks t = tasks.get(getAdapterPosition());
+                            t.visit_checkout = tasksModel.visit_checkout;
+                            t.visitCompleted = tasksModel.visitCompleted;
+                            t.visitMapLocation = tasksModel.visitMapLocation;
+                            t.isCheckOutSync = true;
+
+                            DbClient.getInstance().tasksDao().update(t);
+
+                            tvCheckOut.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void notifyError(VolleyError error) {
+                            AppUtils.dismissProgress();
+                        }
+
+                        @Override
+                        public void notifyNetworkParseResponse(NetworkResponse response) {
+                            AppUtils.dismissProgress();
+                        }
+                    };
+
+                    final VolleyService volleyService = new VolleyService(callback,context);
+                    volleyService.putDataVolley(api,tasksModel.checkOutJson());
+                }else{
+                    /// set data local
+                    final Tasks t = tasks.get(getAdapterPosition());
+                    t.visit_checkout = tasksModel.visit_checkout;
+                    t.visitCompleted = tasksModel.visitCompleted;
+                    t.visitMapLocation = tasksModel.visitMapLocation;
+                    t.isCheckOutSync = false;
+
+                    DbClient.getInstance().tasksDao().update(t);
+
+                    tvCheckOut.setVisibility(View.GONE);
                 }
+            }catch (Exception e){
+                AppUtils.dismissProgress();
+                AppUtils.displayAlertMessage(context,"Error Exception",e.getMessage());
+                Log.e("Error on api check out",e.getMessage());
             }
-            sharedPreferencesManager.saveVisitRequests(tasks);
         }
-    }
 
-    private void visitRequestCheckIn(String fsVisitRequestNo, TextView fTvCheckIn, TextView fTvCheckout) {
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-        String apiUrl = context.getString(R.string.api_url);
-        String endPoint = context.getString(R.string.api_methodname_visit_request);
-
-        endPoint += "/" + fsVisitRequestNo;
-        apiUrl += endPoint;
-        SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(context.getString(R.string.timeFormat), Locale.getDefault());
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(context.getString(R.string.dateFormat), Locale.getDefault());
-        String strCurrentDate = simpleDateFormat.format(new Date());
-        String strCurrentTime = simpleTimeFormat.format(new Date());
-        String strVisitCheckIn = strCurrentDate + " " + strCurrentTime;
-        JSONObject jsonRequest = new JSONObject();
-        ProgressDialog progressDialog;
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setMax(100);
-        progressDialog.setMessage(context.getString(R.string.prog_dialog_title));
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setCancelable(false);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        try {
-
-            RequestQueue queue = Volley.newRequestQueue(context);
-            jsonRequest.put(context.getString(R.string.visit_checkin_param_key), strVisitCheckIn);
-            JsonObjectRequest putRequest = new JsonObjectRequest(Request.Method.PUT, apiUrl, jsonRequest,
-                    (JSONObject response) -> {
-                        progressDialog.dismiss();
-                        try {
-                            JSONObject dataResponse = response.getJSONObject(context.getString(R.string.data_param_key));
-                            if (!dataResponse.toString().isEmpty()) {
-                                String strName = dataResponse.getString(context.getString(R.string.name_param_key));
-                                if (!TextUtils.isEmpty(strName)) {
-                                    if (strName.equals(fsVisitRequestNo)) {
-                                        Toast.makeText(context, "Visit request check in time updated successfully", Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                                fTvCheckIn.setVisibility(View.GONE);
-                                fTvCheckout.setVisibility(View.VISIBLE);
-                            }
-                        } catch (JSONException e) {
-                            progressDialog.dismiss();
-                            e.printStackTrace();
-                            AppUtils.displayAlertMessage(context, "VISIT REQUEST CHECK IN", e.getMessage());
-                        }
-                    },
-                    error -> {
-                        progressDialog.dismiss();
-                        if (error.getMessage() != null) {
-                            if (error.getMessage().equals(context.getString(R.string.unknown_host))) {
-                                storeVisitRequestCheckInData(fsVisitRequestNo, strVisitCheckIn, fTvCheckIn, fTvCheckout);
-                            }
-                        }
-                        if (error.networkResponse != null) {
-                            switch (error.networkResponse.statusCode) {
-                                case 401:
-                                    String responseBody;
-                                    try {
-                                        responseBody = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(responseBody);
-                                        if (!data.getString("message").isEmpty()) {
-                                            AppUtils.displayAlertMessage(context, "VISIT REQUEST CHECK IN", data.getString("message"));
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(context, "VISIT REQUEST CHECK IN", e.getMessage());
-                                        e.printStackTrace();
-                                    }
-                                    break;
-                                case 403:
-                                    AppUtils.displayAlertMessage(context, "VISIT REQUEST CHECK IN", context.getString(R.string.error_403));
-                                case 404:
-                                    AppUtils.displayAlertMessage(context, "VISIT REQUEST CHECK IN", context.getString(R.string.error_404));
-                                    break;
-                                case 417:
-                                    String response;
-                                    try {
-                                        response = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(response);
-                                        if (!data.getString(context.getString(R.string._server_messages_param_key)).isEmpty()) {
-                                            AppUtils.displayAlertMessage(context, "VISIT REQUEST CHECK IN", data.getString("_server_messages"));
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(context, "VISIT REQUEST CHECK IN", e.getMessage());
-                                        e.printStackTrace();
-                                    }
-                                    break;
-                                case 500:
-                                    AppUtils.displayAlertMessage(context, "VISIT REQUEST CHECK IN", context.getString(R.string.error_500));
-                                    break;
-                            }
-                        }
-                    }
-            ) {
-                @Override
-                public String getBodyContentType() {
-                    return "application/json";
-                }
-
-                @Override
-                public Map<String, String> getHeaders() {
-                    Map<String, String> params = new HashMap<>();
-                    //..add other headers
-                    if (!sharedPreferencesManager.getToken().equals("")) {
-                        params.put("Authorization", sharedPreferencesManager.getToken());
-                    }
-                    params.put("Content-Type", "application/json");
-                    params.put("Accept", "application/json");
-                    return params;
-                }
-            };
-            queue.add(putRequest);
-            progressDialog.show();
-        } catch (JSONException e) {
-            progressDialog.dismiss();
-            AppUtils.displayAlertMessage(context, "VISIT REQUEST CHECK IN", e.getMessage());
-            e.printStackTrace();
+        private String getCheckInCheckOutDate(){
+            final Date date = Calendar.getInstance().getTime();
+            final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            return dateFormat.format(date);
         }
     }
 

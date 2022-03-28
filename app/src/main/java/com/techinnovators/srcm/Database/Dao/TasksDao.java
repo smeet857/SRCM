@@ -5,6 +5,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.techinnovators.srcm.models.Tasks;
 
@@ -23,6 +24,9 @@ public interface TasksDao {
 
     @Insert
     void insert(Tasks tasks);
+
+    @Update
+    void update(Tasks tasks);
 
     @Query("DELETE FROM Tasks")
     void deleteAll();

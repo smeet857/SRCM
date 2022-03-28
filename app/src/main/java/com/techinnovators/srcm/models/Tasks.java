@@ -1,5 +1,7 @@
 package com.techinnovators.srcm.models;
 
+import android.util.Log;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -10,6 +12,9 @@ import com.techinnovators.srcm.Application;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity(tableName = "Tasks")
 public class Tasks {
@@ -88,10 +93,25 @@ public class Tasks {
     @Expose
     public boolean visitRequestAdded = false;
 
-    @SerializedName("isSync")
-    @ColumnInfo(name = "isSync")
+    @SerializedName("visit_completed")
+    @ColumnInfo(name = "visit_completed")
     @Expose
-    public boolean isSync = false;
+    public int visitCompleted = 0;
+
+    @SerializedName("visit_map_location")
+    @ColumnInfo(name = "visit_map_location")
+    @Expose
+    public String visitMapLocation = "";
+
+    @SerializedName("isCheckInSync")
+    @ColumnInfo(name = "isCheckInSync")
+    @Expose
+    public boolean isCheckInSync = false;
+
+    @SerializedName("isCheckOutSync")
+    @ColumnInfo(name = "isCheckOutSync")
+    @Expose
+    public boolean isCheckOutSync = false;
 
     public String getProject_name() {
         return project_name;
@@ -250,9 +270,28 @@ public class Tasks {
             e.printStackTrace();
         }
 
-//        jsonObject.put("visit_taluka", this.per);
-//        jsonObject.put("visit_taluka", this.visit_taluka);
+        return jsonObject;
+    }
+
+    public JSONObject checkInJson(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("visit_checkin",this.visit_checkin);
+        } catch (JSONException e) {
+            Log.e("Error on json put",e.getMessage());
+            e.printStackTrace();
+        }
 
         return jsonObject;
+    }
+
+    public JSONObject checkOutJson(){
+        final HashMap<String,Object> map = new HashMap<>();
+
+        map.put("visit_checkout",this.visit_checkout);
+        map.put("visit_completed",this.visitCompleted);
+        map.put("visit_map_location",this.visit_location);
+
+        return new JSONObject(map);
     }
 }

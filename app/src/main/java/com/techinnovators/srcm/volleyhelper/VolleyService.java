@@ -6,16 +6,22 @@ import android.util.Log;
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.techinnovators.srcm.Activity.AddVisitRequestActivity2;
 import com.techinnovators.srcm.Application;
+import com.techinnovators.srcm.R;
+import com.techinnovators.srcm.utils.AppUtils;
 import com.techinnovators.srcm.utils.SharedPreferencesManager;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -144,6 +150,79 @@ public class VolleyService {
 //                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                 queue.add(jsonObj);
             }
+
+        } catch (Exception e) {
+            Log.e("exceptionVolleyService:", e.getMessage());
+        }
+    }
+
+    public void putDataVolley(String url, JSONObject sendObj) {
+        try {
+            RequestQueue queue = Volley.newRequestQueue(mContext);
+
+            JsonObjectRequest jsonObj = new JsonObjectRequest(Request.Method.PUT,url, sendObj, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    if (mResultCallback != null)
+                        mResultCallback.notifySuccess(response);
+                }
+            }, error -> {
+                String errorMessage = "";
+                switch (error.networkResponse.statusCode) {
+                    case 401:
+                        String responseBody;
+                        try {
+                            responseBody = new String(error.networkResponse.data, "utf-8");
+                            JSONObject data = new JSONObject(responseBody);
+                            if (!data.getString("message").isEmpty()) {
+                                errorMessage = data.getString("message");
+                            }
+                        } catch (UnsupportedEncodingException | JSONException e) {
+                            errorMessage = e.getMessage();
+                            e.printStackTrace();
+                        }
+                        break;
+                    case 404:
+                        errorMessage = mContext.getString(R.string.error_404);
+                        break;
+                    case 500:
+                        errorMessage = mContext.getString(R.string.error_500);
+                        break;
+                }
+
+                AppUtils.displayAlertMessage(mContext, "Api Error", errorMessage);
+
+                if (mResultCallback != null){
+                    mResultCallback.notifyError(error);
+                }
+
+            }) {
+                @Override
+                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                    if (mResultCallback != null) {
+                        mResultCallback.notifyNetworkParseResponse(response);
+                    }
+                    return super.parseNetworkResponse(response);
+                }
+
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<>();
+                    //..add other headers
+                    if (!Application.getUserModel().token.isEmpty()) {
+                        params.put("Authorization", Application.getUserModel().token);
+                    }
+                    params.put("Content-Type", "application/json");
+                    params.put("Accept", "application/json");
+                    return params;
+                }
+
+            };
+//            jsonObj.setRetryPolicy(new DefaultRetryPolicy(
+//                    DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 2,
+//                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+//                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            queue.add(jsonObj);
 
         } catch (Exception e) {
             Log.e("exceptionVolleyService:", e.getMessage());
