@@ -127,6 +127,7 @@ public class VolleyService {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+
                         if (mResultCallback != null)
                             mResultCallback.notifyError(error);
                     }
@@ -167,31 +168,6 @@ public class VolleyService {
                         mResultCallback.notifySuccess(response);
                 }
             }, error -> {
-                String errorMessage = "";
-                switch (error.networkResponse.statusCode) {
-                    case 401:
-                        String responseBody;
-                        try {
-                            responseBody = new String(error.networkResponse.data, "utf-8");
-                            JSONObject data = new JSONObject(responseBody);
-                            if (!data.getString("message").isEmpty()) {
-                                errorMessage = data.getString("message");
-                            }
-                        } catch (UnsupportedEncodingException | JSONException e) {
-                            errorMessage = e.getMessage();
-                            e.printStackTrace();
-                        }
-                        break;
-                    case 404:
-                        errorMessage = mContext.getString(R.string.error_404);
-                        break;
-                    case 500:
-                        errorMessage = mContext.getString(R.string.error_500);
-                        break;
-                }
-
-                AppUtils.displayAlertMessage(mContext, "Api Error", errorMessage);
-
                 if (mResultCallback != null){
                     mResultCallback.notifyError(error);
                 }

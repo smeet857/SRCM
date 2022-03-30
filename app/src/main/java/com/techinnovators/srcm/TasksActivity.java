@@ -953,10 +953,13 @@ public class TasksActivity extends AppCompatActivity {
 //        try {
 //            mVolleyService = new VolleyService(mResultCallback, TasksActivity.this);
 //            JSONObject jsonObject = new JSONObject();
+
 //            SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(getString(R.string.timeFormat), Locale.getDefault());
 //            String strCurrentTime = simpleTimeFormat.format(new Date());
+
 //            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault());
 //            String strCurrentDate = simpleDateFormat.format(new Date());
+
 //            jsonObject.put(getString(R.string.attendance_date_param_key), strCurrentDate);
 //            jsonObject.put(getString(R.string.company_param_key), fsCompany);
 //            jsonObject.put(getString(R.string.docstatus_param_key), 0);
@@ -966,6 +969,7 @@ public class TasksActivity extends AppCompatActivity {
 //            jsonObject.put(getString(R.string.last_checkout_param_key), "");
 //            jsonObject.put(getString(R.string.status_param_key), getString(R.string.attendance_default_status));
 //            jsonObject.put(getString(R.string.total_working_hours_param_key), 0.0);
+
 //            mVolleyService.postDataVolley(apiUrl, jsonObject);
 //            progressDialog.show();
 //        } catch (Exception e) {

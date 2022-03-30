@@ -24,5 +24,6 @@
     <string name="api_create_task">&baseUrl;api/resource/Visit%20Request</string>
     <string name="api_check_in">&baseUrl;api/resource/Visit%20Request</string>
     <string name="api_check_out">&baseUrl;api/resource/Visit%20Request</string>
+    <string name="api_attendance">&baseUrl;api/resource/Attendance</string>
 
 </resources>

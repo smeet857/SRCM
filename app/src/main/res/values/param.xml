@@ -20,5 +20,6 @@
     <string name="param_filters">filters=</string>
     <string name="param_data">data</string>
     <string name="param_name">name</string>
+    <string name="param_company">company</string>
 
 </resources>

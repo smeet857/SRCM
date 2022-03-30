@@ -1,10 +1,8 @@
 package com.techinnovators.srcm.adapter;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Handler;
+
+import android.location.Location;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,56 +10,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.techinnovators.srcm.ActivityDetails;
 import com.techinnovators.srcm.Database.DbClient;
 import com.techinnovators.srcm.R;
 import com.techinnovators.srcm.models.Tasks;
-import com.techinnovators.srcm.models.VisitRequest;
 import com.techinnovators.srcm.utils.AppUtils;
+import com.techinnovators.srcm.utils.GpsCallback;
+import com.techinnovators.srcm.utils.LocationUtils;
 import com.techinnovators.srcm.utils.NetworkUtils;
-import com.techinnovators.srcm.utils.SharedPreferencesManager;
 import com.techinnovators.srcm.volleyhelper.APIVInterface;
 import com.techinnovators.srcm.volleyhelper.VolleyService;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
-
-import static com.techinnovators.srcm.utils.SharedPreferencesManager.ACTIVITY_DETAILS;
-import static com.techinnovators.srcm.utils.SharedPreferencesManager.PREFS_NAME;
-import static com.techinnovators.srcm.utils.SharedPreferencesManager.VISIT_REQUESTS;
-import static com.techinnovators.srcm.utils.SharedPreferencesManager.VISIT_REQUEST_CHECK_IN;
-import static com.techinnovators.srcm.utils.SharedPreferencesManager.VISIT_REQUEST_CHECK_OUT;
 
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> {
     Context context;
     ArrayList<Tasks> tasks;
-    ArrayList<VisitRequest> visitRequestCheckIns;
-    ArrayList<VisitRequest> visitRequestCheckOuts;
-    ArrayList<Tasks> tasksArrayList;
 
     public TasksAdapter(Context context, ArrayList<Tasks> tasksArrayList) {
         this.tasks = tasksArrayList;
@@ -245,11 +222,15 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
                             tvCheckIn.setVisibility(View.GONE);
                             tvCheckOut.setVisibility(View.VISIBLE);
+
+                            AppUtils.displayAlertMessage(context,"Check In","Successfully");
                         }
 
                         @Override
                         public void notifyError(VolleyError error) {
                             AppUtils.dismissProgress();
+
+                            AppUtils.displayAlertMessage(context,"Api Error",error.getMessage());
                         }
 
                         @Override
@@ -269,6 +250,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
                     tvCheckIn.setVisibility(View.GONE);
                     tvCheckOut.setVisibility(View.VISIBLE);
+
+                    AppUtils.displayAlertMessage(context,"Check In","Successfully");
                 }
             }catch (Exception e){
                 AppUtils.dismissProgress();
@@ -277,12 +260,12 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             }
         }
 
-        private void checkOut(){
+        public void checkOut(){
             try{
                 Tasks tasksModel = new Tasks();
                 tasksModel.visit_checkout = getCheckInCheckOutDate();
                 tasksModel.visitCompleted = 1;
-                tasksModel.visitMapLocation = "https://maps.google.com";
+                tasksModel.visitMapLocation = "https://maps.google.com?=3243443,4343243";
 
                 if(NetworkUtils.isNetworkConnected(context)){
                     AppUtils.showProgress(context,context.getString(R.string.prog_dialog_title));
@@ -305,11 +288,16 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                             DbClient.getInstance().tasksDao().update(t);
 
                             tvCheckOut.setVisibility(View.GONE);
+
+                            AppUtils.displayAlertMessage(context,"Check Out","Successfully");
+
                         }
 
                         @Override
                         public void notifyError(VolleyError error) {
                             AppUtils.dismissProgress();
+                            AppUtils.displayAlertMessage(context,"Api Error",error.getMessage());
+
                         }
 
                         @Override
@@ -331,6 +319,9 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                     DbClient.getInstance().tasksDao().update(t);
 
                     tvCheckOut.setVisibility(View.GONE);
+
+                    AppUtils.displayAlertMessage(context,"Check Out","Successfully");
+
                 }
             }catch (Exception e){
                 AppUtils.dismissProgress();

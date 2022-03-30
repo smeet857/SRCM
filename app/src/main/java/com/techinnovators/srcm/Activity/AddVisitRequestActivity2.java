@@ -299,6 +299,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             final APIVInterface callback = new APIVInterface() {
                 @Override
                 public void notifySuccess(JSONObject response) {
+                    visitRequest.isSync = true;
                     db.tasksDao().insert(visitRequest);
                     setResult(RESULT_OK);
                     finish();
@@ -347,6 +348,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 AppUtils.displayAlertMessage(this, getString(R.string.create_Visit), e.getMessage());
             }
         }else{
+            visitRequest.isSync = false;
             db.tasksDao().insert(visitRequest);
             setResult(RESULT_OK);
             finish();

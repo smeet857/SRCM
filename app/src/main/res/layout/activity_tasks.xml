@@ -99,16 +99,18 @@
         android:layout_marginTop="@dimen/_9sdp"
         android:src="@drawable/ic_time"
         android:visibility="gone"
+        android:tint="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.78"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:ignore="UseAppTint" />
 
     <TextView
         android:id="@+id/tvWorkingHours"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_9sdp"
+        android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_12sdp"
         android:fontFamily="@font/poppins_regular"
         android:textColor="@color/black"

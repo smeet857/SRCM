@@ -55,6 +55,11 @@ public class UserModel {
     @Expose
     public String token = "";
 
+    @SerializedName("company")
+    @ColumnInfo(name = "company")
+    @Expose
+    public String company = "";
+
     /// Form details
     @SerializedName("project_name")
     @ColumnInfo(name = "project_name")
@@ -90,4 +95,41 @@ public class UserModel {
     @ColumnInfo(name = "location_of_visit")
     @Expose
     public String locationOfVisit = "";
+
+    /// Attendance details
+
+    @SerializedName("first_checkin")
+    @ColumnInfo(name = "first_checkin")
+    @Expose
+    public String firstCheckin = "";
+
+    @SerializedName("last_check_out")
+    @ColumnInfo(name = "last_check_out")
+    @Expose
+    public String lastCheckOut = "";
+
+    @SerializedName("employee")
+    @ColumnInfo(name = "employee")
+    @Expose
+    public String employee = "";
+
+    @SerializedName("attendance_date")
+    @ColumnInfo(name = "attendance_date")
+    @Expose
+    public String attendanceDate = "";
+
+    @SerializedName("name")
+    @ColumnInfo(name = "name")
+    @Expose
+    public String name = "";
+
+    @SerializedName("check_in")
+    @ColumnInfo(name = "check_in")
+    @Expose
+    public int checkIn = 0;
+
+    @SerializedName("check_out")
+    @ColumnInfo(name = "check_out")
+    @Expose
+    public int checkOut = 0;
 }
