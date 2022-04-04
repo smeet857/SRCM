@@ -25,7 +25,7 @@
         app:layout_constraintStart_toEndOf="@+id/ivProject"
         app:layout_constraintTop_toTopOf="@+id/ivProject" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/tvActivityUnderProject"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -214,6 +214,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_project" />
+
     <ImageView
         android:id="@+id/ivCPerson"
         android:layout_width="wrap_content"
@@ -222,6 +223,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSchoolLocation"
         app:srcCompat="@drawable/ic_reportperson" />
+
     <ImageView
         android:id="@+id/ivCPersonNo"
         android:layout_width="wrap_content"

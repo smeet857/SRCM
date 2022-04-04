@@ -1,5 +1,6 @@
 package com.techinnovators.srcm.models;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import androidx.room.ColumnInfo;
@@ -14,6 +15,7 @@ import com.techinnovators.srcm.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -122,6 +124,9 @@ public class Tasks {
     @Expose
     public boolean isCheckOutSync = false;
 
+    public int getId(){
+        return this.id;
+    }
     public String getProject_name() {
         return project_name;
     }
@@ -258,9 +263,10 @@ public class Tasks {
     }
 
     public Date getDate (){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Application.context.getString(R.string.dateFormat));
+        @SuppressLint("SimpleDateFormat")
+        DateFormat f = new SimpleDateFormat(Application.context.getString(R.string.dateFormat));
         try {
-            return simpleDateFormat.parse(this.visit_date);
+            return f.parse(visit_date);
         } catch (ParseException e) {
             e.printStackTrace();
             return null;

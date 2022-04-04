@@ -276,8 +276,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         visitRequest.setContact_person_mobile_no(etContPersonNo.getText().toString());
         visitRequest.setContact_person_name(etContPersonName.getText().toString());
 
-        SimpleDateFormat displayDateFormat = new SimpleDateFormat(getString(R.string.dateFormat_display), Locale.getDefault());
-        SimpleDateFormat dateFormat = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault());
+        SimpleDateFormat displayDateFormat = new SimpleDateFormat(getString(R.string.dateFormat_display),Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat(getString(R.string.dateFormat),Locale.getDefault());
 
         try {
            final Date visitDate = displayDateFormat.parse(etVisitDate.getText().toString());

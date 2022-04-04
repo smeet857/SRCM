@@ -40,9 +40,15 @@ import com.techinnovators.srcm.Database.DbClient;
 import com.techinnovators.srcm.R;
 import com.techinnovators.srcm.TasksActivity;
 import com.techinnovators.srcm.adapter.TasksAdapter;
+import com.techinnovators.srcm.models.Taluka;
+import com.techinnovators.srcm.models.TalukaResponse;
 import com.techinnovators.srcm.models.Tasks;
 import com.techinnovators.srcm.models.TasksReponse;
 import com.techinnovators.srcm.models.UserModel;
+import com.techinnovators.srcm.models.VisitDistrict;
+import com.techinnovators.srcm.models.VisitDistrictResponse;
+import com.techinnovators.srcm.models.VisitLocation;
+import com.techinnovators.srcm.models.VisitLocationResponse;
 import com.techinnovators.srcm.utils.AppUtils;
 import com.techinnovators.srcm.utils.GpsCallback;
 import com.techinnovators.srcm.utils.LocationUtils;
@@ -93,6 +99,8 @@ public class TaskActivity2 extends AppCompatActivity {
 
     private CountDownTimer countDownTimer;
 
+    private DbClient db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +111,7 @@ public class TaskActivity2 extends AppCompatActivity {
     }
 
     private void init() {
+        db = DbClient.getInstance();
         llEmptyView = findViewById(R.id.llEmptyView);
         csMain = findViewById(R.id.csMain);
         ivAdd = findViewById(R.id.ivAdd);
@@ -215,10 +224,22 @@ public class TaskActivity2 extends AppCompatActivity {
     }
 
     private void initData() {
-        syncData();
-        getUserDetails();
+        if(NetworkUtils.isNetworkConnected(this)){
+            syncData();
+        }else{
+            getUserDetails();
+        }
     }
 
+    private void setTaskCategories(){
+        getProjectName();
+        getProjectType();
+        getOrganisationName();
+        getVisitState();
+        getDistrict();
+        getTaluka();
+        getLocationOfVisit();
+    }
     private void setCountDownTimer() {
         countDownTimer = new CountDownTimer(Long.MAX_VALUE,1000) {
             @Override
@@ -313,7 +334,7 @@ public class TaskActivity2 extends AppCompatActivity {
                                         int enabled = jsonObject.getInt(getString(R.string.enabled_param_key));
 
                                         if (enabled == 0) {
-//                                        logout();
+                                        logout();
                                         } else if (enabled == 1) {
                                             final UserModel model = Application.getUserModel();
 
@@ -351,6 +372,8 @@ public class TaskActivity2 extends AppCompatActivity {
                         } catch (JSONException jsonException) {
                             AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS", jsonException.getMessage());
                         }
+
+                        setTaskCategories();
                     }
 
                     @Override
@@ -405,6 +428,7 @@ public class TaskActivity2 extends AppCompatActivity {
             }
         } else {
             getTasksList(Application.getUserModel().employeeId);
+            setTaskCategories();
         }
     }
 
@@ -459,12 +483,11 @@ public class TaskActivity2 extends AppCompatActivity {
                                     t.isSync = true;
                                 }
 
-                                setTasksList(tasksList);
-
                                 DbClient.getInstance().tasksDao().deleteAll();
-
                                 DbClient.getInstance().tasksDao().insertAll(tasksList);
+                                tasksList = (ArrayList<Tasks>) DbClient.getInstance().tasksDao().getAll();
 
+                                setTasksList(tasksList);
                             } else {
                                 setTaskListFromLocal();
                             }
@@ -552,18 +575,27 @@ public class TaskActivity2 extends AppCompatActivity {
         if (tasksAdapter == null) {
             Collections.sort(data, new Comparator<Tasks>() {
                 public int compare(Tasks o1, Tasks o2) {
-                    return o1.getDate().compareTo(o2.getDate());
+                    return o2.getDate().compareTo(o1.getDate());
                 }
             });
             tasksAdapter = new TasksAdapter(this, data);
             rvTasks.setAdapter(tasksAdapter);
         } else {
+            Collections.sort(data, new Comparator<Tasks>() {
+                public int compare(Tasks o1, Tasks o2) {
+                    return o2.getDate().compareTo(o1.getDate());
+                }
+            });
             tasksAdapter.updateList(data);
         }
     }
 
     private void refreshTaskList() {
-        getTasksList(Application.getUserModel().employeeId);
+        if(NetworkUtils.isNetworkConnected(this)){
+            syncData();
+        }else{
+            getUserDetails();
+        }
     }
 
     private void checkIn() {
@@ -870,29 +902,26 @@ public class TaskActivity2 extends AppCompatActivity {
         if(NetworkUtils.isNetworkConnected(this)){
             AppUtils.showProgress(this,"Sync data...");
             final ArrayList<Tasks> tasksDbList  = (ArrayList<Tasks>) DbClient.getInstance().tasksDao().getAll();
-            boolean hasData = false;
+
             for (int i = 0;i < tasksDbList.size();i++){
                 final Tasks t = tasksDbList.get(i);
 
                 if(!t.isSync){
-                    hasData = true;
+
                     createTaskFromSync(t);
                 }
                 if(!t.isCheckInSync){
-                    hasData = true;
+
                     checkInTaskFromSync(t);
                 }
                 if(!t.isCheckOutSync){
-                    hasData = true;
+
                     checkOutTaskFromSync(t);
                 }
             }
 
             AppUtils.dismissProgress();
-
-            if(!hasData){
-                AppUtils.displayAlertMessage(this,"Sync","All data is synced");
-            }
+            getUserDetails();
         }else{
             AppUtils.displayAlertMessage(this,"Error","No Internet");
         }
@@ -986,6 +1015,583 @@ public class TaskActivity2 extends AppCompatActivity {
             volleyService.putDataVolley(api,t.checkOutJson());
         }catch (Exception e){
             Log.e("Error on api check out",e.getMessage());
+        }
+    }
+
+
+    private void getProjectName() {
+        if(NetworkUtils.isNetworkConnected(this)){
+            try {
+                String apiUrl = getString(R.string.api_project_name);
+
+                /// Params
+                apiUrl += "?limit_page_length=None";
+
+                final APIVInterface callback = new APIVInterface() {
+                    @Override
+                    public void notifySuccess(JSONObject response) {
+                        try {
+                            JSONArray data = response.getJSONArray(getString(R.string.param_data));
+
+                            if (data.length() > 0) {
+                                final ArrayList<String> arrayList = new ArrayList<>();
+
+                                for (int index = 0; index < data.length(); index++) {
+
+                                    JSONObject jsonObject = data.getJSONObject(index);
+
+                                    if (jsonObject != null && !jsonObject.toString().isEmpty()) {
+                                        String strName = jsonObject.getString(getString(R.string.param_name));
+
+                                        if (!strName.isEmpty()) {
+                                            arrayList.add(strName);
+                                        }
+                                    }
+                                }
+                                
+                                /// set in local storage
+                                Application.getUserModel().projectName = arrayList.toString();
+                                db.userDao().update(Application.getUserModel());
+                            }
+                        } catch (JSONException jsonException) {
+                            jsonException.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void notifyError(VolleyError error) {
+                        if (error.networkResponse != null) {
+                            switch (error.networkResponse.statusCode) {
+                                case 401:
+                                    String responseBody;
+                                    try {
+                                        responseBody = new String(error.networkResponse.data, "utf-8");
+                                        JSONObject data = new JSONObject(responseBody);
+                                        if (!data.getString("message").isEmpty()) {
+                                            AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT NAME", data.getString("message"));
+                                        }
+                                    } catch (UnsupportedEncodingException | JSONException e) {
+                                        AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT NAME", e.getMessage());
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                                case 403:
+                                    AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT NAME", getString(R.string.error_403));
+                                case 404:
+                                    AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT NAME", getString(R.string.error_404));
+                                    break;
+                                case 500:
+                                    AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT NAME", getString(R.string.error_500));
+                                    break;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void notifyNetworkParseResponse(NetworkResponse response) {
+
+                    }
+                };
+
+                VolleyService mVolleyService = new VolleyService(callback,this);
+                mVolleyService.getDataVolley(apiUrl, null);
+
+            } catch (Exception e) {
+                AppUtils.displayAlertMessage(this, "PROJECT NAME", e.getMessage());
+            }
+        }
+    }
+
+    private void getProjectType() {
+        if(NetworkUtils.isNetworkConnected(this)){
+            String apiUrl = getString(R.string.api_project_type);
+
+            apiUrl += "?limit_page_length=None";
+
+            final APIVInterface callback = new APIVInterface() {
+                @Override
+                public void notifySuccess(JSONObject response) {
+                    try {
+                        JSONArray data = response.getJSONArray(getString(R.string.param_data));
+                        if (data.length() > 0) {
+                            final ArrayList<String> arrayList = new ArrayList<>();
+
+                            for (int index = 0; index < data.length(); index++) {
+                                JSONObject jsonObject = data.getJSONObject(index);
+
+                                if (jsonObject != null && !jsonObject.toString().isEmpty()) {
+                                    String strName = jsonObject.getString(getString(R.string.param_name));
+                                    if (!strName.isEmpty()) {
+                                        arrayList.add(strName);
+                                    }
+                                }
+                            }
+
+                            Application.getUserModel().projectType = arrayList.toString();
+                            db.userDao().update(Application.getUserModel());
+                        }
+                    } catch (JSONException jsonException) {
+                        jsonException.printStackTrace();
+                    }
+
+                }
+
+                @Override
+                public void notifyError(VolleyError error) {
+                    if (error.networkResponse != null) {
+                        switch (error.networkResponse.statusCode) {
+                            case 401:
+                                String responseBody;
+                                try {
+                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(responseBody);
+                                    if (!data.getString("message").isEmpty()) {
+                                        AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT TYPE", data.getString("message"));
+                                    }
+                                } catch (UnsupportedEncodingException | JSONException e) {
+                                    AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT TYPE", e.getMessage());
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case 403:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT TYPE", getString(R.string.error_403));
+                            case 404:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT TYPE", getString(R.string.error_404));
+                                break;
+                            case 500:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT TYPE", getString(R.string.error_500));
+                                break;
+                        }
+                    }
+                }
+
+                @Override
+                public void notifyNetworkParseResponse(NetworkResponse response) {
+
+                }
+            };
+
+            try {
+                VolleyService mVolleyService = new VolleyService(callback, TaskActivity2.this);
+                mVolleyService.getDataVolley(apiUrl, null);
+            } catch (Exception e) {
+                AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT TYPE", e.getMessage());
+            }
+        }
+    }
+
+    private void getOrganisationName() {
+        if(NetworkUtils.isNetworkConnected(this)){
+            String apiUrl = getString(R.string.api_organization_name);
+
+            apiUrl +=  "?limit_page_length=None";
+
+            final APIVInterface callback = new APIVInterface() {
+                @Override
+                public void notifySuccess(JSONObject response) {
+                    try {
+                        JSONArray data = response.getJSONArray(getString(R.string.param_data));
+                        if (data.length() > 0) {
+                            final ArrayList<String> arrayList = new ArrayList<>();
+
+                            for (int index = 0; index < data.length(); index++) {
+                                JSONObject jsonObject = data.getJSONObject(index);
+                                if (jsonObject != null && !jsonObject.toString().isEmpty()) {
+                                    String strName = jsonObject.getString(getString(R.string.param_name));
+                                    if (!strName.isEmpty()) {
+                                        arrayList.add(strName);
+                                    }
+                                }
+                            }
+
+
+                            Application.getUserModel().organizationName = arrayList.toString();
+                            db.userDao().update(Application.getUserModel());
+
+                        }
+                    } catch (JSONException jsonException) {
+                        jsonException.printStackTrace();
+                    }
+
+                }
+
+                @Override
+                public void notifyError(VolleyError error) {
+                    if (error.networkResponse != null) {
+                        switch (error.networkResponse.statusCode) {
+                            case 401:
+                                String responseBody;
+                                try {
+                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(responseBody);
+                                    if (!data.getString("message").isEmpty()) {
+                                        AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.orgname), data.getString("message"));
+                                    }
+                                } catch (UnsupportedEncodingException | JSONException e) {
+                                    AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.orgname), e.getMessage());
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case 403:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.orgname), getString(R.string.error_403));
+                            case 404:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.orgname), getString(R.string.error_404));
+                                break;
+                            case 500:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.orgname), getString(R.string.error_500));
+                                break;
+                        }
+                    }
+                }
+
+                @Override
+                public void notifyNetworkParseResponse(NetworkResponse response) {
+
+                }
+            };
+
+            try {
+                VolleyService mVolleyService = new VolleyService(callback, TaskActivity2.this);
+                mVolleyService.getDataVolley(apiUrl, null);
+            } catch (Exception e) {
+                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.orgname), e.getMessage());
+            }
+        }
+    }
+
+    private void getVisitState() {
+        if(NetworkUtils.isNetworkConnected(this)){
+            String apiUrl = getString(R.string.api_visit_state);
+
+            apiUrl += "?limit_page_length=None";
+
+            final APIVInterface callback = new APIVInterface() {
+                @Override
+                public void notifySuccess(JSONObject response) {
+                    try {
+                        JSONArray data = response.getJSONArray(getString(R.string.data_param_key));
+                        if (data.length() > 0) {
+                            ArrayList<String> arrayList = new ArrayList<>();
+                            for (int index = 0; index < data.length(); index++) {
+                                JSONObject jsonObject = data.getJSONObject(index);
+                                if (jsonObject != null && !jsonObject.toString().isEmpty()) {
+                                    String strName = jsonObject.getString(getString(R.string.name_param_key));
+                                    if (!strName.isEmpty()) {
+                                        arrayList.add(strName);
+                                    }
+                                }
+                            }
+
+                            Application.getUserModel().visitState = arrayList.toString();
+                            db.userDao().update(Application.getUserModel());
+
+                        }
+                    } catch (JSONException jsonException) {
+                        jsonException.printStackTrace();
+                    }
+
+                }
+
+                @Override
+                public void notifyError(VolleyError error) {
+                    if (error.networkResponse != null) {
+                        switch (error.networkResponse.statusCode) {
+                            case 401:
+                                String responseBody;
+                                try {
+                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(responseBody);
+                                    if (!data.getString("message").isEmpty()) {
+                                        AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.state), data.getString("message"));
+                                    }
+                                } catch (UnsupportedEncodingException | JSONException e) {
+                                    AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.state), e.getMessage());
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case 403:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.state), getString(R.string.error_403));
+                            case 404:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.state), getString(R.string.error_404));
+                                break;
+                            case 500:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.state), getString(R.string.error_500));
+                                break;
+                        }
+                    }
+                }
+
+                @Override
+                public void notifyNetworkParseResponse(NetworkResponse response) {
+
+                }
+            };
+
+            try {
+                VolleyService mVolleyService = new VolleyService(callback, TaskActivity2.this);
+                mVolleyService.getDataVolley(apiUrl, null);
+            } catch (Exception e) {
+                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.state), e.getMessage());
+            }
+        }
+    }
+
+    private void getDistrict() {
+        if(NetworkUtils.isNetworkConnected(this)){
+            String apiUrl = getString(R.string.api_district);
+
+            String fields = getString(R.string.fields_param_key);
+            String fieldsValue = getString(R.string.fields_value_district);
+
+            apiUrl += "?limit_page_length=None&" + fields + fieldsValue;
+
+            final APIVInterface callback = new APIVInterface() {
+                @Override
+                public void notifySuccess(JSONObject response) {
+                    try {
+                        JSONArray data = response.getJSONArray(getString(R.string.data_param_key));
+                        if (data.length() > 0) {
+                            ArrayList<VisitDistrict> arrayList = new ArrayList<>();
+
+                            Gson gson = new Gson();
+
+                            Type listType = new TypeToken<VisitDistrictResponse>() {}.getType();
+
+                            VisitDistrictResponse tasksResponse = gson.fromJson(response.toString(), listType);
+                            arrayList.addAll(tasksResponse.getData());
+
+                            if (!arrayList.isEmpty()) {
+                                ArrayList<String> districtNames = new ArrayList<>();
+                                for (int index = 0; index < arrayList.size(); index++) {
+                                    String strName = arrayList.get(index).getName();
+                                    districtNames.add(strName);
+                                }
+
+                                Application.getUserModel().district = districtNames.toString();
+                                db.userDao().update(Application.getUserModel());
+                            }
+                        }
+                    } catch (
+                            JSONException jsonException) {
+                        jsonException.printStackTrace();
+                    }
+
+                }
+
+                @Override
+                public void notifyError(VolleyError error) {
+                    if (error.networkResponse != null) {
+                        switch (error.networkResponse.statusCode) {
+                            case 401:
+                                String responseBody;
+                                try {
+                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(responseBody);
+                                    if (!data.getString("message").isEmpty()) {
+                                        AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), data.getString("message"));
+                                    }
+                                } catch (UnsupportedEncodingException | JSONException e) {
+                                    AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), e.getMessage());
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case 403:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), getString(R.string.error_403));
+                            case 404:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), getString(R.string.error_404));
+                                break;
+                            case 500:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), getString(R.string.error_500));
+                                break;
+                        }
+                    }
+                }
+
+                @Override
+                public void notifyNetworkParseResponse(NetworkResponse response) {
+
+                }
+            };
+
+            try {
+                VolleyService mVolleyService = new VolleyService(callback, TaskActivity2.this);
+                mVolleyService.getDataVolley(apiUrl, null);
+            } catch (Exception e) {
+                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), e.getMessage());
+            }
+        }
+    }
+
+    private void getTaluka() {
+        if (NetworkUtils.isNetworkConnected(this)) {
+            String apiUrl = getString(R.string.api_taluka);
+
+            String fields = getString(R.string.fields_param_key);
+            String fieldsValue = getString(R.string.fields_value_taluka);
+
+            apiUrl += "?limit_page_length=None&" + fields + fieldsValue;
+
+            final APIVInterface callback = new APIVInterface() {
+                @Override
+                public void notifySuccess(JSONObject response) {
+                    try {
+                        JSONArray data = response.getJSONArray(getString(R.string.param_data));
+
+                        if (data.length() > 0) {
+                            ArrayList<Taluka> talukas = new ArrayList<>();
+
+                            Gson gson = new Gson();
+                            Type listType = new TypeToken<TalukaResponse>() {
+                            }.getType();
+
+                            TalukaResponse tasksResponse = gson.fromJson(response.toString(), listType);
+                            talukas.addAll(tasksResponse.getData());
+
+                            if (!talukas.isEmpty()) {
+                                ArrayList<String> talukaNames = new ArrayList<>();
+                                for (int index = 0; index < talukas.size(); index++) {
+                                    String strName = talukas.get(index).getName();
+                                    talukaNames.add(strName);
+                                }
+                                if (!talukaNames.isEmpty()) {
+
+                                    Application.getUserModel().taluka = talukaNames.toString();
+                                    db.userDao().update(Application.getUserModel());
+                                }
+                            }
+                        }
+                    } catch (JSONException jsonException) {
+                        jsonException.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void notifyError(VolleyError error) {
+                    if (error.networkResponse != null) {
+                        switch (error.networkResponse.statusCode) {
+                            case 401:
+                                String responseBody;
+                                try {
+                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(responseBody);
+                                    if (!data.getString("message").isEmpty()) {
+                                        AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), data.getString("message"));
+                                    }
+                                } catch (UnsupportedEncodingException | JSONException e) {
+                                    AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), e.getMessage());
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case 403:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), getString(R.string.error_403));
+                            case 404:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), getString(R.string.error_404));
+                                break;
+                            case 500:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), getString(R.string.error_500));
+                                break;
+                        }
+                    }
+                }
+
+                @Override
+                public void notifyNetworkParseResponse(NetworkResponse response) {
+
+                }
+            };
+
+            try {
+                VolleyService mVolleyService = new VolleyService(callback, TaskActivity2.this);
+                mVolleyService.getDataVolley(apiUrl, null);
+            } catch (Exception e) {
+                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), e.getMessage());
+            }
+        }
+    }
+
+    private void getLocationOfVisit() {
+        if(NetworkUtils.isNetworkConnected(this)){
+            String apiUrl = getString(R.string.api_visit_location);
+
+            String fields = getString(R.string.fields_param_key);
+            String fieldsValue = getString(R.string.fields_value_location);
+
+            apiUrl += "?limit_page_length=None&" + fields + fieldsValue;
+
+            final APIVInterface callback = new APIVInterface() {
+                @Override
+                public void notifySuccess(JSONObject response) {
+                    try {
+                        JSONArray data = response.getJSONArray(getString(R.string.data_param_key));
+                        if (data.length() > 0) {
+                            final ArrayList<VisitLocation> visitLocations = new ArrayList<>();
+
+                            Gson gson = new Gson();
+                            Type listType = new TypeToken<VisitLocationResponse>() {}.getType();
+
+                            VisitLocationResponse tasksResponse = gson.fromJson(response.toString(), listType);
+                            visitLocations.addAll(tasksResponse.getData());
+
+                            if (!visitLocations.isEmpty()) {
+                                ArrayList<String> locationNames = new ArrayList<>();
+                                for (int index = 0; index < visitLocations.size(); index++) {
+                                    String strName = visitLocations.get(index).getName();
+                                    locationNames.add(strName);
+                                }
+                                if (!locationNames.isEmpty()) {
+
+                                    Application.getUserModel().locationOfVisit = locationNames.toString();
+                                    db.userDao().update(Application.getUserModel());
+                                }
+                            }
+                        }
+                    } catch (JSONException jsonException) {
+                        jsonException.printStackTrace();
+                    }
+
+                }
+
+                @Override
+                public void notifyError(VolleyError error) {
+                    if (error.networkResponse != null) {
+                        switch (error.networkResponse.statusCode) {
+                            case 401:
+                                String responseBody;
+                                try {
+                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(responseBody);
+                                    if (!data.getString("message").isEmpty()) {
+                                        AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), data.getString("message"));
+                                    }
+                                } catch (UnsupportedEncodingException | JSONException e) {
+                                    AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visitlocation), e.getMessage());
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case 403:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visitlocation), getString(R.string.error_403));
+                            case 404:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visitlocation), getString(R.string.error_404));
+                                break;
+                            case 500:
+                                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visitlocation), getString(R.string.error_500));
+                                break;
+                        }
+                    }
+                }
+
+                @Override
+                public void notifyNetworkParseResponse(NetworkResponse response) {
+
+                }
+            };
+
+            try {
+                VolleyService mVolleyService = new VolleyService(callback, TaskActivity2.this);
+                mVolleyService.getDataVolley(apiUrl, null);
+            } catch (Exception e) {
+                AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visitlocation), e.getMessage());
+            }
         }
     }
 }
