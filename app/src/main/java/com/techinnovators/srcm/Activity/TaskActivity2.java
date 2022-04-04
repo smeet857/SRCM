@@ -749,6 +749,8 @@ public class TaskActivity2 extends AppCompatActivity {
                             if (!dataResponse.toString().isEmpty()) {
                                 ivCheckIn.setVisibility(View.VISIBLE);
                                 ivCheckOut.setVisibility(View.GONE);
+                                tvWorkingHours.setVisibility(View.GONE);
+                                ivWorkingHours.setVisibility(View.GONE);
 
                                 UserModel model = Application.getUserModel();
 
