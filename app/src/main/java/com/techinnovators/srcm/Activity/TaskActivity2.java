@@ -19,6 +19,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.Settings;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +34,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.techinnovators.srcm.AddVisitRequestActivity;
 import com.techinnovators.srcm.Application;
@@ -485,9 +487,8 @@ public class TaskActivity2 extends AppCompatActivity {
 
                                 DbClient.getInstance().tasksDao().deleteAll();
                                 DbClient.getInstance().tasksDao().insertAll(tasksList);
-                                tasksList = (ArrayList<Tasks>) DbClient.getInstance().tasksDao().getAll();
 
-                                setTasksList(tasksList);
+                                setTaskListFromLocal();
                             } else {
                                 setTaskListFromLocal();
                             }
@@ -562,31 +563,26 @@ public class TaskActivity2 extends AppCompatActivity {
     }
 
     private void setTaskListFromLocal() {
-        final ArrayList<Tasks> list = (ArrayList<Tasks>) DbClient.getInstance().tasksDao().getAll();
-        if (list.isEmpty()) {
-            llEmptyView.setVisibility(View.VISIBLE);
-            rvTasks.setVisibility(View.GONE);
-        } else {
-            setTasksList(list);
-        }
+        tasksList = (ArrayList<Tasks>) DbClient.getInstance().tasksDao().getAll();
+        setTasksList(tasksList);
     }
 
     private void setTasksList(ArrayList<Tasks> data) {
-        if (tasksAdapter == null) {
+        if(data.isEmpty()){
+            llEmptyView.setVisibility(View.VISIBLE);
+            rvTasks.setVisibility(View.GONE);
+        }else{
+            llEmptyView.setVisibility(View.GONE);
+            rvTasks.setVisibility(View.VISIBLE);
+
             Collections.sort(data, new Comparator<Tasks>() {
                 public int compare(Tasks o1, Tasks o2) {
                     return o2.getDate().compareTo(o1.getDate());
                 }
             });
+
             tasksAdapter = new TasksAdapter(this, data);
             rvTasks.setAdapter(tasksAdapter);
-        } else {
-            Collections.sort(data, new Comparator<Tasks>() {
-                public int compare(Tasks o1, Tasks o2) {
-                    return o2.getDate().compareTo(o1.getDate());
-                }
-            });
-            tasksAdapter.updateList(data);
         }
     }
 
@@ -675,7 +671,12 @@ public class TaskActivity2 extends AppCompatActivity {
                                     response = new String(error.networkResponse.data, "utf-8");
                                     JSONObject data = new JSONObject(response);
                                     if (!data.getString("_server_messages").isEmpty()) {
-                                        errorMessage = data.getString("_server_messages");
+                                        final String message = data.getString("_server_messages");
+
+                                        JSONArray jsonArray = new JSONArray(message);
+                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
+
+                                        errorMessage = Html.fromHtml(jo.getString("message")).toString();
                                     }
                                 } catch (UnsupportedEncodingException | JSONException e) {
                                     errorMessage = e.getMessage();
@@ -1353,23 +1354,23 @@ public class TaskActivity2 extends AppCompatActivity {
                     try {
                         JSONArray data = response.getJSONArray(getString(R.string.data_param_key));
                         if (data.length() > 0) {
-                            ArrayList<VisitDistrict> arrayList = new ArrayList<>();
 
                             Gson gson = new Gson();
 
                             Type listType = new TypeToken<VisitDistrictResponse>() {}.getType();
 
                             VisitDistrictResponse tasksResponse = gson.fromJson(response.toString(), listType);
-                            arrayList.addAll(tasksResponse.getData());
+                            ArrayList<VisitDistrict> vdList = new ArrayList<>(tasksResponse.getData());
 
-                            if (!arrayList.isEmpty()) {
-                                ArrayList<String> districtNames = new ArrayList<>();
-                                for (int index = 0; index < arrayList.size(); index++) {
-                                    String strName = arrayList.get(index).getName();
-                                    districtNames.add(strName);
+                            if (!vdList.isEmpty()) {
+                                ArrayList<String> arrayJson = new ArrayList<>();
+
+                                for (int index = 0; index < vdList.size(); index++) {
+                                    final VisitDistrict vd = vdList.get(index);
+                                    arrayJson.add(gson.toJson(vd));
                                 }
 
-                                Application.getUserModel().district = districtNames.toString();
+                                Application.getUserModel().district = arrayJson.toString();
                                 db.userDao().update(Application.getUserModel());
                             }
                         }

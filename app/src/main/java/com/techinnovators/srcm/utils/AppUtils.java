@@ -14,8 +14,12 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.JsonArray;
 import com.techinnovators.srcm.Application;
 import com.techinnovators.srcm.R;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -183,6 +187,27 @@ public class AppUtils {
             final String[] str = text.split(",");
 
             return new ArrayList<>(Arrays.asList(str));
+        }
+    }
+
+    public static ArrayList<String> jsonArrayStringToStringArray(String text) {
+        ArrayList<String> strArray = new ArrayList<>();
+
+        if(text.isEmpty()){
+            return strArray;
+        }else{
+            try {
+                JSONArray jsonArray = new JSONArray(text);
+
+                for(int i = 0; i< jsonArray.length(); i++){
+                    strArray.add(jsonArray.getString(i));
+                }
+
+                return strArray;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return strArray;
+            }
         }
     }
 }
