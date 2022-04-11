@@ -5,6 +5,7 @@ import android.content.Context;
 import com.techinnovators.srcm.Database.DbClient;
 import com.techinnovators.srcm.models.UserModel;
 import com.techinnovators.srcm.utils.LocationUtils;
+import com.techinnovators.srcm.utils.NetworkUtils;
 
 public class Application extends android.app.Application {
 
@@ -22,7 +23,7 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
-
+        NetworkUtils.startNetworkChangeListener(context);
         LocationUtils.init();
     }
 }

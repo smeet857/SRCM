@@ -12,10 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.Settings;
@@ -26,6 +32,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -220,7 +227,7 @@ public class TaskActivity2 extends AppCompatActivity {
         ivSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                syncData();
+                syncData();
             }
         });
     }
@@ -910,15 +917,12 @@ public class TaskActivity2 extends AppCompatActivity {
                 final Tasks t = tasksDbList.get(i);
 
                 if(!t.isSync){
-
                     createTaskFromSync(t);
                 }
                 if(!t.isCheckInSync){
-
                     checkInTaskFromSync(t);
                 }
                 if(!t.isCheckOutSync){
-
                     checkOutTaskFromSync(t);
                 }
             }
