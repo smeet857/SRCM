@@ -43,15 +43,26 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import in.galaxyofandroid.spinerdialog.OnSpinerItemClick;
+import in.galaxyofandroid.spinerdialog.SpinnerDialog;
+
 public class AddVisitRequestActivity2 extends AppCompatActivity implements View.OnClickListener {
 
-    private ArrayAdapter<String> arrayAdapterProjectName,
-            arrayAdapterProjectType,
-            arrayAdapterOrganizationName,
-            arrayAdapterVisitState,
-            arrayAdapterVisitDist,
-            arrayAdapterVisitTaluka,
-            arrayAdapterVisitLocation;
+//    private ArrayAdapter<String> arrayAdapterProjectName,
+//            arrayAdapterProjectType,
+//            arrayAdapterOrganizationName,
+//            arrayAdapterVisitState,
+//            arrayAdapterVisitDist,
+//            arrayAdapterVisitTaluka,
+//            arrayAdapterVisitLocation;
+
+    private ArrayList<String> arrayProjectName,
+            arrayProjectType,
+            arrayOrganizationName,
+            arrayVisitState,
+            arrayVisitDist,
+            arrayVisitTaluka,
+            arrayVisitLocation = new ArrayList<>();
 
     private AutoCompleteTextView acProjectName,
             acProjectType,
@@ -75,13 +86,24 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
     private ArrayList<VisitDistrict> visitDistrictList = new ArrayList<>();
 
+    private SpinnerDialog spinnerDialog;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_visit_request);
+        Application.context = this;
+
         init();
         initListener();
         initData();
+    }
+
+    @Override
+    protected void onResume() {
+        Application.context = this;
+        super.onResume();
     }
 
     private void init() {
@@ -106,34 +128,34 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         etContPersonName = findViewById(R.id.etContPersonName);
         etContPersonNo = findViewById(R.id.etContPersonNo);
 
-        arrayAdapterProjectName = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
-        arrayAdapterProjectType = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
-        arrayAdapterOrganizationName = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
-        arrayAdapterVisitState = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
-        arrayAdapterVisitDist = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
-        arrayAdapterVisitTaluka = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
-        arrayAdapterVisitLocation = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
+//        arrayAdapterProjectName = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
+//        arrayAdapterProjectType = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
+//        arrayAdapterOrganizationName = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
+//        arrayAdapterVisitState = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
+//        arrayAdapterVisitDist = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
+//        arrayAdapterVisitTaluka = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
+//        arrayAdapterVisitLocation = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
 
-        acProjectName.setAdapter(arrayAdapterProjectName);
-        acProjectName.setThreshold(1);
-
-        acProjectType.setAdapter(arrayAdapterProjectType);
-        acProjectType.setThreshold(1);
-
-        acOrganizationName.setAdapter(arrayAdapterOrganizationName);
-        acOrganizationName.setThreshold(1);
-
-        acVisitState.setAdapter(arrayAdapterVisitState);
-        acVisitState.setThreshold(1);
-
-        acDistrict.setAdapter(arrayAdapterVisitDist);
-        acDistrict.setThreshold(1);
-
-        acTaluka.setAdapter(arrayAdapterVisitTaluka);
-        acTaluka.setThreshold(1);
-
-        acLocation.setAdapter(arrayAdapterVisitLocation);
-        acLocation.setThreshold(1);
+//        acProjectName.setAdapter(arrayAdapterProjectName);
+//        acProjectName.setThreshold(1);
+//
+//        acProjectType.setAdapter(arrayAdapterProjectType);
+//        acProjectType.setThreshold(1);
+//
+//        acOrganizationName.setAdapter(arrayAdapterOrganizationName);
+//        acOrganizationName.setThreshold(1);
+//
+//        acVisitState.setAdapter(arrayAdapterVisitState);
+//        acVisitState.setThreshold(1);
+//
+//        acDistrict.setAdapter(arrayAdapterVisitDist);
+//        acDistrict.setThreshold(1);
+//
+//        acTaluka.setAdapter(arrayAdapterVisitTaluka);
+//        acTaluka.setThreshold(1);
+//
+//        acLocation.setAdapter(arrayAdapterVisitLocation);
+//        acLocation.setThreshold(1);
 
         etVisitAssignedTo.setText(Application.getUserModel().employeeId);
 //        etVisitDate.setText(AppUtils.dispCurrentDateFirst());
@@ -149,54 +171,115 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         acProjectName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                acProjectName.showDropDown();
+                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayProjectName,"Select Event Type", "Close");
+                spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
+                    @Override
+                    public void onClick(String item, int position) {
+                        acProjectName.setText(item);
+                    }
+                });
+                spinnerDialog.showSpinerDialog();
             }
         });
 
         acProjectType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                acProjectType.showDropDown();
+//                acProjectType.showDropDown();
+                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayProjectType,"Select Event Categories", "Close");
+                spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
+                    @Override
+                    public void onClick(String item, int position) {
+                        acProjectType.setText(item);
+                    }
+                });
+                spinnerDialog.showSpinerDialog();
             }
         });
 
         acOrganizationName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                acOrganizationName.showDropDown();
+//                acOrganizationName.showDropDown();
+                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayOrganizationName,"Select Organization", "Close");
+                spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
+                    @Override
+                    public void onClick(String item, int position) {
+                        acOrganizationName.setText(item);
+                    }
+                });
+                spinnerDialog.showSpinerDialog();
             }
         });
 
         acVisitState.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                acVisitState.showDropDown();
+//                acVisitState.showDropDown();
+                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayVisitState,"Select Visit State", "Close");
+                spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
+                    @Override
+                    public void onClick(String item, int position) {
+                        acVisitState.setText(item);
+                        acDistrict.getText().clear();
+                        setDistrictArrayAdapter(visitDistrictList);
+                    }
+                });
+                spinnerDialog.showSpinerDialog();
             }
         });
 
-        acVisitState.setOnItemClickListener((adapterView, view, i, l) -> {
-            acDistrict.getText().clear();
-            setDistrictArrayAdapter(visitDistrictList);
-        });
+//        acVisitState.setOnItemClickListener((adapterView, view, i, l) -> {
+//            acDistrict.getText().clear();
+//            setDistrictArrayAdapter(visitDistrictList);
+//        });
 
         acDistrict.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                acDistrict.showDropDown();
+//                acDistrict.showDropDown();
+                if(acVisitState.getText().toString().isEmpty()){
+                    AppUtils.showSnackBar(AddVisitRequestActivity2.this,csMain,"Please select visit state first");
+                }else{
+                    spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayVisitDist,"Select Visit District", "Close");
+                    spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
+                        @Override
+                        public void onClick(String item, int position) {
+                            acDistrict.setText(item);
+                        }
+                    });
+                    spinnerDialog.showSpinerDialog();
+                }
             }
         });
 
         acTaluka.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                acTaluka.showDropDown();
+//                acTaluka.showDropDown();
+                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayVisitTaluka,"Select Visit Taluka", "Close");
+                spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
+                    @Override
+                    public void onClick(String item, int position) {
+                        acTaluka.setText(item);
+                    }
+                });
+                spinnerDialog.showSpinerDialog();
             }
         });
 
         acLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                acLocation.showDropDown();
+//                acLocation.showDropDown();
+                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayVisitLocation,"Select Visit Location", "Close");
+                spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
+                    @Override
+                    public void onClick(String item, int position) {
+                        acLocation.setText(item);
+                    }
+                });
+                spinnerDialog.showSpinerDialog();
             }
         });
     }
@@ -970,23 +1053,27 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
     }
 
     private void setProjectNameArrayAdapter(ArrayList<String> data) {
-        arrayAdapterProjectName = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
-        acProjectName.setAdapter(arrayAdapterProjectName);
+        arrayProjectName = data;
+//        arrayAdapterProjectName = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
+//        acProjectName.setAdapter(arrayAdapterProjectName);
     }
 
     private void setProjectTypeArrayAdapter(ArrayList<String> data) {
-        arrayAdapterProjectType = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
-        acProjectType.setAdapter(arrayAdapterProjectType);
+        arrayProjectType = data;
+//        arrayAdapterProjectType = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
+//        acProjectType.setAdapter(arrayAdapterProjectType);
     }
 
     private void setOrganizationNameArrayAdapter(ArrayList<String> data) {
-        arrayAdapterOrganizationName = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
-        acOrganizationName.setAdapter(arrayAdapterOrganizationName);
+        arrayOrganizationName = data;
+//        arrayAdapterOrganizationName = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
+//        acOrganizationName.setAdapter(arrayAdapterOrganizationName);
     }
 
     private void setVisitStateArrayAdapter(ArrayList<String> data) {
-        arrayAdapterVisitState = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
-        acVisitState.setAdapter(arrayAdapterVisitState);
+        arrayVisitState = data;
+//        arrayAdapterVisitState = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
+//        acVisitState.setAdapter(arrayAdapterVisitState);
     }
 
     private void setDistrictArrayAdapter(ArrayList<VisitDistrict> data) {
@@ -999,17 +1086,20 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             }
         }
 
-        arrayAdapterVisitDist = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, arrayNames);
-        acDistrict.setAdapter(arrayAdapterVisitDist);
+        arrayVisitDist = arrayNames;
+//        arrayAdapterVisitDist = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, arrayNames);
+//        acDistrict.setAdapter(arrayAdapterVisitDist);
     }
 
     private void setTalukaArrayAdapter(ArrayList<String> data) {
-        arrayAdapterVisitTaluka = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
-        acTaluka.setAdapter(arrayAdapterVisitTaluka);
+        arrayVisitTaluka = data;
+//        arrayAdapterVisitTaluka = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
+//        acTaluka.setAdapter(arrayAdapterVisitTaluka);
     }
 
     private void setVisitLocationArrayAdapter(ArrayList<String> data) {
-        arrayAdapterVisitLocation = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
-        acLocation.setAdapter(arrayAdapterVisitLocation);
+        arrayVisitLocation = data;
+//        arrayAdapterVisitLocation = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
+//        acLocation.setAdapter(arrayAdapterVisitLocation);
     }
 }

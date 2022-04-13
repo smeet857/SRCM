@@ -114,9 +114,17 @@ public class TaskActivity2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tasks);
+        Application.context = this;
+
         init();
         initClickListener();
         initData();
+    }
+
+    @Override
+    protected void onResume() {
+        Application.context = this;
+        super.onResume();
     }
 
     private void init() {

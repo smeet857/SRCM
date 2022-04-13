@@ -48,13 +48,22 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.tasks_list_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.tasks_list_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Tasks data = tasks.get(position);
+
+        if(data.visit_place.isEmpty()){
+            holder.ivSchool.setVisibility(View.GONE);
+            holder.tvSchoolName.setVisibility(View.GONE);
+        }else{
+            holder.ivSchool.setVisibility(View.VISIBLE);
+            holder.tvSchoolName.setVisibility(View.VISIBLE);
+        }
+
         if (!TextUtils.isEmpty(tasks.get(position).getProject_name())) {
             holder.tvActivityUnderProject.setText(tasks.get(position).getProject_name());
         } else {

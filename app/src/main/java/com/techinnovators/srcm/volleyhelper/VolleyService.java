@@ -3,6 +3,8 @@ package com.techinnovators.srcm.volleyhelper;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
@@ -70,6 +72,11 @@ public class VolleyService {
                     return params;
                 }
 
+                @Nullable
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    return super.getParams();
+                }
             };
 //            jsonObj.setRetryPolicy(new DefaultRetryPolicy(
 //                    DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 2,

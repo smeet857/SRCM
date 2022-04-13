@@ -160,23 +160,23 @@
         app:layout_constraintTop_toBottomOf="@+id/tvCPersonNo" />
 
     <ImageView
-        android:id="@+id/ivDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_3sdp"
-        android:tint="@color/black"
-        app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/ivSchool"
-        app:srcCompat="@drawable/ic_calendar" />
-
-    <ImageView
         android:id="@+id/ivSchool"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_2sdp"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toBottomOf="@+id/tvSchoolLocation"
-        app:srcCompat="@drawable/ic_school" />
+        android:src="@drawable/ic_school" />
+
+    <ImageView
+        android:id="@+id/ivDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_3sdp"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/ivSchool"
+        android:src="@drawable/ic_calendar"
+        app:tint="@color/black" />
 
     <ImageView
         android:id="@+id/ivLocation"
@@ -186,7 +186,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/tvSchoolLocation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvReportPerson"
-        app:srcCompat="@drawable/ic_location" />
+        android:src="@drawable/ic_location" />
 
     <ImageView
         android:id="@+id/ivVisit"
@@ -196,24 +196,24 @@
         app:layout_constraintBottom_toBottomOf="@+id/tvReportPerson"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvActivityUnderProject"
-        app:srcCompat="@drawable/ic_visit" />
+        android:src="@drawable/ic_visit" />
 
     <ImageView
         android:id="@+id/ivActivity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:tint="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivProject"
-        app:srcCompat="@drawable/ic_activity" />
+        android:src="@drawable/ic_activity"
+        app:tint="@color/black" />
 
     <ImageView
         android:id="@+id/ivProject"
         android:layout_width="@dimen/_20sdp"
         android:layout_height="@dimen/_20sdp"
+        android:src="@drawable/ic_project"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_project" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/ivCPerson"
@@ -222,7 +222,7 @@
         android:layout_marginTop="@dimen/_3sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSchoolLocation"
-        app:srcCompat="@drawable/ic_reportperson" />
+        android:src="@drawable/ic_reportperson" />
 
     <ImageView
         android:id="@+id/ivCPersonNo"
@@ -230,7 +230,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivCPerson"
-        app:srcCompat="@drawable/ic_phone" />
+        android:src="@drawable/ic_phone" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"

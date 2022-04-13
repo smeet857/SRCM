@@ -39,6 +39,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        Application.context = this;
+        NetworkUtils.startNetworkChangeListener(this);
 
         if (hasUserData()) {
             Intent intent = new Intent(LoginActivity.this, TaskActivity2.class);
@@ -49,6 +51,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             init();
             tvLogin.setOnClickListener(this);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        Application.context = this;
+        super.onResume();
     }
 
     private void init(){

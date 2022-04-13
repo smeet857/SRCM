@@ -89,8 +89,8 @@
     <string name="create_visit_request">CREATE VISIT REQUEST</string>
     <string name="orgname">ORGANISATION NAME</string>
     <string name="visit_district">Visit District</string>
-    <string name="proj_name_empty_msg">Please select project name</string>
-    <string name="proj_type_empty_msg">Please select project type</string>
+    <string name="proj_name_empty_msg">Please select Event Type</string>
+    <string name="proj_type_empty_msg">Please select Event Categories</string>
     <string name="date_empty_msg">Please select visit date</string>
     <string name="orgname_empty_msg">Please select organisation name</string>
     <string name="visitstate_empty_msg">Please select visit state</string>

@@ -28,7 +28,7 @@ import java.util.ArrayList;
 public class NetworkUtils {
     private static ConnectivityManager connectivityManager;
    private static ConnectivityManager.NetworkCallback networkCallback;
-   static boolean isNetworkConnected = false;
+   public static boolean isNetworkConnected = false;
 
     public static boolean isNetworkConnected(Context context) {
         return isNetworkConnected;

@@ -23,7 +23,6 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
-        NetworkUtils.startNetworkChangeListener(context);
         LocationUtils.init();
     }
 }
