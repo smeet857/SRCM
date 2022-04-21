@@ -29,6 +29,7 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.techinnovators.srcm.Activity.TaskActivity2;
 import com.techinnovators.srcm.utils.NetworkUtils;
 import com.techinnovators.srcm.utils.SharedPreferencesManager;
 
@@ -172,7 +173,7 @@ public class ActivityDetails extends AppCompatActivity {
         });
         ImageView ivBack = toolbar.findViewById(R.id.ivBack);
         ivBack.setOnClickListener(view -> {
-            Intent intent = new Intent(ActivityDetails.this, TasksActivity.class);
+            Intent intent = new Intent(ActivityDetails.this, TaskActivity2.class);
             startActivity(intent);
         });
     }

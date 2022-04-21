@@ -8,12 +8,16 @@ import androidx.annotation.Nullable;
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.techinnovators.srcm.Activity.AddVisitRequestActivity2;
 import com.techinnovators.srcm.Application;
 import com.techinnovators.srcm.R;
@@ -57,6 +61,19 @@ public class VolleyService {
                     if (mResultCallback != null) {
                         mResultCallback.notifyNetworkParseResponse(response);
                     }
+//                    try {
+//                        Gson gson = new Gson();
+//
+//                        String json = new String(
+//                                response.data, HttpHeaderParser.parseCharset(response.headers));
+//                        return Response.success(
+//                                gson.fromJson(json, clazz), HttpHeaderParser.parseCacheHeaders(response));
+//
+//                    } catch (UnsupportedEncodingException e) {
+//                        return Response.error(new ParseError(e));
+//                    } catch (JsonSyntaxException e) {
+//                        return Response.error(new ParseError(e));
+//                    }
                     return super.parseNetworkResponse(response);
                 }
 
@@ -70,12 +87,6 @@ public class VolleyService {
                     params.put("Content-Type", "application/json");
                     params.put("Accept", "application/json");
                     return params;
-                }
-
-                @Nullable
-                @Override
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    return super.getParams();
                 }
             };
 //            jsonObj.setRetryPolicy(new DefaultRetryPolicy(

@@ -13,10 +13,12 @@ import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.VolleyError;
+import com.google.android.gms.common.api.Api;
 import com.techinnovators.srcm.Activity.TaskActivity2;
 import com.techinnovators.srcm.Application;
 import com.techinnovators.srcm.Database.DbClient;
 import com.techinnovators.srcm.R;
+import com.techinnovators.srcm.callbacks.ProcessCompleteCallback;
 import com.techinnovators.srcm.models.Tasks;
 import com.techinnovators.srcm.volleyhelper.APIVInterface;
 import com.techinnovators.srcm.volleyhelper.VolleyService;
@@ -24,11 +26,15 @@ import com.techinnovators.srcm.volleyhelper.VolleyService;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class NetworkUtils {
     private static ConnectivityManager connectivityManager;
    private static ConnectivityManager.NetworkCallback networkCallback;
    public static boolean isNetworkConnected = false;
+
+
+   private static boolean firstTimeCall = true;
 
     public static boolean isNetworkConnected(Context context) {
         return isNetworkConnected;
@@ -38,21 +44,28 @@ public class NetworkUtils {
 //        return (netInfo != null && netInfo.isConnected());
     }
 
-    public static void startNetworkChangeListener(Context context){
+    public static synchronized void startNetworkChangeListener(Context context){
 
        if(networkCallback == null){
            networkCallback = new ConnectivityManager.NetworkCallback() {
                @Override
                public void onAvailable(Network network) {
                    isNetworkConnected = true;
-                   syncData();
+                   if(Application.isLogin){
+                       if(firstTimeCall){
+                           firstTimeCall = false;
+                       }else{
+                           syncData();
+                       }
+                   }
                }
 
                @Override
                public void onLost(Network network) {
                    isNetworkConnected = false;
-                   Toast.makeText(context, "Internet Not Available", Toast.LENGTH_SHORT).show();
-
+                   if(firstTimeCall){
+                       firstTimeCall = false;
+                   }
                }
            };
        }
@@ -76,53 +89,127 @@ public class NetworkUtils {
         }
     }
 
-    public static void syncData(){
-        AppUtils.showProgress(Application.context,"Sync data...");
-        final ArrayList<Tasks> tasksDbList  = (ArrayList<Tasks>) DbClient.getInstance().tasksDao().getAll();
+    /// Optional parameter function
+    public static synchronized void syncData(ProcessCompleteCallback syncCompleteCallback){
+        final ArrayList<Tasks> tasksDbList  = (ArrayList<Tasks>)DbClient.getInstance().tasksDao().getNotSyncData();
 
-        for (int i = 0;i < tasksDbList.size();i++){
-            final Tasks t = tasksDbList.get(i);
+        if(!tasksDbList.isEmpty()){
+            AppUtils.showProgress(Application.context,"Sync data...");
+            for (int i = 0;i< tasksDbList.size() ; i++) {
+                final Tasks t = tasksDbList.get(i);
 
-            if(!t.isSync){
-                createTaskFromSync(t);
+                if(!t.isSync) {
+                    int finalI = i;
+                    createTaskFromSync(t, (error) -> {
+                        /// is Last
+                        if(tasksDbList.size() - 1 == finalI){
+                            AppUtils.dismissProgress();
+                            syncCompleteCallback.onComplete(error);
+                        }
+                    });
+                }else if(!t.isCheckInSync){
+                    int finalI = i;
+                    checkInTaskFromSync(t, (error) -> {
+                        /// is Last
+                        if(tasksDbList.size() - 1 == finalI){
+                            AppUtils.dismissProgress();
+                            syncCompleteCallback.onComplete(error);
+                        }
+                    });
+                }else if(!t.isCheckOutSync){
+                    int finalI = i;
+                    checkOutTaskFromSync(t, (error) -> {
+                        /// is Last
+                        if(tasksDbList.size() - 1 == finalI){
+                            AppUtils.dismissProgress();
+                            syncCompleteCallback.onComplete(error);
+                        }
+                    });
+                }
             }
-            if(!t.isCheckInSync){
-                checkInTaskFromSync(t);
-            }
-            if(!t.isCheckOutSync){
-                checkOutTaskFromSync(t);
+        }else{
+            syncCompleteCallback.onComplete(false);
+        }
+    }
+    public static synchronized void syncData(){
+        final ArrayList<Tasks> tasksDbList  = (ArrayList<Tasks>)DbClient.getInstance().tasksDao().getNotSyncData();
+
+        if(!tasksDbList.isEmpty()){
+            AppUtils.showProgress(Application.context,"Sync data...");
+            for (int i = 0;i< tasksDbList.size() ; i++) {
+                final Tasks t = tasksDbList.get(i);
+
+                if(!t.isSync) {
+                    int finalI = i;
+                    createTaskFromSync(t, (error) -> {
+                        /// is Last
+                        if(tasksDbList.size() - 1 == finalI){
+                            AppUtils.dismissProgress();
+                        }
+                    });
+                }else if(!t.isCheckInSync){
+                    int finalI = i;
+                    checkInTaskFromSync(t, (error) -> {
+                        /// is Last
+                        if(tasksDbList.size() - 1 == finalI){
+                            AppUtils.dismissProgress();
+                        }
+                    });
+                }else if(!t.isCheckOutSync){
+                    int finalI = i;
+                    checkOutTaskFromSync(t, (error) -> {
+                        /// is Last
+                        if(tasksDbList.size() - 1 == finalI){
+                            AppUtils.dismissProgress();
+                        }
+                    });
+                }
             }
         }
-
-        AppUtils.dismissProgress();
     }
 
-    private static void createTaskFromSync(Tasks t){
+    @SuppressLint("LongLogTag")
+    private static synchronized void createTaskFromSync(Tasks t, ProcessCompleteCallback processCompleteCallback){
+        try{
+            String apiUrl = Application.context.getString(R.string.api_create_task);
 
-        String apiUrl = Application.context.getString(R.string.api_create_task);
+            final APIVInterface callback = new APIVInterface() {
+                @Override
+                public void notifySuccess(JSONObject response) {
+                    t.isSync = true;
+                    DbClient.getInstance().tasksDao().update(t);
 
-        final APIVInterface callback = new APIVInterface() {
-            @Override
-            public void notifySuccess(JSONObject response) {
-                t.isSync = true;
-                DbClient.getInstance().tasksDao().update(t);
-            }
+                    if(!t.isCheckInSync){
+                        checkInTaskFromSync(t,processCompleteCallback);
+                    }else if(!t.isCheckOutSync){
+                        checkOutTaskFromSync(t,processCompleteCallback);
+                    }else{
+                        processCompleteCallback.onComplete(false);
+                    }
+                }
 
-            @Override
-            public void notifyError(VolleyError error) {
-                Log.e("Error on create task",error.toString());
-            }
+                @Override
+                public void notifyError(VolleyError error) {
+                    Log.e("Error on create task",error.toString());
+                    processCompleteCallback.onComplete(true);
+                }
 
-            @Override
-            public void notifyNetworkParseResponse(NetworkResponse response) {
-                Log.e("Error on create task",response.toString());
-            }
-        };
+                @Override
+                public void notifyNetworkParseResponse(NetworkResponse response) {
+                    Log.e("Error on create task",response.toString());
+                    processCompleteCallback.onComplete(false);
+                }
+            };
 
-        final VolleyService mVolleyService = new VolleyService(callback, Application.context);
-        mVolleyService.postDataVolley(apiUrl, t.createTaskJson());
+            final VolleyService mVolleyService = new VolleyService(callback, Application.context);
+            mVolleyService.postDataVolley(apiUrl, t.createTaskJson());
+        }catch (Exception e){
+            Log.e("Error on api create task",e.getMessage());
+            processCompleteCallback.onComplete(true);
+        }
     }
-    private static void checkInTaskFromSync(Tasks t){
+
+    private static synchronized void checkInTaskFromSync(Tasks t,ProcessCompleteCallback ProcessCompleteCallback){
         try{
 
             String api = Application.context.getString(R.string.api_check_in);
@@ -134,17 +221,25 @@ public class NetworkUtils {
                     /// set data local
                     t.isCheckInSync = true;
                     DbClient.getInstance().tasksDao().update(t);
+
+                    if(!t.isCheckOutSync){
+                        checkOutTaskFromSync(t,ProcessCompleteCallback);
+                    }else{
+                        ProcessCompleteCallback.onComplete(false);
+                    }
                 }
 
                 @Override
                 public void notifyError(VolleyError error) {
                     Log.e("Error on check in",error.toString());
+                    ProcessCompleteCallback.onComplete(true);
                 }
 
                 @SuppressLint("LongLogTag")
                 @Override
                 public void notifyNetworkParseResponse(NetworkResponse response) {
                     Log.e("Error on check in parse response",response.toString());
+                    ProcessCompleteCallback.onComplete(false);
                 }
             };
 
@@ -153,9 +248,11 @@ public class NetworkUtils {
 
         }catch (Exception e){
             Log.e("Error on api check in",e.getMessage());
+            ProcessCompleteCallback.onComplete(true);
         }
     }
-    public static void checkOutTaskFromSync(Tasks t){
+
+    public static synchronized void checkOutTaskFromSync(Tasks t, ProcessCompleteCallback ProcessCompleteCallback){
         try{
             String api = Application.context.getString(R.string.api_check_out);
             api += "/" + t.name;
@@ -167,17 +264,19 @@ public class NetworkUtils {
                     t.isCheckOutSync = true;
 
                     DbClient.getInstance().tasksDao().update(t);
-
+                    ProcessCompleteCallback.onComplete(false);
                 }
 
                 @Override
                 public void notifyError(VolleyError error) {
                     Log.e("Check Out Error",error.toString());
+                    ProcessCompleteCallback.onComplete(true);
                 }
 
                 @Override
                 public void notifyNetworkParseResponse(NetworkResponse response) {
                     Log.e("Check out Error",response.toString());
+                    ProcessCompleteCallback.onComplete(false);
                 }
             };
 
@@ -185,6 +284,7 @@ public class NetworkUtils {
             volleyService.putDataVolley(api,t.checkOutJson());
         }catch (Exception e){
             Log.e("Error on api check out",e.getMessage());
+            ProcessCompleteCallback.onComplete(true);
         }
     }
 

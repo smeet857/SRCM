@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 public class Taluka {
     @SerializedName("district")
     @Expose
-    String district;
+    String district = "";
 
     public String getDistrict() {
         return district;
@@ -26,5 +26,5 @@ public class Taluka {
 
     @SerializedName("name")
     @Expose
-    String name;
+    String name = "";
 }

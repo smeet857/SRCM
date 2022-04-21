@@ -40,9 +40,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         Application.context = this;
-        NetworkUtils.startNetworkChangeListener(this);
 
-        if (hasUserData()) {
+        NetworkUtils.startNetworkChangeListener(getApplicationContext());
+
+        if (Application.isLogin) {
             Intent intent = new Intent(LoginActivity.this, TaskActivity2.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -73,18 +74,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private boolean hasUserData(){
-        ArrayList<UserModel> data = (ArrayList<UserModel>) DbClient.getInstance().userDao().getAll();
-
-        if(data.size() > 0){
-            Application.setUserModel(data.get(0));
-            return true;
-        }else{
-            return false;
-        }
-    }
 
     private void onLoginTap(){
+        AppUtils.hideKeyboard(this);
+
         final String strUsername = Objects.requireNonNull(etUserName.getText()).toString().trim();
         final String strPass = Objects.requireNonNull(etPassword.getText()).toString().trim();
 
@@ -122,6 +115,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             userModel.userName = strUsername;
                             Application.setUserModel(userModel);
                             DbClient.getInstance().userDao().insert(userModel);
+
+                            Application.isLogin = true;
 
                             Intent intent = new Intent(LoginActivity.this, TaskActivity2.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

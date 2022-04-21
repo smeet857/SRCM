@@ -85,6 +85,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
     private DbClient db;
 
     private ArrayList<VisitDistrict> visitDistrictList = new ArrayList<>();
+    private ArrayList<Taluka> visitTalukaList = new ArrayList<>();
+    private ArrayList<VisitLocation> visitLocationList = new ArrayList<>();
 
     private SpinnerDialog spinnerDialog;
 
@@ -221,7 +223,10 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                     @Override
                     public void onClick(String item, int position) {
                         acVisitState.setText(item);
+
                         acDistrict.getText().clear();
+                        acTaluka.getText().clear();
+                        acLocation.getText().clear();
                         setDistrictArrayAdapter(visitDistrictList);
                     }
                 });
@@ -246,6 +251,10 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                         @Override
                         public void onClick(String item, int position) {
                             acDistrict.setText(item);
+
+                            acTaluka.getText().clear();
+                            acLocation.getText().clear();
+                            setTalukaArrayAdapter(visitTalukaList);
                         }
                     });
                     spinnerDialog.showSpinerDialog();
@@ -256,30 +265,38 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         acTaluka.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                acTaluka.showDropDown();
-                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayVisitTaluka,"Select Visit Taluka", "Close");
-                spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
-                    @Override
-                    public void onClick(String item, int position) {
-                        acTaluka.setText(item);
-                    }
-                });
-                spinnerDialog.showSpinerDialog();
+                if(acDistrict.getText().toString().isEmpty()){
+                    AppUtils.showSnackBar(AddVisitRequestActivity2.this,csMain,"Please select visit district first");
+                }else{
+                    spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayVisitTaluka,"Select Visit Taluka", "Close");
+                    spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
+                        @Override
+                        public void onClick(String item, int position) {
+                            acTaluka.setText(item);
+                            acLocation.getText().clear();
+                            setVisitLocationArrayAdapter(visitLocationList);
+                        }
+                    });
+                    spinnerDialog.showSpinerDialog();
+                }
             }
         });
 
         acLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                acLocation.showDropDown();
-                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayVisitLocation,"Select Visit Location", "Close");
-                spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
-                    @Override
-                    public void onClick(String item, int position) {
-                        acLocation.setText(item);
-                    }
-                });
-                spinnerDialog.showSpinerDialog();
+                if(acTaluka.getText().toString().isEmpty()){
+                    AppUtils.showSnackBar(AddVisitRequestActivity2.this,csMain,"Please select visit taluka first");
+                }else{
+                    spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayVisitLocation,"Select Visit Location", "Close");
+                    spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
+                        @Override
+                        public void onClick(String item, int position) {
+                            acLocation.setText(item);
+                        }
+                    });
+                    spinnerDialog.showSpinerDialog();
+                }
             }
         });
     }
@@ -344,6 +361,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
     }
 
     private void apiCreateTask() {
+        AppUtils.hideKeyboard(this);
+
         Tasks visitRequest = new Tasks();
 
         visitRequest.setVisit_district(acDistrict.getText().toString());
@@ -360,7 +379,6 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         visitRequest.setContact_person_mobile_no(etContPersonNo.getText().toString());
         visitRequest.setContact_person_name(etContPersonName.getText().toString());
 
-//        SimpleDateFormat displayDateFormat = new SimpleDateFormat(getString(R.string.dateFormat_display),Locale.getDefault());
         SimpleDateFormat dateFormat = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault());
 
         final Date visitDate = new Date();
@@ -886,27 +904,23 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                         JSONArray data = response.getJSONArray(getString(R.string.param_data));
 
                         if (data.length() > 0) {
-                            ArrayList<Taluka> talukas = new ArrayList<>();
 
                             Gson gson = new Gson();
                             Type listType = new TypeToken<TalukaResponse>() {
                             }.getType();
 
                             TalukaResponse tasksResponse = gson.fromJson(response.toString(), listType);
-                            talukas.addAll(tasksResponse.getData());
+                            visitTalukaList = new ArrayList<>(tasksResponse.getData());
 
-                            if (!talukas.isEmpty()) {
-                                ArrayList<String> talukaNames = new ArrayList<>();
-                                for (int index = 0; index < talukas.size(); index++) {
-                                    String strName = talukas.get(index).getName();
-                                    talukaNames.add(strName);
+                            if (!visitTalukaList.isEmpty()) {
+                                ArrayList<String> arrayJson = new ArrayList<>();
+                                for (int index = 0; index < visitTalukaList.size(); index++) {
+                                    final Taluka t = visitTalukaList.get(index);
+                                    arrayJson.add(gson.toJson(t));
                                 }
-                                if (!talukaNames.isEmpty()) {
-                                    setTalukaArrayAdapter(talukaNames);
 
-                                    Application.getUserModel().taluka = talukaNames.toString();
-                                    db.userDao().update(Application.getUserModel());
-                                }
+                                Application.getUserModel().taluka = arrayJson.toString();
+                                db.userDao().update(Application.getUserModel());
                             }
                         }
                     } catch (JSONException jsonException) {
@@ -956,8 +970,15 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visit_district), e.getMessage());
             }
         } else {
-            final ArrayList<String> data = AppUtils.stringToArray(Application.getUserModel().taluka);
-            setTalukaArrayAdapter(data);
+            final ArrayList<String> data = AppUtils.jsonArrayStringToStringArray(Application.getUserModel().taluka);
+
+            Gson gson = new Gson();
+
+            for (int i = 0; i < data.size(); i++) {
+                final String str = data.get(i);
+                visitTalukaList.add(gson.fromJson(str, Taluka.class));
+            }
+
         }
     }
 
@@ -976,27 +997,24 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                     try {
                         JSONArray data = response.getJSONArray(getString(R.string.data_param_key));
                         if (data.length() > 0) {
-                            final ArrayList<VisitLocation> visitLocations = new ArrayList<>();
 
                             Gson gson = new Gson();
                             Type listType = new TypeToken<VisitLocationResponse>() {
                             }.getType();
 
                             VisitLocationResponse tasksResponse = gson.fromJson(response.toString(), listType);
-                            visitLocations.addAll(tasksResponse.getData());
+                            visitLocationList = new ArrayList<>(tasksResponse.getData());
 
-                            if (!visitLocations.isEmpty()) {
-                                ArrayList<String> locationNames = new ArrayList<>();
-                                for (int index = 0; index < visitLocations.size(); index++) {
-                                    String strName = visitLocations.get(index).getName();
-                                    locationNames.add(strName);
-                                }
-                                if (!locationNames.isEmpty()) {
-                                    setVisitLocationArrayAdapter(locationNames);
+                            if (!visitLocationList.isEmpty()) {
+                                ArrayList<String> arrayJson = new ArrayList<>();
 
-                                    Application.getUserModel().locationOfVisit = locationNames.toString();
-                                    db.userDao().update(Application.getUserModel());
+                                for (int index = 0; index < visitLocationList.size(); index++) {
+                                    final VisitLocation visitLocation = visitLocationList.get(index);
+                                    arrayJson.add(gson.toJson(visitLocation));
                                 }
+
+                                Application.getUserModel().locationOfVisit = arrayJson.toString();
+                                db.userDao().update(Application.getUserModel());
                             }
                         }
                     } catch (JSONException jsonException) {
@@ -1047,33 +1065,31 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visitlocation), e.getMessage());
             }
         } else {
-            final ArrayList<String> data = AppUtils.stringToArray(Application.getUserModel().locationOfVisit);
-            setVisitLocationArrayAdapter(data);
+            final ArrayList<String> data = AppUtils.jsonArrayStringToStringArray(Application.getUserModel().locationOfVisit);
+
+            Gson gson = new Gson();
+
+            for (int i = 0; i < data.size(); i++) {
+                final String str = data.get(i);
+                visitLocationList.add(gson.fromJson(str, VisitLocation.class));
+            }
         }
     }
 
     private void setProjectNameArrayAdapter(ArrayList<String> data) {
         arrayProjectName = data;
-//        arrayAdapterProjectName = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
-//        acProjectName.setAdapter(arrayAdapterProjectName);
     }
 
     private void setProjectTypeArrayAdapter(ArrayList<String> data) {
         arrayProjectType = data;
-//        arrayAdapterProjectType = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
-//        acProjectType.setAdapter(arrayAdapterProjectType);
     }
 
     private void setOrganizationNameArrayAdapter(ArrayList<String> data) {
         arrayOrganizationName = data;
-//        arrayAdapterOrganizationName = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
-//        acOrganizationName.setAdapter(arrayAdapterOrganizationName);
     }
 
     private void setVisitStateArrayAdapter(ArrayList<String> data) {
         arrayVisitState = data;
-//        arrayAdapterVisitState = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
-//        acVisitState.setAdapter(arrayAdapterVisitState);
     }
 
     private void setDistrictArrayAdapter(ArrayList<VisitDistrict> data) {
@@ -1087,19 +1103,32 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         }
 
         arrayVisitDist = arrayNames;
-//        arrayAdapterVisitDist = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, arrayNames);
-//        acDistrict.setAdapter(arrayAdapterVisitDist);
+
     }
 
-    private void setTalukaArrayAdapter(ArrayList<String> data) {
-        arrayVisitTaluka = data;
-//        arrayAdapterVisitTaluka = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
-//        acTaluka.setAdapter(arrayAdapterVisitTaluka);
+    private void setTalukaArrayAdapter(ArrayList<Taluka> data) {
+        ArrayList<String> arrayNames = new ArrayList<>();
+
+        for (int index = 0; index < data.size(); index++) {
+            final Taluka t = data.get(index);
+            if (t.getDistrict().trim().equals(acDistrict.getText().toString().trim())) {
+                arrayNames.add(t.getName());
+            }
+        }
+
+        arrayVisitTaluka = arrayNames;
     }
 
-    private void setVisitLocationArrayAdapter(ArrayList<String> data) {
-        arrayVisitLocation = data;
-//        arrayAdapterVisitLocation = new ArrayAdapter<>(this, R.layout.autocomplete_text_item, data);
-//        acLocation.setAdapter(arrayAdapterVisitLocation);
+    private void setVisitLocationArrayAdapter(ArrayList<VisitLocation> data) {
+        ArrayList<String> arrayNames = new ArrayList<>();
+
+        for (int index = 0; index < data.size(); index++) {
+            final VisitLocation vl = data.get(index);
+            if (vl.getTaluka().trim().equals(acTaluka.getText().toString().trim())) {
+                arrayNames.add(vl.getName());
+            }
+        }
+
+        arrayVisitLocation = arrayNames;
     }
 }

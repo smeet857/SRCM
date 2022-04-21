@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginTop="@dimen/_12sdp"
     android:background="@drawable/list_item"
     android:paddingStart="@dimen/_10sdp"
@@ -10,124 +11,270 @@
     android:paddingEnd="@dimen/_10sdp"
     android:paddingBottom="@dimen/_8sdp">
 
+    <LinearLayout
+        android:id="@+id/llLeftBaseLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:ignore="MissingConstraints">
 
-    <TextView
-        android:id="@+id/tvProjectName"
+        <LinearLayout
+            android:id="@+id/llProjectName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivProject"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/ic_project" />
+
+            <Space
+                android:layout_width="@dimen/_3sdp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvProjectName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:textColor="@color/white"
+                android:text="School Connect"
+
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llActivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivActivity"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                app:tint="@color/black"
+                android:src="@drawable/ic_activity" />
+
+            <Space
+                android:layout_width="@dimen/_3sdp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvActivityUnderProject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:textColor="@color/white"
+                android:text="KGBV Project"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llVisit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivVisit"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/ic_visit" />
+
+            <Space
+                android:layout_width="@dimen/_3sdp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvReportPerson"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:textColor="@color/white"
+                android:text="Shilpaben"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivLocation"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/ic_location" />
+
+            <Space
+                android:layout_width="@dimen/_3sdp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvSchoolLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:textColor="@color/white"
+                android:text="Mangrol"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llCPerson"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivCPerson"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/ic_reportperson" />
+
+            <Space
+                android:layout_width="@dimen/_3sdp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvCPerson"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:textColor="@color/white"
+                android:text="XYZ ABC"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llCPersonNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivCPersonNo"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/ic_phone" />
+
+            <Space
+                android:layout_width="@dimen/_3sdp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvCPersonNo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:textColor="@color/white"
+                android:text="+91 99999 88888"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_3sdp"
-        android:layout_marginTop="@dimen/_2sdp"
-        android:fontFamily="@font/poppins_semi_bold"
-        android:text="School Connect"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_10ssp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/ivProject"
-        app:layout_constraintTop_toTopOf="@+id/ivProject" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.55" />
 
-    <TextView
-        android:id="@+id/tvActivityUnderProject"
+    <LinearLayout
+        android:id="@+id/llRightBaseLine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_3sdp"
-        android:fontFamily="@font/poppins_semi_bold"
-        android:text="KGBV Project"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_10ssp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/ivActivity"
-        app:layout_constraintStart_toEndOf="@+id/ivActivity"
-        app:layout_constraintTop_toBottomOf="@+id/tvProjectName"
-        app:layout_constraintVertical_bias="1.0" />
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintBottom_toTopOf="@id/tvCheckIn">
 
-    <TextView
-        android:id="@+id/tvReportPerson"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_3sdp"
-        android:fontFamily="@font/poppins_semi_bold"
-        android:text="Shilpaben"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_10ssp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/ivVisit"
-        app:layout_constraintStart_toEndOf="@+id/ivVisit" />
+        <LinearLayout
+            android:id="@+id/llSchool"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/tvSchoolName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_3sdp"
-        android:layout_marginTop="@dimen/_2sdp"
-        android:fontFamily="@font/poppins_semi_bold"
-        android:text="KGBV"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_10ssp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/ivSchool"
-        app:layout_constraintTop_toTopOf="@+id/ivSchool" />
+            <ImageView
+                android:id="@+id/ivSchool"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/ic_school" />
 
-    <TextView
-        android:id="@+id/tvVisitDay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_3sdp"
-        android:layout_marginTop="@dimen/_2sdp"
-        android:fontFamily="@font/poppins_semi_bold"
-        android:text="Wed"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_10ssp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/ivDate"
-        app:layout_constraintTop_toTopOf="@+id/ivDate" />
+            <Space
+                android:layout_width="@dimen/_3sdp"
+                android:layout_height="wrap_content"/>
 
+            <TextView
+                android:id="@+id/tvSchoolName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:textColor="@color/white"
+                android:text="KGBV"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"/>
 
-    <TextView
-        android:id="@+id/tvSchoolLocation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_3sdp"
-        android:fontFamily="@font/poppins_semi_bold"
-        android:text="Mangrol"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_10ssp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/ivLocation"
-        app:layout_constraintStart_toEndOf="@+id/ivLocation" />
+        </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/llVisitDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/tvCPersonNo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_3sdp"
-        android:layout_marginStart="@dimen/_3sdp"
-        android:fontFamily="@font/poppins_semi_bold"
-        android:text="+91 99999 88888"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_10ssp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/tvCPerson"
-        app:layout_constraintStart_toEndOf="@+id/ivCPersonNo" />
-    <TextView
-        android:id="@+id/tvCPerson"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_3sdp"
-        android:fontFamily="@font/poppins_semi_bold"
-        android:text="XYZ ABC"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_10ssp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/tvSchoolLocation"
-        app:layout_constraintStart_toStartOf="@+id/tvSchoolLocation" />
+            <ImageView
+                android:id="@+id/ivDate"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                app:tint="@color/black"
+                android:src="@drawable/ic_calendar" />
 
+            <Space
+                android:layout_width="@dimen/_3sdp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvVisitDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:textColor="@color/white"
+                android:text="Wed"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvCheckIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_3sdp"
+        android:layout_marginTop="@dimen/_5sdp"
         android:background="@drawable/rounded_active_button"
         android:drawableEnd="@drawable/ic_start_activity"
         android:drawablePadding="@dimen/_5sdp"
@@ -139,7 +286,8 @@
         android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCPersonNo" />
+        app:layout_constraintTop_toBottomOf="@+id/llLeftBaseLine" />
+
     <TextView
         android:id="@+id/tvCheckOut"
         android:layout_width="wrap_content"
@@ -151,92 +299,12 @@
         android:fontFamily="@font/poppins_semi_bold"
         android:gravity="center"
         android:padding="@dimen/_5sdp"
-        android:visibility="gone"
         android:src="@drawable/ic_start_activity"
         android:text="@string/check_out"
         android:textColor="@color/white"
+        android:visibility="gone"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCPersonNo" />
-
-    <ImageView
-        android:id="@+id/ivSchool"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_2sdp"
-        app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/tvSchoolLocation"
-        android:src="@drawable/ic_school" />
-
-    <ImageView
-        android:id="@+id/ivDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_3sdp"
-        app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/ivSchool"
-        android:src="@drawable/ic_calendar"
-        app:tint="@color/black" />
-
-    <ImageView
-        android:id="@+id/ivLocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_3sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvSchoolLocation"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvReportPerson"
-        android:src="@drawable/ic_location" />
-
-    <ImageView
-        android:id="@+id/ivVisit"
-        android:layout_width="@dimen/_20sdp"
-        android:layout_height="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_2sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvReportPerson"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvActivityUnderProject"
-        android:src="@drawable/ic_visit" />
-
-    <ImageView
-        android:id="@+id/ivActivity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivProject"
-        android:src="@drawable/ic_activity"
-        app:tint="@color/black" />
-
-    <ImageView
-        android:id="@+id/ivProject"
-        android:layout_width="@dimen/_20sdp"
-        android:layout_height="@dimen/_20sdp"
-        android:src="@drawable/ic_project"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/ivCPerson"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_3sdp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSchoolLocation"
-        android:src="@drawable/ic_reportperson" />
-
-    <ImageView
-        android:id="@+id/ivCPersonNo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivCPerson"
-        android:src="@drawable/ic_phone" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.55" />
+        app:layout_constraintTop_toBottomOf="@+id/llLeftBaseLine"  />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

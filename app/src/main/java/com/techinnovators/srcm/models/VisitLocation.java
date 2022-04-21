@@ -7,7 +7,7 @@ public class VisitLocation {
     //    "name\",\"taluka
     @SerializedName("taluka")
     @Expose
-    String taluka;
+    String taluka = "";
 
     public String getTaluka() {
         return taluka;
@@ -27,5 +27,5 @@ public class VisitLocation {
 
     @SerializedName("name")
     @Expose
-    String name;
+    String name = "";
 }

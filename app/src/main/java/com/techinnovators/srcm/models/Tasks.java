@@ -112,17 +112,17 @@ public class Tasks {
     @SerializedName("isCheckInSync")
     @ColumnInfo(name = "isCheckInSync")
     @Expose
-    public boolean isCheckInSync = false;
+    public boolean isCheckInSync = true;
 
     @SerializedName("isSync")
     @ColumnInfo(name = "isSync")
     @Expose
-    public boolean isSync = false;
+    public boolean isSync = true;
 
     @SerializedName("isCheckOutSync")
     @ColumnInfo(name = "isCheckOutSync")
     @Expose
-    public boolean isCheckOutSync = false;
+    public boolean isCheckOutSync = true;
 
     public int getId(){
         return this.id;
@@ -276,19 +276,19 @@ public class Tasks {
     public JSONObject createTaskJson(){
         JSONObject jsonObject = new JSONObject();
         try {
-        jsonObject.put("visit_location",this.visit_location);
-        jsonObject.put("project_type",this.project_type);
-        jsonObject.put("visit_place",this.visit_place);
-        jsonObject.put("employee", Application.getUserModel().employeeId);
-        jsonObject.put("project_name", this.project_name);
-        jsonObject.put("visit_date", this.visit_date);
-        jsonObject.put("visit_type", this.visit_type);
-        jsonObject.put("visit_mode", this.visit_mode);
-        jsonObject.put("visit_state", this.visit_state);
-        jsonObject.put("visit_district", this.visit_district);
-        jsonObject.put("visit_taluka", this.visit_taluka);
-        jsonObject.put("contact_person_mobile_no", this.contact_person_mobile_no);
-        jsonObject.put("contact_person_name", this.contact_person_name);
+        jsonObject.put("visit_location",this.visit_location.trim());
+        jsonObject.put("project_type",this.project_type.trim());
+        jsonObject.put("visit_place",this.visit_place.trim());
+        jsonObject.put("employee", Application.getUserModel().employeeId.trim());
+        jsonObject.put("project_name", this.project_name.trim());
+        jsonObject.put("visit_date", this.visit_date.trim());
+        jsonObject.put("visit_type", this.visit_type.trim());
+        jsonObject.put("visit_mode", this.visit_mode.trim());
+        jsonObject.put("visit_state", this.visit_state.trim());
+        jsonObject.put("visit_district", this.visit_district.trim());
+        jsonObject.put("visit_taluka", this.visit_taluka.trim());
+        jsonObject.put("contact_person_mobile_no", this.contact_person_mobile_no.trim());
+        jsonObject.put("contact_person_name", this.contact_person_name.trim());
 
         } catch (JSONException e) {
             e.printStackTrace();

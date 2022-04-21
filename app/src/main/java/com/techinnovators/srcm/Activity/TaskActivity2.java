@@ -1,10 +1,6 @@
 package com.techinnovators.srcm.Activity;
 
-import static com.techinnovators.srcm.utils.PermissionUtils.LOCATION_PERMISSIONS_CODE;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,19 +8,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkRequest;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.provider.Settings;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -32,7 +18,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -41,14 +26,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.techinnovators.srcm.AddVisitRequestActivity;
 import com.techinnovators.srcm.Application;
 import com.techinnovators.srcm.Database.DbClient;
 import com.techinnovators.srcm.R;
-import com.techinnovators.srcm.TasksActivity;
 import com.techinnovators.srcm.adapter.TasksAdapter;
+import com.techinnovators.srcm.callbacks.ProcessCompleteCallback;
 import com.techinnovators.srcm.models.Taluka;
 import com.techinnovators.srcm.models.TalukaResponse;
 import com.techinnovators.srcm.models.Tasks;
@@ -59,8 +42,6 @@ import com.techinnovators.srcm.models.VisitDistrictResponse;
 import com.techinnovators.srcm.models.VisitLocation;
 import com.techinnovators.srcm.models.VisitLocationResponse;
 import com.techinnovators.srcm.utils.AppUtils;
-import com.techinnovators.srcm.utils.GpsCallback;
-import com.techinnovators.srcm.utils.LocationUtils;
 import com.techinnovators.srcm.utils.NetworkUtils;
 import com.techinnovators.srcm.utils.PermissionUtils;
 import com.techinnovators.srcm.volleyhelper.APIVInterface;
@@ -76,7 +57,6 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -102,7 +82,6 @@ public class TaskActivity2 extends AppCompatActivity {
     private TextView tvWorkingHours;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private TasksAdapter tasksAdapter;
 
     private ArrayList<Tasks> tasksList;
 
@@ -126,6 +105,7 @@ public class TaskActivity2 extends AppCompatActivity {
         Application.context = this;
         super.onResume();
     }
+
 
     private void init() {
         db = DbClient.getInstance();
@@ -159,90 +139,83 @@ public class TaskActivity2 extends AppCompatActivity {
     }
 
     private void initClickListener() {
-        ivAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onAddTap();
-            }
-        });
+        ivAdd.setOnClickListener(view -> onAddTap());
 
-        ivCheckIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                checkIn();
-            }
-        });
+        ivCheckIn.setOnClickListener(view -> checkIn());
 
-        ivCheckOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                double hoursFromMinutes;
-                double totalWorkingHours = 0.0;
-                if (NetworkUtils.isNetworkConnected(TaskActivity2.this)) {
-                    String strFirstCheckInTime = Application.getUserModel().firstCheckin;
+        ivCheckOut.setOnClickListener(view -> {
+            double hoursFromMinutes;
+            double totalWorkingHours = 0.0;
+            if (NetworkUtils.isNetworkConnected(TaskActivity2.this)) {
+                String strFirstCheckInTime = Application.getUserModel().firstCheckin;
 
-                    if (!TextUtils.isEmpty(strFirstCheckInTime) && !strFirstCheckInTime.equals("0.0")) {
+                if (!TextUtils.isEmpty(strFirstCheckInTime) && !strFirstCheckInTime.equals("0.0")) {
 
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-                        long timeDiff;
-                        long hours;
-                        long minutes;
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+                    long timeDiff;
+                    long hours;
+                    long minutes;
 
-                        try {
-                            SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(getString(R.string.timeFormat), Locale.getDefault());
+                    try {
+                        SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(getString(R.string.timeFormat), Locale.getDefault());
 
-                            Date firstCheckInDate = dateFormat.parse(strFirstCheckInTime);
-                            String strCurrentTime = simpleTimeFormat.format(new Date());
-                            Date currentDateTime = dateFormat.parse(strCurrentTime);
+                        Date firstCheckInDate = dateFormat.parse(strFirstCheckInTime);
+                        String strCurrentTime = simpleTimeFormat.format(new Date());
+                        Date currentDateTime = dateFormat.parse(strCurrentTime);
 
-                            if (firstCheckInDate != null && currentDateTime != null) {
-                                timeDiff = currentDateTime.getTime() - firstCheckInDate.getTime();
-                                hours = (timeDiff / (60 * 60 * 1000)) % 24;
-                                minutes = (timeDiff / (60 * 1000)) % 60;
-                                hoursFromMinutes = (double) minutes / 60;
-                                totalWorkingHours = hours + hoursFromMinutes;
-                                DecimalFormat df = new DecimalFormat("#.#");
-                                totalWorkingHours = Double.parseDouble(df.format(totalWorkingHours));
-                            }
-                            if (totalWorkingHours > 0.0) {
-                                checkOut(strCurrentTime, totalWorkingHours);
-                            } else {
-                                AppUtils.showSnackBar(TaskActivity2.this, csMain, "Total working hours cannot be 0 while checking out from system.");
-                            }
-                        } catch (ParseException e) {
-                            AppUtils.showSnackBar(TaskActivity2.this, csMain, "Unable to find working hours from the app. Please contact tech support");
+                        if (firstCheckInDate != null && currentDateTime != null) {
+                            timeDiff = currentDateTime.getTime() - firstCheckInDate.getTime();
+                            hours = (timeDiff / (60 * 60 * 1000)) % 24;
+                            minutes = (timeDiff / (60 * 1000)) % 60;
+                            hoursFromMinutes = (double) minutes / 60;
+                            totalWorkingHours = hours + hoursFromMinutes;
+                            DecimalFormat df = new DecimalFormat("#.#");
+                            totalWorkingHours = Double.parseDouble(df.format(totalWorkingHours));
                         }
-                    } else {
-                        AppUtils.showSnackBar(TaskActivity2.this, csMain, "Unable to find check in time from system. Please contact tech support.");
+                        if (totalWorkingHours > 0.0) {
+                            checkOut(strCurrentTime, totalWorkingHours);
+                        } else {
+                            AppUtils.showSnackBar(TaskActivity2.this, csMain, "Total working hours cannot be 0 while checking out from system.");
+                        }
+                    } catch (ParseException e) {
+                        AppUtils.showSnackBar(TaskActivity2.this, csMain, "Unable to find working hours from the app. Please contact tech support");
                     }
                 } else {
-                    AppUtils.showSnackBar(TaskActivity2.this, csMain, getString(R.string.internet_off));
+                    AppUtils.showSnackBar(TaskActivity2.this, csMain, "Unable to find check in time from system. Please contact tech support.");
                 }
+            } else {
+                AppUtils.showSnackBar(TaskActivity2.this, csMain, getString(R.string.internet_off));
             }
         });
 
-        mSwipeRefreshLayout.setOnRefreshListener(() -> {
-            refreshTaskList();
-        });
+        mSwipeRefreshLayout.setOnRefreshListener(this::refreshTaskList);
 
-        ivLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                logout();
-            }
-        });
+        ivLogout.setOnClickListener(view -> logout());
 
-        ivSync.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                syncData();
+        ivSync.setOnClickListener(view -> {
+            if(NetworkUtils.isNetworkConnected(TaskActivity2.this)){
+                NetworkUtils.syncData((error) -> {
+                    if(error){
+                        AppUtils.displayAlertMessage(TaskActivity2.this, "Sync Data","Some data is not sync proper please sync again");
+                    }else{
+                        AppUtils.displayAlertMessage(TaskActivity2.this, "Sync Data","All data is synced");
+                    }
+                });
+            }else{
+                AppUtils.displayAlertMessage(TaskActivity2.this,"Alert","No internet connectivity");
             }
         });
     }
 
     private void initData() {
         if(NetworkUtils.isNetworkConnected(this)){
-            syncData();
+            NetworkUtils.syncData((error) -> {
+                if(error){
+                    AppUtils.displayAlertMessage(TaskActivity2.this, "Sync Data","Some data is not sync proper please sync again");
+                }else{
+                    getUserDetails();
+                }
+            });
         }else{
             getUserDetails();
         }
@@ -257,6 +230,7 @@ public class TaskActivity2 extends AppCompatActivity {
         getTaluka();
         getLocationOfVisit();
     }
+
     private void setCountDownTimer() {
         countDownTimer = new CountDownTimer(Long.MAX_VALUE,1000) {
             @Override
@@ -590,20 +564,22 @@ public class TaskActivity2 extends AppCompatActivity {
             llEmptyView.setVisibility(View.GONE);
             rvTasks.setVisibility(View.VISIBLE);
 
-            Collections.sort(data, new Comparator<Tasks>() {
-                public int compare(Tasks o1, Tasks o2) {
-                    return o2.getDate().compareTo(o1.getDate());
-                }
-            });
+            Collections.sort(data, (o1, o2) -> o2.getDate().compareTo(o1.getDate()));
 
-            tasksAdapter = new TasksAdapter(this, data);
+            TasksAdapter tasksAdapter = new TasksAdapter(this, data);
             rvTasks.setAdapter(tasksAdapter);
         }
     }
 
     private void refreshTaskList() {
         if(NetworkUtils.isNetworkConnected(this)){
-            syncData();
+           NetworkUtils.syncData((error) -> {
+               if(error){
+                   AppUtils.displayAlertMessage(TaskActivity2.this, "Sync Data","Some data is not sync proper please sync again");
+               }else{
+                   getUserDetails();
+               }
+           });
         }else{
             getUserDetails();
         }
@@ -915,124 +891,6 @@ public class TaskActivity2 extends AppCompatActivity {
             refreshTaskList();
         }
     }
-
-    private void syncData(){
-        if(NetworkUtils.isNetworkConnected(this)){
-            AppUtils.showProgress(this,"Sync data...");
-            final ArrayList<Tasks> tasksDbList  = (ArrayList<Tasks>) DbClient.getInstance().tasksDao().getAll();
-
-            for (int i = 0;i < tasksDbList.size();i++){
-                final Tasks t = tasksDbList.get(i);
-
-                if(!t.isSync){
-                    createTaskFromSync(t);
-                }
-                if(!t.isCheckInSync){
-                    checkInTaskFromSync(t);
-                }
-                if(!t.isCheckOutSync){
-                    checkOutTaskFromSync(t);
-                }
-            }
-
-            AppUtils.dismissProgress();
-            getUserDetails();
-        }else{
-            AppUtils.displayAlertMessage(this,"Error","No Internet");
-        }
-    }
-
-    private void createTaskFromSync(Tasks t){
-
-        String apiUrl = getString(R.string.api_create_task);
-
-        final APIVInterface callback = new APIVInterface() {
-            @Override
-            public void notifySuccess(JSONObject response) {
-                t.isSync = true;
-                DbClient.getInstance().tasksDao().update(t);
-            }
-
-            @Override
-            public void notifyError(VolleyError error) {
-                Log.e("Error on create task",error.toString());
-            }
-
-            @Override
-            public void notifyNetworkParseResponse(NetworkResponse response) {
-                Log.e("Error on create task",response.toString());
-            }
-        };
-
-        final VolleyService mVolleyService = new VolleyService(callback, this);
-        mVolleyService.postDataVolley(apiUrl, t.createTaskJson());
-    }
-    private void checkInTaskFromSync(Tasks t){
-        try{
-
-            String api = getString(R.string.api_check_in);
-            api += "/" + t.name;
-
-            final APIVInterface callback = new APIVInterface() {
-                @Override
-                public void notifySuccess(JSONObject response) {
-                    /// set data local
-                    t.isCheckInSync = true;
-                    DbClient.getInstance().tasksDao().update(t);
-                }
-
-                @Override
-                public void notifyError(VolleyError error) {
-                    Log.e("Error on check in",error.toString());
-                }
-
-                @SuppressLint("LongLogTag")
-                @Override
-                public void notifyNetworkParseResponse(NetworkResponse response) {
-                    Log.e("Error on check in parse response",response.toString());
-                }
-            };
-
-            final VolleyService volleyService = new VolleyService(callback,this);
-            volleyService.putDataVolley(api,t.checkInJson());
-
-        }catch (Exception e){
-            Log.e("Error on api check in",e.getMessage());
-        }
-    }
-    public void checkOutTaskFromSync(Tasks t){
-        try{
-            String api = getString(R.string.api_check_out);
-            api += "/" + t.name;
-
-            final APIVInterface callback = new APIVInterface() {
-                @Override
-                public void notifySuccess(JSONObject response) {
-                    /// set data local
-                    t.isCheckOutSync = true;
-
-                    DbClient.getInstance().tasksDao().update(t);
-
-                }
-
-                @Override
-                public void notifyError(VolleyError error) {
-                    Log.e("Check Out Error",error.toString());
-                }
-
-                @Override
-                public void notifyNetworkParseResponse(NetworkResponse response) {
-                    Log.e("Check out Error",response.toString());
-                }
-            };
-
-            final VolleyService volleyService = new VolleyService(callback,this);
-            volleyService.putDataVolley(api,t.checkOutJson());
-        }catch (Exception e){
-            Log.e("Error on api check out",e.getMessage());
-        }
-    }
-
 
     private void getProjectName() {
         if(NetworkUtils.isNetworkConnected(this)){
@@ -1453,26 +1311,22 @@ public class TaskActivity2 extends AppCompatActivity {
                         JSONArray data = response.getJSONArray(getString(R.string.param_data));
 
                         if (data.length() > 0) {
-                            ArrayList<Taluka> talukas = new ArrayList<>();
-
                             Gson gson = new Gson();
                             Type listType = new TypeToken<TalukaResponse>() {
                             }.getType();
 
                             TalukaResponse tasksResponse = gson.fromJson(response.toString(), listType);
-                            talukas.addAll(tasksResponse.getData());
+                            ArrayList<Taluka> talukas = new ArrayList<>(tasksResponse.getData());
 
                             if (!talukas.isEmpty()) {
-                                ArrayList<String> talukaNames = new ArrayList<>();
+                                ArrayList<String> arrayJson = new ArrayList<>();
                                 for (int index = 0; index < talukas.size(); index++) {
-                                    String strName = talukas.get(index).getName();
-                                    talukaNames.add(strName);
+                                    final Taluka taluka = talukas.get(index);
+                                    arrayJson.add(gson.toJson(taluka));
                                 }
-                                if (!talukaNames.isEmpty()) {
 
-                                    Application.getUserModel().taluka = talukaNames.toString();
-                                    db.userDao().update(Application.getUserModel());
-                                }
+                                Application.getUserModel().taluka = arrayJson.toString();
+                                db.userDao().update(Application.getUserModel());
                             }
                         }
                     } catch (JSONException jsonException) {
@@ -1539,25 +1393,22 @@ public class TaskActivity2 extends AppCompatActivity {
                     try {
                         JSONArray data = response.getJSONArray(getString(R.string.data_param_key));
                         if (data.length() > 0) {
-                            final ArrayList<VisitLocation> visitLocations = new ArrayList<>();
 
                             Gson gson = new Gson();
                             Type listType = new TypeToken<VisitLocationResponse>() {}.getType();
 
                             VisitLocationResponse tasksResponse = gson.fromJson(response.toString(), listType);
-                            visitLocations.addAll(tasksResponse.getData());
+                            final ArrayList<VisitLocation> vl = new ArrayList<>(tasksResponse.getData());
 
-                            if (!visitLocations.isEmpty()) {
-                                ArrayList<String> locationNames = new ArrayList<>();
-                                for (int index = 0; index < visitLocations.size(); index++) {
-                                    String strName = visitLocations.get(index).getName();
-                                    locationNames.add(strName);
+                            if (!vl.isEmpty()) {
+                                ArrayList<String> arrayJson = new ArrayList<>();
+                                for (int index = 0; index < vl.size(); index++) {
+                                    final VisitLocation visitLocation = vl.get(index);
+                                    arrayJson.add(gson.toJson(visitLocation));
                                 }
-                                if (!locationNames.isEmpty()) {
 
-                                    Application.getUserModel().locationOfVisit = locationNames.toString();
-                                    db.userDao().update(Application.getUserModel());
-                                }
+                                Application.getUserModel().locationOfVisit = arrayJson.toString();
+                                db.userDao().update(Application.getUserModel());
                             }
                         }
                     } catch (JSONException jsonException) {

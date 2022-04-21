@@ -16,6 +16,9 @@ public interface TasksDao {
     @Query("SELECT * FROM Tasks")
     List<Tasks> getAll();
 
+    @Query("SELECT * FROM Tasks WHERE isSync = 0 OR isCheckOutSync = 0 OR isCheckInSync = 0")
+    List<Tasks> getNotSyncData();
+
     @Query("SELECT * FROM Tasks WHERE id IN (:taskId)")
     List<Tasks> getById(int[] taskId);
 

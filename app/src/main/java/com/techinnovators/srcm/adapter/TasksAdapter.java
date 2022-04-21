@@ -64,6 +64,15 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             holder.tvSchoolName.setVisibility(View.VISIBLE);
         }
 
+        /// name
+        if(data.name.isEmpty()){
+            holder.tvRPName.setVisibility(View.GONE);
+            holder.ivName.setVisibility(View.GONE);
+        }else{
+            holder.tvRPName.setVisibility(View.VISIBLE);
+            holder.ivName.setVisibility(View.VISIBLE);
+        }
+
         if (!TextUtils.isEmpty(tasks.get(position).getProject_name())) {
             holder.tvActivityUnderProject.setText(tasks.get(position).getProject_name());
         } else {
@@ -114,7 +123,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             }
 
         }
-        if(!TextUtils.isEmpty(tasks.get(position).visit_checkin) && !TextUtils.isEmpty(tasks.get(position).visit_checkout)){
+        if(!TextUtils.isEmpty(data.visit_checkin) && !TextUtils.isEmpty(data.visit_checkout)){
             holder.tvCheckIn.setVisibility(View.GONE);
             holder.tvCheckOut.setVisibility(View.GONE);
         }else if (TextUtils.isEmpty(tasks.get(position).visit_checkin)) {
@@ -125,7 +134,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             holder.tvCheckOut.setVisibility(View.VISIBLE);
         }
 
-        if (!TextUtils.isEmpty(tasks.get(position).getContact_person_name())) {
+        if (!TextUtils.isEmpty(data.contact_person_name)) {
             holder.tvCPerson.setVisibility(View.VISIBLE);
             holder.ivCPerson.setVisibility(View.VISIBLE);
             holder.tvCPerson.setText(tasks.get(position).getContact_person_name());
@@ -133,7 +142,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             holder.ivCPerson.setVisibility(View.GONE);
             holder.tvCPerson.setVisibility(View.GONE);
         }
-        if (!TextUtils.isEmpty(tasks.get(position).getContact_person_mobile_no())) {
+        if (!TextUtils.isEmpty(data.contact_person_mobile_no)) {
             holder.ivCPersonNo.setVisibility(View.VISIBLE);
             holder.tvCPersonNo.setVisibility(View.VISIBLE);
             holder.tvCPersonNo.setText(tasks.get(position).getContact_person_mobile_no());

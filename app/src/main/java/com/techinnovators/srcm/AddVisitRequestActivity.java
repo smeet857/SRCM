@@ -24,6 +24,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.techinnovators.srcm.Activity.TaskActivity2;
 import com.techinnovators.srcm.models.Taluka;
 import com.techinnovators.srcm.models.TalukaResponse;
 import com.techinnovators.srcm.models.Tasks;
@@ -1126,7 +1127,7 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
             createVisitRequest();
         }
         if (view.getId() == R.id.ivBack) {
-            Intent intent = new Intent(AddVisitRequestActivity.this, TasksActivity.class);
+            Intent intent = new Intent(AddVisitRequestActivity.this, TaskActivity2.class);
             startActivity(intent);
         }
     }
