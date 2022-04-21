@@ -7,10 +7,10 @@ public class VisitLocation {
     //    "name\",\"taluka
     @SerializedName("taluka")
     @Expose
-    String taluka = "";
+    public String taluka = "";
 
     public String getTaluka() {
-        return taluka;
+        return taluka == null ? "" : taluka;
     }
 
     public void setTaluka(String state) {

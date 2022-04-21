@@ -212,12 +212,13 @@ public class TaskActivity2 extends AppCompatActivity {
             NetworkUtils.syncData((error) -> {
                 if(error){
                     AppUtils.displayAlertMessage(TaskActivity2.this, "Sync Data","Some data is not sync proper please sync again");
+                    getUserDetails(true);
                 }else{
-                    getUserDetails();
+                    getUserDetails(false);
                 }
             });
         }else{
-            getUserDetails();
+            getUserDetails(false);
         }
     }
 
@@ -287,7 +288,7 @@ public class TaskActivity2 extends AppCompatActivity {
 
     private void logout(){
         DbClient.getInstance().clearAllTables();
-
+        Application.isLogin = false;
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
@@ -301,7 +302,7 @@ public class TaskActivity2 extends AppCompatActivity {
         countDownTimer.cancel();
     }
 
-    private void getUserDetails() {
+    private void getUserDetails(boolean gettaskListFromLocal) {
         if (NetworkUtils.isNetworkConnected(this)) {
             try {
                 AppUtils.showProgress(this, getString(R.string.prog_dialog_title));
@@ -355,7 +356,11 @@ public class TaskActivity2 extends AppCompatActivity {
                                     for (int index = 0; index < appModules.size(); index++) {
                                         String strVisitRequest = appModules.get(index);
                                         if (!TextUtils.isEmpty(strVisitRequest)) {
-                                            getTasksList(Application.getUserModel().employeeId);
+                                            if(gettaskListFromLocal){
+                                                setTaskListFromLocal();
+                                            }else{
+                                                getTasksList(Application.getUserModel().employeeId);
+                                            }
                                         }
                                     }
                                 }
@@ -423,7 +428,7 @@ public class TaskActivity2 extends AppCompatActivity {
         }
     }
 
-    private void getTasksList(String fsEmpName) {
+    private synchronized void getTasksList(String fsEmpName) {
         if (NetworkUtils.isNetworkConnected(this)) {
             try {
                 AppUtils.showProgress(this, getString(R.string.prog_dialog_title));
@@ -534,26 +539,25 @@ public class TaskActivity2 extends AppCompatActivity {
                 AppUtils.displayAlertMessage(this, "TASKS", e.getMessage());
             }
         } else {
-            /// set task list from local storage
-            final ArrayList<Tasks> list = (ArrayList<Tasks>) DbClient.getInstance().tasksDao().getAll();
-            if (list.isEmpty()) {
-                llEmptyView.setVisibility(View.VISIBLE);
-                rvTasks.setVisibility(View.GONE);
-            } else {
-                setTasksList(list);
-            }
+            setTaskListFromLocal();
 
             mSwipeRefreshLayout.setRefreshing(false);
         }
     }
 
-    private void onAddTap() {
-        startActivityForResult(new Intent(this, AddVisitRequestActivity2.class), 100);
+    private void setTaskListFromLocal(){
+        /// set task list from local storage
+        final ArrayList<Tasks> list = (ArrayList<Tasks>) DbClient.getInstance().tasksDao().getAll();
+        if (list.isEmpty()) {
+            llEmptyView.setVisibility(View.VISIBLE);
+            rvTasks.setVisibility(View.GONE);
+        } else {
+            setTasksList(list);
+        }
     }
 
-    private void setTaskListFromLocal() {
-        tasksList = (ArrayList<Tasks>) DbClient.getInstance().tasksDao().getAll();
-        setTasksList(tasksList);
+    private void onAddTap() {
+        startActivityForResult(new Intent(this, AddVisitRequestActivity2.class), 100);
     }
 
     private void setTasksList(ArrayList<Tasks> data) {
@@ -576,12 +580,13 @@ public class TaskActivity2 extends AppCompatActivity {
            NetworkUtils.syncData((error) -> {
                if(error){
                    AppUtils.displayAlertMessage(TaskActivity2.this, "Sync Data","Some data is not sync proper please sync again");
+                   getUserDetails(true);
                }else{
-                   getUserDetails();
+                   getUserDetails(false);
                }
            });
         }else{
-            getUserDetails();
+            getUserDetails(false);
         }
     }
 

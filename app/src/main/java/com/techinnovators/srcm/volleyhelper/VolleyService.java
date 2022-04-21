@@ -46,33 +46,17 @@ public class VolleyService {
         try {
             RequestQueue queue = Volley.newRequestQueue(mContext);
 
-            JsonObjectRequest jsonObj = new JsonObjectRequest(url, sendObj, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    if (mResultCallback != null)
-                        mResultCallback.notifySuccess(response);
-                }
+            JsonObjectRequest jsonObj = new JsonObjectRequest(url, sendObj, response -> {
+                if (mResultCallback != null)
+                    mResultCallback.notifySuccess(response);
             }, error -> {
                 if (mResultCallback != null)
                     mResultCallback.notifyError(error);
             }) {
                 @Override
                 protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                    if (mResultCallback != null) {
-                        mResultCallback.notifyNetworkParseResponse(response);
-                    }
-//                    try {
-//                        Gson gson = new Gson();
-//
-//                        String json = new String(
-//                                response.data, HttpHeaderParser.parseCharset(response.headers));
-//                        return Response.success(
-//                                gson.fromJson(json, clazz), HttpHeaderParser.parseCacheHeaders(response));
-//
-//                    } catch (UnsupportedEncodingException e) {
-//                        return Response.error(new ParseError(e));
-//                    } catch (JsonSyntaxException e) {
-//                        return Response.error(new ParseError(e));
+//                    if (mResultCallback != null) {
+//                        mResultCallback.notifyNetworkParseResponse(response);
 //                    }
                     return super.parseNetworkResponse(response);
                 }
@@ -193,9 +177,9 @@ public class VolleyService {
             }) {
                 @Override
                 protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                    if (mResultCallback != null) {
-                        mResultCallback.notifyNetworkParseResponse(response);
-                    }
+//                    if (mResultCallback != null) {
+//                        mResultCallback.notifyNetworkParseResponse(response);
+//                    }
                     return super.parseNetworkResponse(response);
                 }
 

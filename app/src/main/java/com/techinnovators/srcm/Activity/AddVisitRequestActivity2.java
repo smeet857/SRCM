@@ -821,8 +821,6 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     arrayJson.add(gson.toJson(vd));
                                 }
 
-                                setDistrictArrayAdapter(visitDistrictList);
-
                                 Application.getUserModel().district = arrayJson.toString();
                                 db.userDao().update(Application.getUserModel());
                             }
@@ -883,8 +881,6 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 final String str = data.get(i);
                 visitDistrictList.add(gson.fromJson(str, VisitDistrict.class));
             }
-
-            setDistrictArrayAdapter(visitDistrictList);
         }
     }
 
@@ -1104,6 +1100,10 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
         arrayVisitDist = arrayNames;
 
+        if(arrayNames.isEmpty()){
+            AppUtils.showSnackBar(AddVisitRequestActivity2.this,findViewById(android.R.id.content),"No district of selected visit state");
+        }
+
     }
 
     private void setTalukaArrayAdapter(ArrayList<Taluka> data) {
@@ -1117,6 +1117,10 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         }
 
         arrayVisitTaluka = arrayNames;
+
+        if(arrayNames.isEmpty()){
+            AppUtils.showSnackBar(AddVisitRequestActivity2.this,findViewById(android.R.id.content),"No taluka of selected district");
+        }
     }
 
     private void setVisitLocationArrayAdapter(ArrayList<VisitLocation> data) {
@@ -1130,5 +1134,9 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         }
 
         arrayVisitLocation = arrayNames;
+
+        if(arrayNames.isEmpty()){
+            AppUtils.showSnackBar(AddVisitRequestActivity2.this,findViewById(android.R.id.content),"No Location of selected taluka");
+        }
     }
 }
