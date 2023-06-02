@@ -248,7 +248,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                         public void notifyError(VolleyError error) {
                             AppUtils.dismissProgress();
 
-                            AppUtils.displayAlertMessage(context,"Api Error",error.getMessage());
+                            AppUtils.displayAlertMessage(context,"Alert",error.getMessage());
                         }
 
                         @Override
@@ -314,7 +314,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                         @Override
                         public void notifyError(VolleyError error) {
                             AppUtils.dismissProgress();
-                            AppUtils.displayAlertMessage(context,"Api Error",error.getMessage());
+                            AppUtils.displayAlertMessage(context,"Alert",error.getMessage());
 
                         }
 

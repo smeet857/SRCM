@@ -683,7 +683,7 @@ public class TaskActivity2 extends AppCompatActivity {
                                 errorMessage = getString(R.string.error_500);
                                 break;
                         }
-                        AppUtils.displayAlertMessage(TaskActivity2.this, "Api Error", errorMessage);
+                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", errorMessage);
                     }
 
                     @Override

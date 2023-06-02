@@ -445,10 +445,13 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 AppUtils.displayAlertMessage(this, getString(R.string.create_Visit), e.getMessage());
             }
         } else {
-            visitRequest.isSync = false;
+            /*visitRequest.isSync = false;
             db.tasksDao().insert(visitRequest);
             setResult(RESULT_OK);
-            finish();
+            finish();*/
+
+            AppUtils.dismissProgress();
+            AppUtils.displayAlertMessage(this,"Alert","No internet connectivity");
         }
     }
 
