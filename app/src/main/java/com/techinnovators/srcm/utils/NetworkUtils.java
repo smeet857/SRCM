@@ -26,6 +26,7 @@ import com.techinnovators.srcm.volleyhelper.VolleyService;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 
 public class NetworkUtils {
@@ -124,7 +125,7 @@ public class NetworkUtils {
                             AppUtils.dismissProgress();
                             syncCompleteCallback.onComplete(error);
                         }
-                    });
+                    }, 0);
                 }
             }
         }else{
@@ -162,7 +163,7 @@ public class NetworkUtils {
                         if(tasksDbList.size() - 1 == finalI){
                             AppUtils.dismissProgress();
                         }
-                    });
+                    }, 0);
                 }
             }
         }
@@ -182,7 +183,7 @@ public class NetworkUtils {
                     if(!t.isCheckInSync){
                         checkInTaskFromSync(t,processCompleteCallback);
                     }else if(!t.isCheckOutSync){
-                        checkOutTaskFromSync(t,processCompleteCallback);
+                        checkOutTaskFromSync(t,processCompleteCallback, 0);
                     }else{
                         processCompleteCallback.onComplete(false);
                     }
@@ -223,7 +224,7 @@ public class NetworkUtils {
                     DbClient.getInstance().tasksDao().update(t);
 
                     if(!t.isCheckOutSync){
-                        checkOutTaskFromSync(t,ProcessCompleteCallback);
+                        checkOutTaskFromSync(t,ProcessCompleteCallback, 0);
                     }else{
                         ProcessCompleteCallback.onComplete(false);
                     }
@@ -252,19 +253,56 @@ public class NetworkUtils {
         }
     }
 
-    public static synchronized void checkOutTaskFromSync(Tasks t, ProcessCompleteCallback ProcessCompleteCallback){
+    public static synchronized void checkOutTaskFromSync(Tasks t, ProcessCompleteCallback ProcessCompleteCallback, int imgPos){
         try{
             String api = Application.context.getString(R.string.api_check_out);
-            api += "/" + t.name;
+            String[] separated = t.images.split(",");
+            if (separated.length > 0 && imgPos <= separated.length - 1) {
+                uploadImage(t, separated[imgPos], imgPos, ProcessCompleteCallback);
+            } else {
+                api += "/" + t.name;
+
+                final APIVInterface callback = new APIVInterface() {
+                    @Override
+                    public void notifySuccess(JSONObject response) {
+                        /// set data local
+                        t.isCheckOutSync = true;
+
+                        DbClient.getInstance().tasksDao().update(t);
+                        ProcessCompleteCallback.onComplete(false);
+                    }
+
+                    @Override
+                    public void notifyError(VolleyError error) {
+                        Log.e("Check Out Error", error.toString());
+                        ProcessCompleteCallback.onComplete(true);
+                    }
+
+                    @Override
+                    public void notifyNetworkParseResponse(NetworkResponse response) {
+                        Log.e("Check out Error", response.toString());
+                        ProcessCompleteCallback.onComplete(false);
+                    }
+                };
+
+                final VolleyService volleyService = new VolleyService(callback, Application.context);
+                volleyService.putDataVolley(api, t.checkOutJson());
+            }
+        }catch (Exception e){
+            Log.e("Error on api check out",e.getMessage());
+            ProcessCompleteCallback.onComplete(true);
+        }
+    }
+
+    public static synchronized void  uploadImage(Tasks t, String img, int pos, ProcessCompleteCallback ProcessCompleteCallback) {
+        try{
+            String api = Application.context.getString(R.string.api_upload);
 
             final APIVInterface callback = new APIVInterface() {
                 @Override
                 public void notifySuccess(JSONObject response) {
-                    /// set data local
-                    t.isCheckOutSync = true;
-
-                    DbClient.getInstance().tasksDao().update(t);
                     ProcessCompleteCallback.onComplete(false);
+                    checkOutTaskFromSync(t, ProcessCompleteCallback, pos+1);
                 }
 
                 @Override
@@ -281,11 +319,21 @@ public class NetworkUtils {
             };
 
             final VolleyService volleyService = new VolleyService(callback,Application.context);
-            volleyService.putDataVolley(api,t.checkOutJson());
+
+            final HashMap<String, Object> map = new HashMap<>();
+            map.put("filename", System.currentTimeMillis() / 1000 + ".jpg");
+            map.put("filedata", img);
+            map.put("from_form", 1);
+            map.put("doctype", "Visit Request");
+            map.put("app_auth_key", "536aa3df73a76dcdf6c64a3919f4a0d3");
+            map.put("pass_token", Application.getUserModel().token);
+            map.put("usr", Application.getUserModel().userName);
+            map.put("docname", t.name);
+
+            volleyService.putDataVolley(api, new JSONObject(map));
         }catch (Exception e){
             Log.e("Error on api check out",e.getMessage());
             ProcessCompleteCallback.onComplete(true);
         }
     }
-
 }

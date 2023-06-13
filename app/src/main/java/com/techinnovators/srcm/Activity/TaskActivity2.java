@@ -3,14 +3,16 @@ package com.techinnovators.srcm.Activity;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Parcelable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,11 +29,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sangcomz.fishbun.FishBun;
 import com.techinnovators.srcm.Application;
 import com.techinnovators.srcm.Database.DbClient;
 import com.techinnovators.srcm.R;
 import com.techinnovators.srcm.adapter.TasksAdapter;
-import com.techinnovators.srcm.callbacks.ProcessCompleteCallback;
 import com.techinnovators.srcm.models.Taluka;
 import com.techinnovators.srcm.models.TalukaResponse;
 import com.techinnovators.srcm.models.Tasks;
@@ -58,7 +60,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -67,6 +68,10 @@ import java.util.Map;
 public class TaskActivity2 extends AppCompatActivity {
 
     private RecyclerView rvTasks;
+    TasksAdapter tasksAdapter;
+    ArrayList<Tasks> data;
+    ArrayList<Uri> path;
+    MutableLiveData<ArrayList<Uri>> imagePathsListener = new MutableLiveData<>();
 
     private LinearLayout llEmptyView;
 
@@ -570,7 +575,8 @@ public class TaskActivity2 extends AppCompatActivity {
 
             Collections.sort(data, (o1, o2) -> o2.getDate().compareTo(o1.getDate()));
 
-            TasksAdapter tasksAdapter = new TasksAdapter(this, data);
+            this.data = data;
+            tasksAdapter = new TasksAdapter(this,this,  data, imagePathsListener);
             rvTasks.setAdapter(tasksAdapter);
         }
     }
@@ -894,6 +900,15 @@ public class TaskActivity2 extends AppCompatActivity {
 
         if (requestCode == 100 && resultCode == RESULT_OK) {
             refreshTaskList();
+        }
+        if (requestCode == 1010 && resultCode == RESULT_OK) {
+            // path = imageData.getStringArrayListExtra(Define.INTENT_PATH);
+            // you can get an image path(ArrayList<String>) on <0.6.2
+
+            path = data.getParcelableArrayListExtra(FishBun.INTENT_PATH);
+            // you can get an image path(ArrayList<Uri>) on 0.6.2 and later
+            Log.e("images", path.toString());
+            imagePathsListener.setValue(path);
         }
     }
 

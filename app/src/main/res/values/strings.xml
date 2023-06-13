@@ -100,4 +100,11 @@
     <string name="project_type_villageconnect">Village Connect</string>
     <string name="create_Visit">CREATE VISIT REQUEST</string>
     <string name="state_param_key">state</string>
+    <string name="total_number_of_participants">Total number of participants</string>
+    <string name="prefect_trainer_name">Prefect Trainer Name</string>
+    <string name="data_of_participants_taken">Data Of Participants Taken</string>
+    <string name="cancel">Cancel</string>
+    <string name="submit">Submit</string>
+    <string name="remarks">Remarks</string>
+    <string name="select_images">Select Images</string>
 </resources>

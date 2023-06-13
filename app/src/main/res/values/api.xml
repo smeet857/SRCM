@@ -25,5 +25,6 @@
     <string name="api_check_in">&baseUrl;api/resource/Visit%20Request</string>
     <string name="api_check_out">&baseUrl;api/resource/Visit%20Request</string>
     <string name="api_attendance">&baseUrl;api/resource/Attendance</string>
+    <string name="api_upload">&baseUrl;api/method/field_work_tracking.api.uploadfile</string>
 
 </resources>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/_20sdp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_regular"
+        android:text="@string/total_number_of_participants"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12ssp" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/etTotalParticipant"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edittext_background"
+        android:fontFamily="@font/poppins_regular"
+        android:hint="@string/total_number_of_participants"
+        android:inputType="number"
+        android:lines="1"
+        android:padding="@dimen/_8sdp"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textColorHint="@color/hint_color"
+        android:textSize="@dimen/_12ssp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:fontFamily="@font/poppins_regular"
+        android:text="@string/prefect_trainer_name"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12ssp" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/etTrainerName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edittext_background"
+        android:fontFamily="@font/poppins_regular"
+        android:hint="@string/prefect_trainer_name"
+        android:inputType="text"
+        android:lines="1"
+        android:padding="@dimen/_8sdp"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textColorHint="@color/hint_color"
+        android:textSize="@dimen/_12ssp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:fontFamily="@font/poppins_regular"
+        android:text="@string/remarks"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12ssp" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/etRemarks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edittext_background"
+        android:fontFamily="@font/poppins_regular"
+        android:hint="Remarks"
+        android:lines="3"
+        android:maxLines="3"
+        android:minLines="3"
+        android:padding="@dimen/_8sdp"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textColorHint="@color/hint_color"
+        android:textSize="@dimen/_12ssp" />
+
+    <CheckBox
+        android:id="@+id/check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:text="@string/data_of_participants_taken"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12ssp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnPick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="@drawable/rounded_active_button"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:gravity="center"
+        android:padding="@dimen/_8sdp"
+        android:text="@string/select_images"
+        android:textColor="@color/white" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_active_button"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:gravity="center"
+            android:padding="@dimen/_8sdp"
+            android:text="@string/cancel"
+            android:textColor="@color/white" />
+
+        <Space
+            android:layout_width="@dimen/_10sdp"
+            android:layout_height="0dp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSubmit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_active_button"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:gravity="center"
+            android:padding="@dimen/_8sdp"
+            android:text="@string/submit"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+</LinearLayout>

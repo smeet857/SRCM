@@ -1,6 +1,7 @@
 package com.techinnovators.srcm.models;
 
 import android.annotation.SuppressLint;
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.room.ColumnInfo;
@@ -18,6 +19,7 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -123,6 +125,31 @@ public class Tasks {
     @ColumnInfo(name = "isCheckOutSync")
     @Expose
     public boolean isCheckOutSync = true;
+
+    @SerializedName("total_number_of_participants")
+    @ColumnInfo(name = "total_number_of_participants")
+    @Expose
+    public String totalParticipants = "";
+
+    @SerializedName("prefect_trainer_name")
+    @ColumnInfo(name = "prefect_trainer_name")
+    @Expose
+    public String trainerName = "";
+
+    @SerializedName("data_of_participants_taken")
+    @ColumnInfo(name = "data_of_participants_taken")
+    @Expose
+    public boolean dataTaken = false;
+
+    @SerializedName("remarks")
+    @ColumnInfo(name = "remarks")
+    @Expose
+    public String remarks = "";
+
+    @SerializedName("images")
+    @ColumnInfo(name = "images")
+    @Expose
+    public String images = "";
 
     public int getId(){
         return this.id;
@@ -315,6 +342,10 @@ public class Tasks {
         map.put("visit_checkout",this.visit_checkout);
         map.put("visit_completed",this.visitCompleted);
         map.put("visit_map_location",this.visit_location);
+        map.put("total_number_of_participants",this.totalParticipants);
+        map.put("prefect_trainer_name",this.trainerName);
+        map.put("data_of_participants_taken",this.dataTaken);
+        map.put("remarks",this.remarks);
 
         return new JSONObject(map);
     }
