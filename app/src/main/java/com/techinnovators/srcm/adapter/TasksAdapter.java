@@ -382,15 +382,17 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                     tasksModel.trainerName = etTrainerName.getText().toString();
                     tasksModel.dataTaken = check.isChecked();
                     tasksModel.remarks = etRemarks.getText().toString();
-                    for (int i = 0; i < imageListener.getValue().size(); i++) {
-                        String encodedImage = encodeImage(imageListener.getValue().get(i));
+                    if(imageListener!=null && imageListener.getValue()!=null) {
+                        for (int i = 0; i < imageListener.getValue().size(); i++) {
+                            String encodedImage = encodeImage(imageListener.getValue().get(i));
 
-                        if (i == 0) {
-                            tasksModel.images = encodedImage;
-                        } else {
-                            tasksModel.images = tasksModel.images + "," + encodedImage;
+                            if (i == 0) {
+                                tasksModel.images = encodedImage;
+                            } else {
+                                tasksModel.images = tasksModel.images + "," + encodedImage;
+                            }
+
                         }
-
                     }
                     _checkout(tasksModel, 0);
 
@@ -411,7 +413,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                 }
 
                 String[] separated = tasksModel.images.split(",");
-                if (separated.length > 0 && imgPos <= separated.length - 1) {
+                if (!tasksModel.images.equals("") && separated.length > 0 && imgPos <= separated.length - 1) {
                     uploadImage(tasksModel, separated[imgPos], imgPos);
                 } else {
                     imageListener.setValue(new ArrayList<>());
