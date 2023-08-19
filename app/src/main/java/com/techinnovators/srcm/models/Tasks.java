@@ -29,6 +29,10 @@ public class Tasks {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
+    @SerializedName("event_sector")
+    @ColumnInfo(name = "event_sector")
+    @Expose
+    public String event_sector = "";
     @SerializedName("project_name")
     @ColumnInfo(name = "project_name")
     @Expose
@@ -154,6 +158,14 @@ public class Tasks {
     public int getId(){
         return this.id;
     }
+    public String getEvent_sector() {
+        return event_sector;
+    }
+
+    public void setEventSector(String event_sector) {
+        this.event_sector = event_sector;
+    }
+
     public String getProject_name() {
         return project_name;
     }
@@ -304,6 +316,7 @@ public class Tasks {
         JSONObject jsonObject = new JSONObject();
         try {
         jsonObject.put("visit_location",this.visit_location.trim());
+        jsonObject.put("event_sector",this.event_sector.trim());
         jsonObject.put("project_type",this.project_type.trim());
         jsonObject.put("visit_place",this.visit_place.trim());
         jsonObject.put("employee", Application.getUserModel().employeeId.trim());

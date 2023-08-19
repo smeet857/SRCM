@@ -61,11 +61,53 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tvEventSector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_regular"
+                android:paddingBottom="@dimen/_4sdp"
+                android:text="@string/event_sector"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12ssp" />
+
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/acEventSector"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:background="@drawable/edittext_background"
+                android:fontFamily="@font/poppins_regular"
+                android:padding="@dimen/_8sdp"
+                android:textSize="@dimen/_12ssp" />
+
+            <TextView
+                android:id="@+id/tvProjectType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_regular"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_4sdp"
+                android:text="@string/project_type"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12ssp" />
+
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/acProjectType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:background="@drawable/edittext_background"
+                android:fontFamily="@font/poppins_regular"
+                android:padding="@dimen/_8sdp"
+                android:textSize="@dimen/_12ssp" />
+
+            <TextView
                 android:id="@+id/tvProjectName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
-                android:padding="@dimen/_8sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_4sdp"
                 android:text="@string/project_name"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp" />
@@ -81,59 +123,12 @@
                 android:textSize="@dimen/_12ssp" />
 
             <TextView
-                android:id="@+id/tvProjectType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_regular"
-                android:padding="@dimen/_8sdp"
-                android:text="@string/project_type"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_12ssp" />
-
-            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                android:id="@+id/acProjectType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:background="@drawable/edittext_background"
-                android:fontFamily="@font/poppins_regular"
-                android:padding="@dimen/_8sdp"
-                android:textSize="@dimen/_12ssp" />
-
-<!--            <TextView-->
-<!--                android:id="@+id/tvVisitDate"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:fontFamily="@font/poppins_regular"-->
-<!--                android:padding="@dimen/_8sdp"-->
-<!--                android:text="@string/visit_date"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="@dimen/_12ssp" />-->
-
-<!--            <androidx.appcompat.widget.AppCompatEditText-->
-<!--                android:id="@+id/etDate"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:background="@drawable/edittext_background"-->
-<!--                android:drawableEnd="@drawable/ic_calendar"-->
-<!--                android:drawableTint="@color/black"-->
-<!--                android:fontFamily="@font/poppins_regular"-->
-<!--                android:lines="1"-->
-<!--                android:focusable="false"-->
-<!--                android:padding="@dimen/_8sdp"-->
-<!--                android:singleLine="true"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textColorHint="@color/black"-->
-<!--                android:textSize="@dimen/_12ssp"-->
-<!--                app:layout_constraintTop_toBottomOf="@+id/tvVisitDate" />-->
-
-
-            <TextView
                 android:id="@+id/tvAssignedTo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
-                android:padding="@dimen/_8sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_4sdp"
                 android:text="@string/visit_assigned_to"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp"
@@ -163,7 +158,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
-                android:padding="@dimen/_8sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_4sdp"
                 android:text="Visit Type"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp"
@@ -184,7 +180,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
-                android:padding="@dimen/_8sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_4sdp"
                 android:text="@string/visit_mode"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp"
@@ -205,7 +202,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
-                android:padding="@dimen/_8sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_4sdp"
                 android:text="@string/organisation_name"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp"
@@ -228,7 +226,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
-                android:padding="@dimen/_8sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_4sdp"
                 android:text="@string/state"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp"
@@ -251,7 +250,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
-                android:padding="@dimen/_8sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_4sdp"
                 android:text="@string/visit_district"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp"
@@ -274,7 +274,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
-                android:padding="@dimen/_8sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_4sdp"
                 android:text="@string/visit_taluka"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp"
@@ -297,7 +298,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
-                android:padding="@dimen/_8sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_4sdp"
                 android:text="@string/visitlocation"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp"
@@ -318,7 +320,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
-                android:padding="@dimen/_8sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_4sdp"
                 android:text="@string/contact_person_name"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp" />
@@ -345,7 +348,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
-                android:padding="@dimen/_8sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_4sdp"
                 android:text="@string/contact_person_mobile_number"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp" />

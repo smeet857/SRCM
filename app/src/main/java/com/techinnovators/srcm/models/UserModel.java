@@ -61,10 +61,25 @@ public class UserModel {
     public String company = "";
 
     /// Form details
+    @SerializedName("event_sector")
+    @ColumnInfo(name = "event_sector")
+    @Expose
+    public String eventSector = "";
+
     @SerializedName("project_name")
     @ColumnInfo(name = "project_name")
     @Expose
     public String projectName = "";
+
+    @SerializedName("event_categories")
+    @ColumnInfo(name = "event_categories")
+    @Expose
+    public String eventCategories = "";
+
+    @SerializedName("event_types")
+    @ColumnInfo(name = "event_types")
+    @Expose
+    public String eventTypes = "";
 
     @SerializedName("project_type")
     @ColumnInfo(name = "project_type")

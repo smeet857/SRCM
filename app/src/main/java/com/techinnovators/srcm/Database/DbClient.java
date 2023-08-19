@@ -12,7 +12,7 @@ import com.techinnovators.srcm.Database.Dao.UserDao;
 import com.techinnovators.srcm.models.Tasks;
 import com.techinnovators.srcm.models.UserModel;
 
-@Database(entities = {Tasks.class, UserModel.class}, version = 1)
+@Database(entities = {Tasks.class, UserModel.class}, version = 3)
 public abstract class DbClient extends RoomDatabase {
     public abstract TasksDao tasksDao();
     public abstract UserDao userDao();

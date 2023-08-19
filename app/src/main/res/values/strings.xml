@@ -69,7 +69,8 @@
     <string name="visit_date">Visit Date</string>
     <string name="visit_assigned_to">Visit Assigned To</string>
     <string name="visit_mode">Visit Mode</string>
-    <string name="project_name">Event Type</string>
+    <string name="event_sector">Event Sector</string>
+    <string name="project_name">Project Type</string>
     <string name="api_method_projecttype">api/resource/Event Category?</string>
     <string name="api_method_organizationname">api/resource/Visit%20Place?</string>
     <string name="api_method_visitstate">api/resource/Visit%20State?</string>
@@ -89,6 +90,7 @@
     <string name="create_visit_request">CREATE VISIT REQUEST</string>
     <string name="orgname">ORGANISATION NAME</string>
     <string name="visit_district">Visit District</string>
+    <string name="event_sector_empty_msg">Please select Event Sector</string>
     <string name="proj_name_empty_msg">Please select Event Type</string>
     <string name="proj_type_empty_msg">Please select Event Categories</string>
     <string name="date_empty_msg">Please select visit date</string>

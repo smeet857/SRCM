@@ -3,7 +3,6 @@ package com.techinnovators.srcm.Activity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -20,6 +19,7 @@ import com.google.gson.reflect.TypeToken;
 import com.techinnovators.srcm.Application;
 import com.techinnovators.srcm.Database.DbClient;
 import com.techinnovators.srcm.R;
+import com.techinnovators.srcm.models.EventCategory;
 import com.techinnovators.srcm.models.Taluka;
 import com.techinnovators.srcm.models.TalukaResponse;
 import com.techinnovators.srcm.models.Tasks;
@@ -41,7 +41,9 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Objects;
 
 import in.galaxyofandroid.spinerdialog.OnSpinerItemClick;
 import in.galaxyofandroid.spinerdialog.SpinnerDialog;
@@ -56,16 +58,19 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 //            arrayAdapterVisitTaluka,
 //            arrayAdapterVisitLocation;
 
-    private ArrayList<String> arrayProjectName,
-            arrayProjectType,
+    private ArrayList<EventCategory> eventTypes, eventCategories = new ArrayList<>();
+    private ArrayList<String> arrayEventType,
+            arrayEventCategory,
+            arrayEventTypes,
             arrayOrganizationName,
             arrayVisitState,
             arrayVisitDist,
             arrayVisitTaluka,
             arrayVisitLocation = new ArrayList<>();
 
-    private AutoCompleteTextView acProjectName,
-            acProjectType,
+    private AutoCompleteTextView acEventSector,
+            acEventCategory,
+            acEventType,
             acOrganizationName,
             acVisitState,
             acDistrict,
@@ -117,50 +122,20 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
         csMain = findViewById(R.id.csMain);
 
-        acProjectName = findViewById(R.id.acProjectName);
-        acProjectType = findViewById(R.id.acProjectType);
+        acEventSector = findViewById(R.id.acEventSector);
+        acEventCategory = findViewById(R.id.acProjectName);
+        acEventType = findViewById(R.id.acProjectType);
         acOrganizationName = findViewById(R.id.acOrgName);
         acVisitState = findViewById(R.id.acState);
         acDistrict = findViewById(R.id.acDistrict);
         acTaluka = findViewById(R.id.acTaluka);
         acLocation = findViewById(R.id.acVLocation);
 
-//        etVisitDate = findViewById(R.id.etDate);
         etVisitAssignedTo = findViewById(R.id.etAssignedTo);
         etContPersonName = findViewById(R.id.etContPersonName);
         etContPersonNo = findViewById(R.id.etContPersonNo);
 
-//        arrayAdapterProjectName = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
-//        arrayAdapterProjectType = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
-//        arrayAdapterOrganizationName = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
-//        arrayAdapterVisitState = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
-//        arrayAdapterVisitDist = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
-//        arrayAdapterVisitTaluka = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
-//        arrayAdapterVisitLocation = new ArrayAdapter<>(this, R.layout.autocomplete_text_item);
-
-//        acProjectName.setAdapter(arrayAdapterProjectName);
-//        acProjectName.setThreshold(1);
-//
-//        acProjectType.setAdapter(arrayAdapterProjectType);
-//        acProjectType.setThreshold(1);
-//
-//        acOrganizationName.setAdapter(arrayAdapterOrganizationName);
-//        acOrganizationName.setThreshold(1);
-//
-//        acVisitState.setAdapter(arrayAdapterVisitState);
-//        acVisitState.setThreshold(1);
-//
-//        acDistrict.setAdapter(arrayAdapterVisitDist);
-//        acDistrict.setThreshold(1);
-//
-//        acTaluka.setAdapter(arrayAdapterVisitTaluka);
-//        acTaluka.setThreshold(1);
-//
-//        acLocation.setAdapter(arrayAdapterVisitLocation);
-//        acLocation.setThreshold(1);
-
         etVisitAssignedTo.setText(Application.getUserModel().employeeId);
-//        etVisitDate.setText(AppUtils.dispCurrentDateFirst());
 
         db = DbClient.getInstance();
     }
@@ -170,29 +145,60 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         btnSubmit.setOnClickListener(this);
 //        etVisitDate.setOnClickListener(this);
 
-        acProjectName.setOnClickListener(new View.OnClickListener() {
+        acEventSector.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayProjectName,"Select Event Type", "Close");
+                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayEventType,"Select Event Sector", "Close");
                 spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
                     @Override
                     public void onClick(String item, int position) {
-                        acProjectName.setText(item);
+                        acEventSector.setText(item);
+
+                        acEventCategory.setText("");
+                        acEventType.setText("");
+
+                        for(int i=0; i<eventCategories.size(); i++){
+                            if(Objects.equals(item, eventCategories.get(i).getName())){
+                                arrayEventCategory = eventCategories.get(i).getTypes();
+                                break;
+                            }
+                        }
+
+                        for(int i=0; i<eventTypes.size(); i++){
+                            if(Objects.equals(item, eventTypes.get(i).getName())){
+                                arrayEventTypes = eventTypes.get(i).getTypes();
+                                break;
+                            }
+                        }
                     }
                 });
                 spinnerDialog.showSpinerDialog();
             }
         });
 
-        acProjectType.setOnClickListener(new View.OnClickListener() {
+        acEventCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                acProjectType.showDropDown();
-                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayProjectType,"Select Event Categories", "Close");
+                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this, arrayEventCategory,"Select Event Type", "Close");
                 spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
                     @Override
                     public void onClick(String item, int position) {
-                        acProjectType.setText(item);
+                        acEventCategory.setText(item);
+                    }
+                });
+                spinnerDialog.showSpinerDialog();
+            }
+        });
+
+        acEventType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                acProjectType.showDropDown();
+                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this, arrayEventTypes,"Select Event Categories", "Close");
+                spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
+                    @Override
+                    public void onClick(String item, int position) {
+                        acEventType.setText(item);
                     }
                 });
                 spinnerDialog.showSpinerDialog();
@@ -302,8 +308,9 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
     }
 
     private void initData() {
-        getProjectName();
-        getProjectType();
+        getEventSectors();
+        getAllEventCategories();
+        getAllEventTypes();
         getOrganisationName();
         getVisitState();
         getDistrict();
@@ -328,15 +335,19 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 //    }
 
     private void onSubmitTap() {
-        if (TextUtils.isEmpty(acProjectName.getText().toString())) {
+        if (TextUtils.isEmpty(acEventSector.getText().toString())) {
+            AppUtils.showSnackBar(this, csMain, getString(R.string.event_sector_empty_msg));
+            return;
+        }
+        if (TextUtils.isEmpty(acEventCategory.getText().toString())) {
             AppUtils.showSnackBar(this, csMain, getString(R.string.proj_name_empty_msg));
             return;
         }
-        if (TextUtils.isEmpty(acProjectType.getText().toString())) {
+        if (TextUtils.isEmpty(acEventType.getText().toString())) {
             AppUtils.showSnackBar(this, csMain, getString(R.string.proj_type_empty_msg));
             return;
         }
-        if (TextUtils.isEmpty(acOrganizationName.getText().toString()) && !TextUtils.equals(acProjectType.getText().toString(), getString(R.string.project_type_villageconnect))) {
+        if (TextUtils.isEmpty(acOrganizationName.getText().toString()) && !TextUtils.equals(acEventType.getText().toString(), getString(R.string.project_type_villageconnect))) {
             AppUtils.showSnackBar(this, csMain, getString(R.string.orgname_empty_msg));
             return;
         }
@@ -369,8 +380,9 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         visitRequest.setVisit_location(acLocation.getText().toString());
         visitRequest.setVisit_taluka(acTaluka.getText().toString());
         visitRequest.setVisit_state(acVisitState.getText().toString());
-        visitRequest.setProject_type(acProjectType.getText().toString());
-        visitRequest.setProject_name(acProjectName.getText().toString());
+        visitRequest.setProject_type(acEventType.getText().toString());
+        visitRequest.setEventSector(acEventSector.getText().toString());
+        visitRequest.setProject_name(acEventCategory.getText().toString());
         visitRequest.setVisit_place(acOrganizationName.getText().toString());
 
         visitRequest.setVisit_type(spinnerVisitType.getSelectedItem().toString());
@@ -455,10 +467,10 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         }
     }
 
-    private void getProjectName() {
+    private void getEventSectors() {
         if (NetworkUtils.isNetworkConnected(this)) {
             try {
-                String apiUrl = getString(R.string.api_project_name);
+                String apiUrl = getString(R.string.api_event_sector);
 
                 /// Params
                 apiUrl += "?limit_page_length=None";
@@ -484,10 +496,10 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                         }
                                     }
                                 }
-                                setProjectNameArrayAdapter(arrayList);
+                                setEventTypeArrayAdapter(arrayList);
 
                                 /// set in local storage
-                                Application.getUserModel().projectName = arrayList.toString();
+                                Application.getUserModel().eventSector = arrayList.toString();
                                 db.userDao().update(Application.getUserModel());
                             }
                         } catch (JSONException jsonException) {
@@ -538,14 +550,14 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             }
         } else {
             /// set from local storage
-            final ArrayList<String> data = AppUtils.stringToArray(Application.getUserModel().projectName);
-            setProjectNameArrayAdapter(data);
+            final ArrayList<String> data = AppUtils.stringToArray(Application.getUserModel().eventSector);
+            setEventTypeArrayAdapter(data);
         }
     }
 
-    private void getProjectType() {
+    private void getAllEventCategories() {
         if (NetworkUtils.isNetworkConnected(this)) {
-            String apiUrl = getString(R.string.api_project_type);
+            String apiUrl = getString(R.string.api_all_event_category);
 
             apiUrl += "?limit_page_length=None";
 
@@ -553,26 +565,34 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 @Override
                 public void notifySuccess(JSONObject response) {
                     try {
-                        JSONArray data = response.getJSONArray(getString(R.string.param_data));
-                        if (data.length() > 0) {
-                            final ArrayList<String> arrayList = new ArrayList<>();
+                        JSONObject data = response.getJSONObject(getString(R.string.param_message));
 
-                            for (int index = 0; index < data.length(); index++) {
-                                JSONObject jsonObject = data.getJSONObject(index);
+                        final ArrayList<EventCategory> finalList = new ArrayList<>();
+                        for (Iterator it = data.keys(); it.hasNext(); ) {
+                            String name = (String)it.next();
+                            JSONArray arr = data.optJSONArray(name);
 
-                                if (jsonObject != null && !jsonObject.toString().isEmpty()) {
-                                    String strName = jsonObject.getString(getString(R.string.param_name));
-                                    if (!strName.isEmpty()) {
-                                        arrayList.add(strName);
-                                    }
-                                }
+                            EventCategory eventCategory = new EventCategory();
+                            eventCategory.setName(name);
+
+                            ArrayList<String> type = new ArrayList<>();
+
+                            for(int i=0; i<arr.length();i++){
+                                type.add((String) arr.get(i));
                             }
 
-                            setProjectTypeArrayAdapter(arrayList);
+                            eventCategory.setTypes(type);
 
-                            Application.getUserModel().projectType = arrayList.toString();
-                            db.userDao().update(Application.getUserModel());
+                            finalList.add(eventCategory);
                         }
+
+                        Gson gson = new Gson();
+                        String result = gson.toJson(finalList, new TypeToken<ArrayList<EventCategory>>(){}.getType());
+                        Application.getUserModel().eventCategories = result;
+                        db.userDao().update(Application.getUserModel());
+
+                        eventCategories = finalList;
+
                     } catch (JSONException jsonException) {
                         jsonException.printStackTrace();
                     }
@@ -615,15 +635,117 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             };
 
             try {
+
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put(getString(R.string.param_app_auth_key), getString(R.string.auth_key));
+
                 VolleyService mVolleyService = new VolleyService(callback, AddVisitRequestActivity2.this);
-                mVolleyService.getDataVolley(apiUrl, null);
+                mVolleyService.postDataVolley(apiUrl, jsonObject);
+
             } catch (Exception e) {
                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", e.getMessage());
             }
         } else {
             /// set from local storage
-            final ArrayList<String> data = AppUtils.stringToArray(Application.getUserModel().projectType);
-            setProjectTypeArrayAdapter(data);
+            Gson gson = new Gson();
+            eventCategories = gson.fromJson(Application.getUserModel().eventCategories, new TypeToken<ArrayList<EventCategory>>(){}.getType());
+        }
+    }
+
+    private void getAllEventTypes() {
+        if (NetworkUtils.isNetworkConnected(this)) {
+            String apiUrl = getString(R.string.api_all_events_type);
+
+            apiUrl += "?limit_page_length=None";
+
+            final APIVInterface callback = new APIVInterface() {
+                @Override
+                public void notifySuccess(JSONObject response) {
+                    try {
+                        JSONObject data = response.getJSONObject(getString(R.string.param_message));
+
+                        final ArrayList<EventCategory> finalList = new ArrayList<>();
+                        for (Iterator it = data.keys(); it.hasNext(); ) {
+                            String name = (String)it.next();
+                            JSONArray arr = data.optJSONArray(name);
+
+                            EventCategory eventCategory = new EventCategory();
+                            eventCategory.setName(name);
+
+                            ArrayList<String> type = new ArrayList<>();
+
+                            for(int i=0; i<arr.length();i++){
+                                type.add((String) arr.get(i));
+                            }
+
+                            eventCategory.setTypes(type);
+
+                            finalList.add(eventCategory);
+                        }
+
+                        Gson gson = new Gson();
+                        String result = gson.toJson(finalList, new TypeToken<ArrayList<EventCategory>>(){}.getType());
+                        Application.getUserModel().eventTypes = result;
+                        db.userDao().update(Application.getUserModel());
+
+                        eventTypes = finalList;
+
+                    } catch (JSONException jsonException) {
+                        jsonException.printStackTrace();
+                    }
+
+                }
+
+                @Override
+                public void notifyError(VolleyError error) {
+                    if (error.networkResponse != null) {
+                        switch (error.networkResponse.statusCode) {
+                            case 401:
+                                String responseBody;
+                                try {
+                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(responseBody);
+                                    if (!data.getString("message").isEmpty()) {
+                                        AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", data.getString("message"));
+                                    }
+                                } catch (UnsupportedEncodingException | JSONException e) {
+                                    AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", e.getMessage());
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case 403:
+                                AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", getString(R.string.error_403));
+                            case 404:
+                                AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", getString(R.string.error_404));
+                                break;
+                            case 500:
+                                AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", getString(R.string.error_500));
+                                break;
+                        }
+                    }
+                }
+
+                @Override
+                public void notifyNetworkParseResponse(NetworkResponse response) {
+
+                }
+            };
+
+            try {
+
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put(getString(R.string.param_app_auth_key), getString(R.string.auth_key));
+
+                VolleyService mVolleyService = new VolleyService(callback, AddVisitRequestActivity2.this);
+                mVolleyService.postDataVolley(apiUrl, jsonObject);
+
+            } catch (Exception e) {
+                AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", e.getMessage());
+            }
+        } else {
+            /// set from local storage
+            Gson gson = new Gson();
+            eventTypes = gson.fromJson(Application.getUserModel().eventTypes, new TypeToken<ArrayList<EventCategory>>(){}.getType());
         }
     }
 
@@ -1075,12 +1197,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         }
     }
 
-    private void setProjectNameArrayAdapter(ArrayList<String> data) {
-        arrayProjectName = data;
-    }
-
-    private void setProjectTypeArrayAdapter(ArrayList<String> data) {
-        arrayProjectType = data;
+    private void setEventTypeArrayAdapter(ArrayList<String> data) {
+        arrayEventType = data;
     }
 
     private void setOrganizationNameArrayAdapter(ArrayList<String> data) {
