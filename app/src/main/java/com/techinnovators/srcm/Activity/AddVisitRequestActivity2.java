@@ -58,19 +58,21 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 //            arrayAdapterVisitTaluka,
 //            arrayAdapterVisitLocation;
 
-    private ArrayList<EventCategory> eventTypes, eventCategories = new ArrayList<>();
-    private ArrayList<String> arrayEventType,
+    private ArrayList<EventCategory> projectTypes, eventCategories = new ArrayList<>();
+    private ArrayList<String>
+            arrayEventSector,
+            arrayProjectType,
             arrayEventCategory,
-            arrayEventTypes,
             arrayOrganizationName,
             arrayVisitState,
             arrayVisitDist,
             arrayVisitTaluka,
             arrayVisitLocation = new ArrayList<>();
 
-    private AutoCompleteTextView acEventSector,
+    private AutoCompleteTextView
+            acEventSector,
             acEventCategory,
-            acEventType,
+            acProjectType,
             acOrganizationName,
             acVisitState,
             acDistrict,
@@ -123,8 +125,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         csMain = findViewById(R.id.csMain);
 
         acEventSector = findViewById(R.id.acEventSector);
-        acEventCategory = findViewById(R.id.acProjectName);
-        acEventType = findViewById(R.id.acProjectType);
+        acEventCategory = findViewById(R.id.avEventCategory);
+        acProjectType = findViewById(R.id.acProjectType);
         acOrganizationName = findViewById(R.id.acOrgName);
         acVisitState = findViewById(R.id.acState);
         acDistrict = findViewById(R.id.acDistrict);
@@ -148,25 +150,28 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         acEventSector.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayEventType,"Select Event Sector", "Close");
+                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this, arrayEventSector,"Select Event Sector", "Close");
                 spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
                     @Override
                     public void onClick(String item, int position) {
                         acEventSector.setText(item);
 
                         acEventCategory.setText("");
-                        acEventType.setText("");
+                        acProjectType.setText("");
+
+                        arrayEventCategory = new ArrayList<>();
+                        arrayProjectType = new ArrayList<>();
 
                         for(int i=0; i<eventCategories.size(); i++){
-                            if(Objects.equals(item, eventCategories.get(i).getName())){
+                            if(Objects.equals(item.trim(), eventCategories.get(i).getName().trim())){
                                 arrayEventCategory = eventCategories.get(i).getTypes();
                                 break;
                             }
                         }
 
-                        for(int i=0; i<eventTypes.size(); i++){
-                            if(Objects.equals(item, eventTypes.get(i).getName())){
-                                arrayEventTypes = eventTypes.get(i).getTypes();
+                        for(int i = 0; i< projectTypes.size(); i++){
+                            if(Objects.equals(item.trim(), projectTypes.get(i).getName().trim())){
+                                arrayProjectType = projectTypes.get(i).getTypes();
                                 break;
                             }
                         }
@@ -190,15 +195,15 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             }
         });
 
-        acEventType.setOnClickListener(new View.OnClickListener() {
+        acProjectType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                acProjectType.showDropDown();
-                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this, arrayEventTypes,"Select Event Categories", "Close");
+                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this, arrayProjectType,"Select Event Categories", "Close");
                 spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
                     @Override
                     public void onClick(String item, int position) {
-                        acEventType.setText(item);
+                        acProjectType.setText(item);
                     }
                 });
                 spinnerDialog.showSpinerDialog();
@@ -310,7 +315,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
     private void initData() {
         getEventSectors();
         getAllEventCategories();
-        getAllEventTypes();
+        getAllProjectTypes();
         getOrganisationName();
         getVisitState();
         getDistrict();
@@ -343,11 +348,11 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             AppUtils.showSnackBar(this, csMain, getString(R.string.proj_name_empty_msg));
             return;
         }
-        if (TextUtils.isEmpty(acEventType.getText().toString())) {
+        if (TextUtils.isEmpty(acProjectType.getText().toString())) {
             AppUtils.showSnackBar(this, csMain, getString(R.string.proj_type_empty_msg));
             return;
         }
-        if (TextUtils.isEmpty(acOrganizationName.getText().toString()) && !TextUtils.equals(acEventType.getText().toString(), getString(R.string.project_type_villageconnect))) {
+        if (TextUtils.isEmpty(acOrganizationName.getText().toString()) && !TextUtils.equals(acProjectType.getText().toString(), getString(R.string.project_type_villageconnect))) {
             AppUtils.showSnackBar(this, csMain, getString(R.string.orgname_empty_msg));
             return;
         }
@@ -380,9 +385,9 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         visitRequest.setVisit_location(acLocation.getText().toString());
         visitRequest.setVisit_taluka(acTaluka.getText().toString());
         visitRequest.setVisit_state(acVisitState.getText().toString());
-        visitRequest.setProject_type(acEventType.getText().toString());
-        visitRequest.setEventSector(acEventSector.getText().toString());
-        visitRequest.setProject_name(acEventCategory.getText().toString());
+        visitRequest.setProject_type(acEventCategory.getText().toString().trim());
+        visitRequest.setEventSector(acEventSector.getText().toString().trim());
+        visitRequest.setProject_name(acProjectType.getText().toString());
         visitRequest.setVisit_place(acOrganizationName.getText().toString());
 
         visitRequest.setVisit_type(spinnerVisitType.getSelectedItem().toString());
@@ -648,13 +653,15 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         } else {
             /// set from local storage
             Gson gson = new Gson();
-            eventCategories = gson.fromJson(Application.getUserModel().eventCategories, new TypeToken<ArrayList<EventCategory>>(){}.getType());
+            TypeToken<ArrayList<EventCategory>> token = new TypeToken<ArrayList<EventCategory>>() {
+            };
+            eventCategories = gson.fromJson(Application.getUserModel().eventCategories, token.getType());
         }
     }
 
-    private void getAllEventTypes() {
+    private void getAllProjectTypes() {
         if (NetworkUtils.isNetworkConnected(this)) {
-            String apiUrl = getString(R.string.api_all_events_type);
+            String apiUrl = getString(R.string.api_all_project_type);
 
             apiUrl += "?limit_page_length=None";
 
@@ -685,10 +692,10 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                         Gson gson = new Gson();
                         String result = gson.toJson(finalList, new TypeToken<ArrayList<EventCategory>>(){}.getType());
-                        Application.getUserModel().eventTypes = result;
+                        Application.getUserModel().projectTypes = result;
                         db.userDao().update(Application.getUserModel());
 
-                        eventTypes = finalList;
+                        projectTypes = finalList;
 
                     } catch (JSONException jsonException) {
                         jsonException.printStackTrace();
@@ -745,7 +752,9 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         } else {
             /// set from local storage
             Gson gson = new Gson();
-            eventTypes = gson.fromJson(Application.getUserModel().eventTypes, new TypeToken<ArrayList<EventCategory>>(){}.getType());
+            TypeToken<ArrayList<EventCategory>> token = new TypeToken<ArrayList<EventCategory>>() {
+            };
+            projectTypes = gson.fromJson(Application.getUserModel().projectTypes, token.getType());
         }
     }
 
@@ -1198,7 +1207,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
     }
 
     private void setEventTypeArrayAdapter(ArrayList<String> data) {
-        arrayEventType = data;
+        arrayEventSector = data;
     }
 
     private void setOrganizationNameArrayAdapter(ArrayList<String> data) {

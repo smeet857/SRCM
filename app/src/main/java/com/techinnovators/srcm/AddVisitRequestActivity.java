@@ -13,9 +13,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
@@ -32,7 +30,6 @@ import com.techinnovators.srcm.models.VisitDistrict;
 import com.techinnovators.srcm.models.VisitDistrictResponse;
 import com.techinnovators.srcm.models.VisitLocation;
 import com.techinnovators.srcm.models.VisitLocationResponse;
-import com.techinnovators.srcm.models.VisitRequest;
 import com.techinnovators.srcm.utils.AppUtils;
 import com.techinnovators.srcm.utils.NetworkUtils;
 import com.techinnovators.srcm.utils.SharedPreferencesManager;
@@ -48,7 +45,6 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
@@ -60,7 +56,6 @@ import static com.techinnovators.srcm.utils.SharedPreferencesManager.PROJECT_TYP
 import static com.techinnovators.srcm.utils.SharedPreferencesManager.VISIT_DISTRICT;
 import static com.techinnovators.srcm.utils.SharedPreferencesManager.VISIT_LOCATION;
 import static com.techinnovators.srcm.utils.SharedPreferencesManager.VISIT_REQUESTS;
-import static com.techinnovators.srcm.utils.SharedPreferencesManager.VISIT_REQUEST_CHECK_IN;
 import static com.techinnovators.srcm.utils.SharedPreferencesManager.VISIT_STATE;
 import static com.techinnovators.srcm.utils.SharedPreferencesManager.VISIT_TALUKA;
 
@@ -97,7 +92,7 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
         Toolbar toolbar = findViewById(R.id.toolbar);
         ImageView ivBack = toolbar.findViewById(R.id.ivBack);
         ivBack.setOnClickListener(this);
-        AutoCompleteTextView acProjectName = findViewById(R.id.acProjectName);
+        AutoCompleteTextView acProjectName = findViewById(R.id.avEventCategory);
         AutoCompleteTextView acProjectType = findViewById(R.id.acProjectType);
 
         arrayAdapterProjectName = new ArrayAdapter<>(AddVisitRequestActivity.this, R.layout.autocomplete_text_item);

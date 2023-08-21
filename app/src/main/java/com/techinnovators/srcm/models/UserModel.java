@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.techinnovators.srcm.R;
 
 @Entity(tableName = "User")
 public class UserModel {
@@ -66,25 +65,15 @@ public class UserModel {
     @Expose
     public String eventSector = "";
 
-    @SerializedName("project_name")
-    @ColumnInfo(name = "project_name")
-    @Expose
-    public String projectName = "";
-
     @SerializedName("event_categories")
     @ColumnInfo(name = "event_categories")
     @Expose
     public String eventCategories = "";
 
-    @SerializedName("event_types")
-    @ColumnInfo(name = "event_types")
-    @Expose
-    public String eventTypes = "";
-
     @SerializedName("project_type")
     @ColumnInfo(name = "project_type")
     @Expose
-    public String projectType = "";
+    public String projectTypes = "";
 
     @SerializedName("organization_name")
     @ColumnInfo(name = "organization_name")

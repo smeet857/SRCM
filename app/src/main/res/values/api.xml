@@ -16,7 +16,7 @@
 
     <string name="api_event_sector">&baseUrl;api/resource/Event%20Sector</string>
     <string name="api_project_name">&baseUrl;api/resource/Event%20Type</string>
-    <string name="api_all_events_type">&baseUrl;api/method/field_work_tracking.api.get_all_sectorwise_project_category</string>
+    <string name="api_all_project_type">&baseUrl;api/method/field_work_tracking.api.get_all_sectorwise_project_category</string>
     <string name="api_project_type">&baseUrl;api/resource/Event%20Category</string>
     <string name="api_all_event_category">&baseUrl;api/method/field_work_tracking.api.get_all_sectorwise_event_category</string>
     <string name="api_organization_name">&baseUrl;api/resource/Visit%20Place</string>

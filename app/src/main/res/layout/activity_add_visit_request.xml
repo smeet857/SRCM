@@ -81,7 +81,7 @@
                 android:textSize="@dimen/_12ssp" />
 
             <TextView
-                android:id="@+id/tvProjectType"
+                android:id="@+id/tvEventCategory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
@@ -92,7 +92,7 @@
                 android:textSize="@dimen/_12ssp" />
 
             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                android:id="@+id/acProjectType"
+                android:id="@+id/avEventCategory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
@@ -102,7 +102,7 @@
                 android:textSize="@dimen/_12ssp" />
 
             <TextView
-                android:id="@+id/tvProjectName"
+                android:id="@+id/tvProjectType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_regular"
@@ -113,7 +113,7 @@
                 android:textSize="@dimen/_12ssp" />
 
             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                android:id="@+id/acProjectName"
+                android:id="@+id/acProjectType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"

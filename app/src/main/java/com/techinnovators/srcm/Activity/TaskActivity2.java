@@ -1091,7 +1091,7 @@ public class TaskActivity2 extends AppCompatActivity {
         if(NetworkUtils.isNetworkConnected(this)){
             try {
                 //String apiUrl = getString(R.string.api_project_name);
-                String apiUrl = getString(R.string.api_all_events_type);
+                String apiUrl = getString(R.string.api_all_project_type);
 
                 /// Params
                 apiUrl += "?limit_page_length=None";
@@ -1123,7 +1123,7 @@ public class TaskActivity2 extends AppCompatActivity {
 
                             Gson gson = new Gson();
                             String result = gson.toJson(finalList, new TypeToken<ArrayList<EventCategory>>(){}.getType());
-                            Application.getUserModel().eventTypes = result;
+                            Application.getUserModel().projectTypes = result;
                             db.userDao().update(Application.getUserModel());
                         } catch (JSONException jsonException) {
                             jsonException.printStackTrace();

@@ -35,20 +35,20 @@
 
             <ImageView
                 android:id="@+id/ivCheckIn"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
                 android:layout_marginStart="@dimen/_10sdp"
-                android:src="@drawable/ic_check_in"
+                android:src="@drawable/check_in"
                 app:layout_constraintBottom_toBottomOf="@+id/user_name"
                 app:layout_constraintStart_toEndOf="@+id/user_name"
                 app:layout_constraintTop_toTopOf="@+id/user_name" />
 
             <ImageView
                 android:id="@+id/ivCheckOut"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
                 android:layout_marginStart="@dimen/_20sdp"
-                android:src="@drawable/ic_checkout"
+                android:src="@drawable/check_out"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/user_name"
                 app:layout_constraintStart_toEndOf="@+id/ivCheckIn"

@@ -196,7 +196,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             itemView.setOnClickListener(this);
             tvCheckIn = itemView.findViewById(R.id.tvCheckIn);
             tvActivityUnderProject = itemView.findViewById(R.id.tvActivityUnderProject);
-            tvProjectName = itemView.findViewById(R.id.tvProjectName);
+            tvProjectName = itemView.findViewById(R.id.tvEventCategory);
             tvRPName = itemView.findViewById(R.id.tvReportPerson);
             tvVisitLocation = itemView.findViewById(R.id.tvSchoolLocation);
             tvSchoolName = itemView.findViewById(R.id.tvSchoolName);
