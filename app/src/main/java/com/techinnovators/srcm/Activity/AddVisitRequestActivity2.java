@@ -73,7 +73,6 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             acEventSector,
             acEventCategory,
             acProjectType,
-            acOrganizationName,
             acVisitState,
             acDistrict,
             acTaluka,
@@ -81,7 +80,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
     private ConstraintLayout csMain;
 
-    private AppCompatEditText /*etVisitDate,*/etVisitAssignedTo, etContPersonName, etContPersonNo;
+    private AppCompatEditText /*etVisitDate,*/etVisitAssignedTo, etContPersonName, etContPersonNo,acOrganizationName;
 
     private Spinner spinnerVisitType, spinnerVisitMode;
 
@@ -210,7 +209,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             }
         });
 
-        acOrganizationName.setOnClickListener(new View.OnClickListener() {
+        /*acOrganizationName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                acOrganizationName.showDropDown();
@@ -223,7 +222,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 });
                 spinnerDialog.showSpinerDialog();
             }
-        });
+        });*/
 
         acVisitState.setOnClickListener(new View.OnClickListener() {
             @Override

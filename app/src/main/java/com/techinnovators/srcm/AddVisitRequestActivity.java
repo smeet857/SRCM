@@ -145,7 +145,7 @@ public class AddVisitRequestActivity extends AppCompatActivity implements View.O
         if (NetworkUtils.isNetworkConnected(AddVisitRequestActivity.this)) {
             getProjectName();
             getProjectType();
-            getOrganisationName();
+            //getOrganisationName();
             getVisitState();
             getDistrict();
             getTaluka();

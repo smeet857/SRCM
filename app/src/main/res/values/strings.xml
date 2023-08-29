@@ -2,7 +2,7 @@
     <string name="app_name">SRCM</string>
     <string name="location_title">LOCATION SETTINGS</string>
     <string name="location_service_msg">Please turn on location services before using the app.</string>
-    <string name="version">1.0.3</string>
+    <string name="version">1.0.4</string>
     <string name="sign_in">SIGN IN</string>
     <string name="OKAY">OKAY</string>
     <string name="api_url">https://srcm.techinnovators.co.in/</string>

@@ -2,6 +2,7 @@ package com.techinnovators.srcm.Activity;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -76,9 +77,9 @@ public class TaskActivity2 extends AppCompatActivity {
 
     private LinearLayout llEmptyView;
 
+    private AppCompatTextView  ivCheckIn,
+            ivCheckOut;
     private ImageView ivAdd,
-            ivCheckIn,
-            ivCheckOut,
             ivWorkingHours,
             ivLogout,
             ivSync;

@@ -34,39 +34,6 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/ivCheckIn"
-                android:layout_width="@dimen/_24sdp"
-                android:layout_height="@dimen/_24sdp"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:src="@drawable/check_in"
-                app:layout_constraintBottom_toBottomOf="@+id/user_name"
-                app:layout_constraintStart_toEndOf="@+id/user_name"
-                app:layout_constraintTop_toTopOf="@+id/user_name" />
-
-            <ImageView
-                android:id="@+id/ivCheckOut"
-                android:layout_width="@dimen/_24sdp"
-                android:layout_height="@dimen/_24sdp"
-                android:layout_marginStart="@dimen/_20sdp"
-                android:src="@drawable/check_out"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/user_name"
-                app:layout_constraintStart_toEndOf="@+id/ivCheckIn"
-                app:layout_constraintTop_toTopOf="@+id/user_name" />
-
-            <ImageView
-                android:id="@+id/ivAdd"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_marginEnd="48dp"
-                android:src="@drawable/ic_add"
-                app:layout_constraintBottom_toBottomOf="@+id/user_name"
-                app:layout_constraintEnd_toEndOf="@+id/ivLogout"
-                app:layout_constraintTop_toTopOf="@+id/user_name"
-                app:layout_constraintVertical_bias="1.0"
-                app:tint="@color/white" />
-
-            <ImageView
                 android:id="@+id/ivLogout"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
@@ -78,16 +45,55 @@
                 app:tint="@color/white" />
 
             <ImageView
+                android:id="@+id/ivAdd"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:src="@drawable/ic_add"
+                app:layout_constraintBottom_toBottomOf="@+id/user_name"
+                app:layout_constraintEnd_toStartOf="@+id/ivLogout"
+                app:layout_constraintTop_toTopOf="@+id/user_name"
+                app:tint="@color/white" />
+
+            <ImageView
                 android:id="@+id/ivSync"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/user_name"
                 app:layout_constraintEnd_toStartOf="@+id/ivAdd"
-                app:layout_constraintHorizontal_bias="0.9"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/user_name"
-                app:layout_constraintVertical_bias="1.0"
                 app:srcCompat="@drawable/ic_sync" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/ivCheckIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Day In"
+                android:textColor="@color/rosegold"
+                android:fontFamily="@font/poppins_medium"
+                android:textSize="@dimen/_12ssp"
+                android:layout_marginEnd="@dimen/_12sdp"
+                app:layout_constraintEnd_toStartOf="@+id/ivSync"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@drawable/day_bg"
+                android:visibility="visible"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/ivCheckOut"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Day Out"
+                android:visibility="gone"
+                android:textColor="@color/rosegold"
+                android:fontFamily="@font/poppins_medium"
+                android:textSize="@dimen/_12ssp"
+                app:layout_constraintEnd_toStartOf="@+id/ivSync"
+                android:layout_marginEnd="@dimen/_12sdp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@drawable/day_bg"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.appcompat.widget.Toolbar>
