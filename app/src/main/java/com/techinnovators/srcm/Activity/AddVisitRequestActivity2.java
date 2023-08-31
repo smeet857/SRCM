@@ -1,12 +1,19 @@
 package com.techinnovators.srcm.Activity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
@@ -73,6 +80,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             acEventSector,
             acEventCategory,
             acProjectType,
+            acOrganizationName,
             acVisitState,
             acDistrict,
             acTaluka,
@@ -80,11 +88,12 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
     private ConstraintLayout csMain;
 
-    private AppCompatEditText /*etVisitDate,*/etVisitAssignedTo, etContPersonName, etContPersonNo,acOrganizationName;
+    private AppCompatEditText /*etVisitDate,*/etVisitAssignedTo, etContPersonName, etContPersonNo;
 
     private Spinner spinnerVisitType, spinnerVisitMode;
 
-    private ImageView ivBack;
+    private ImageView ivBack, imgAddOrganizationName;
+
 
     private AppCompatButton btnSubmit;
 
@@ -116,6 +125,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
     private void init() {
         ivBack = findViewById(R.id.ivBack);
+        imgAddOrganizationName = findViewById(R.id.imgAddOrganizationName);
         btnSubmit = findViewById(R.id.btnSubmit);
 
         spinnerVisitMode = findViewById(R.id.spin_visitmode);
@@ -209,7 +219,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             }
         });
 
-        /*acOrganizationName.setOnClickListener(new View.OnClickListener() {
+        acOrganizationName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                acOrganizationName.showDropDown();
@@ -222,7 +232,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 });
                 spinnerDialog.showSpinerDialog();
             }
-        });*/
+        });
 
         acVisitState.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -312,6 +322,57 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
     }
 
     private void initData() {
+
+        if (NetworkUtils.isNetworkConnected(this)) {
+            imgAddOrganizationName.setVisibility(View.VISIBLE);
+            imgAddOrganizationName.setOnClickListener(v -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Add Organization Name");
+
+                final EditText input = new EditText(this);
+                input.setHint("Organization name");
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+
+                FrameLayout container = new FrameLayout(this);
+                FrameLayout.LayoutParams params = new  FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.leftMargin = 30;
+                params.rightMargin = 30;
+                params.topMargin = 20;
+
+                input.setLayoutParams(params);
+                container.addView(input);
+
+                builder.setView(container);
+
+                builder.setPositiveButton("Add",
+                        (dialog, which) -> {
+
+                        });
+
+
+                builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+                final AlertDialog dialog = builder.create();
+                dialog.show();
+
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        if(input.getText().toString().isEmpty()){
+                            input.setError("can not be blank");
+                            return;
+                        }
+                        dialog.cancel();
+                        addOrganizationName(input.getText().toString());
+                    }
+                });
+            });
+        } else {
+            imgAddOrganizationName.setVisibility(View.GONE);
+        }
+
         getEventSectors();
         getAllEventCategories();
         getAllProjectTypes();
@@ -837,6 +898,68 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         } else {
             final ArrayList<String> data = AppUtils.stringToArray(Application.getUserModel().organizationName);
             setOrganizationNameArrayAdapter(data);
+        }
+    }
+
+    private void addOrganizationName(String title) {
+        if (NetworkUtils.isNetworkConnected(this)) {
+            try {
+                String apiUrl = getString(R.string.api_organization_name);
+
+                final APIVInterface callback = new APIVInterface() {
+                    @Override
+                    public void notifySuccess(JSONObject response) {
+                        getOrganisationName();
+                    }
+
+                    @Override
+                    public void notifyError(VolleyError error) {
+                        if (error.networkResponse != null) {
+                            switch (error.networkResponse.statusCode) {
+                                case 401:
+                                    String responseBody;
+                                    try {
+                                        responseBody = new String(error.networkResponse.data, "utf-8");
+                                        JSONObject data = new JSONObject(responseBody);
+                                        if (!data.getString("message").isEmpty()) {
+                                            AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", data.getString("message"));
+                                        }
+                                    } catch (UnsupportedEncodingException | JSONException e) {
+                                        AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", e.getMessage());
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                                case 403:
+                                    AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", getString(R.string.error_403));
+                                case 404:
+                                    AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", getString(R.string.error_404));
+                                    break;
+                                case 500:
+                                    AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", getString(R.string.error_500));
+                                    break;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void notifyNetworkParseResponse(NetworkResponse response) {
+
+                    }
+                };
+
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put(getString(R.string.param_place), title);
+
+                VolleyService mVolleyService = new VolleyService(callback, this);
+                mVolleyService.postDataVolley(apiUrl, jsonObject);
+
+            } catch (Exception e) {
+                AppUtils.displayAlertMessage(this, "PROJECT NAME", e.getMessage());
+            }
+        } else {
+            /// set from local storage
+            final ArrayList<String> data = AppUtils.stringToArray(Application.getUserModel().eventSector);
+            setEventTypeArrayAdapter(data);
         }
     }
 

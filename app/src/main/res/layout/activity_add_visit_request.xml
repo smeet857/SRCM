@@ -211,14 +211,32 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/spin_activity" />
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/acOrgName"
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edittext_background"
-                android:fontFamily="@font/poppins_regular"
-                android:padding="@dimen/_8sdp"
-                android:textSize="@dimen/_12ssp" />
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                    android:id="@+id/acOrgName"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:background="@drawable/edittext_background"
+                    android:fontFamily="@font/poppins_regular"
+                    android:padding="@dimen/_8sdp"
+                    android:textSize="@dimen/_12ssp" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgAddOrganizationName"
+                    android:layout_width="@dimen/_30sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:src="@drawable/ic_add"
+                    app:tint="@color/black"
+                    android:layout_marginStart="@dimen/_10sdp"/>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
 
             <TextView
                 android:id="@+id/tvState"
