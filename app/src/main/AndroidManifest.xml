@@ -37,11 +37,6 @@
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".Application" />
         <activity
-            android:name=".AddVisitRequestActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".ActivityDetails"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />

@@ -179,11 +179,12 @@ public class TaskActivity2 extends AppCompatActivity {
                             DecimalFormat df = new DecimalFormat("#.#");
                             totalWorkingHours = Double.parseDouble(df.format(totalWorkingHours));
                         }
-                        if (totalWorkingHours > 0.0) {
-                            checkOut(strCurrentTime, totalWorkingHours);
-                        } else {
-                            AppUtils.showSnackBar(TaskActivity2.this, csMain, "Total working hours cannot be 0 while checking out from system.");
-                        }
+                        checkOut(strCurrentTime, totalWorkingHours);
+//                        if (totalWorkingHours > 0.0) {
+//                            checkOut(strCurrentTime, totalWorkingHours);
+//                        } else {
+//                            AppUtils.showSnackBar(TaskActivity2.this, csMain, "Total working hours cannot be 0 while checking out from system.");
+//                        }
                     } catch (ParseException e) {
                         AppUtils.showSnackBar(TaskActivity2.this, csMain, "Unable to find working hours from the app. Please contact tech support");
                     }
@@ -230,6 +231,7 @@ public class TaskActivity2 extends AppCompatActivity {
     }
 
     private void setTaskCategories() {
+        getCheckInDetail();
         getEventSectors();
         getEventCategories();
         getEventTypes();
@@ -258,7 +260,6 @@ public class TaskActivity2 extends AppCompatActivity {
         final UserModel model = Application.getUserModel();
 
         if (!TextUtils.isEmpty(model.attendanceDate)) {
-            ivCheckOut.setVisibility(View.VISIBLE);
             String strAttendanceDate = model.attendanceDate;
 
             SimpleDateFormat simpleTimeFormat = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault());
@@ -399,8 +400,7 @@ public class TaskActivity2 extends AppCompatActivity {
                                         e.printStackTrace();
                                     }
                                     break;
-                                case 403:
-                                {
+                                case 403: {
                                     String response;
                                     try {
                                         response = new String(error.networkResponse.data, "utf-8");
@@ -417,7 +417,8 @@ public class TaskActivity2 extends AppCompatActivity {
                                         e.printStackTrace();
                                     }
                                     break;
-                                }                                case 404:
+                                }
+                                case 404:
                                     AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS", getString(R.string.error_404));
                                     break;
                                 case 500:
@@ -567,6 +568,103 @@ public class TaskActivity2 extends AppCompatActivity {
             setTaskListFromLocal();
 
             mSwipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    private void getCheckInDetail() {
+        if (NetworkUtils.isNetworkConnected(this)) {
+            try {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault());
+                String strCurrentDate = simpleDateFormat.format(new Date());
+
+                String api = getString(R.string.api_check_day_in);
+                api += "[\"name\",\"first_checkin\"]&filters=[[\"employee\", \"=\", \"" + Application.getUserModel().employeeId + "\"],[\"attendance_date\",\"=\",\"" + strCurrentDate + "\"]]";
+
+                final APIVInterface callback = new APIVInterface() {
+                    @Override
+                    public void notifySuccess(JSONObject response) {
+                        try {
+                            JSONArray jsonArray = response.getJSONArray(getString(R.string.param_data));
+
+                            if (jsonArray.length() > 0) {
+                                JSONObject data = jsonArray.getJSONObject(0);
+                                String time = data.getString("first_checkin");
+
+                                UserModel model = Application.getUserModel();
+                                model.firstCheckin = time;
+                                model.checkIn = 1;
+                                DbClient.getInstance().userDao().update(model);
+
+                                ivCheckIn.setVisibility(View.GONE);
+                                ivCheckOut.setVisibility(View.VISIBLE);
+
+                                startTimer();
+                            }
+                        } catch (JSONException jsonException) {
+                            AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS", jsonException.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void notifyError(VolleyError error) {
+                        if (error.networkResponse != null) {
+                            switch (error.networkResponse.statusCode) {
+                                case 401:
+                                    String responseBody;
+                                    try {
+                                        responseBody = new String(error.networkResponse.data, "utf-8");
+                                        JSONObject data = new JSONObject(responseBody);
+                                        if (!data.getString("message").isEmpty()) {
+                                            AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS", data.getString("message"));
+                                        }
+                                    } catch (UnsupportedEncodingException | JSONException e) {
+                                        AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS", e.getMessage());
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                                case 403: {
+                                    String response;
+                                    try {
+                                        response = new String(error.networkResponse.data, "utf-8");
+                                        JSONObject data = new JSONObject(response);
+                                        if (!data.getString("_server_messages").isEmpty()) {
+                                            final String message = data.getString("_server_messages");
+
+                                            JSONArray jsonArray = new JSONArray(message);
+                                            JSONObject jo = new JSONObject(jsonArray.getString(0));
+                                            AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
+                                        }
+                                    } catch (UnsupportedEncodingException | JSONException e) {
+                                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", getString(R.string.error_403));
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                                }
+                                case 404:
+                                    AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS", getString(R.string.error_404));
+                                    break;
+                                case 500:
+                                    AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS", getString(R.string.error_500));
+                                    break;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void notifyNetworkParseResponse(NetworkResponse response) {
+                    }
+                };
+
+                final VolleyService volleyService = new VolleyService(callback, this);
+
+                volleyService.getDataVolley(api, null);
+
+            } catch (Exception e) {
+                AppUtils.displayAlertMessage(this, "Alert", e.getMessage());
+            }
+        } else {
+            //String time = Application.getUserModel().employeeId
+           // getTasksList(Application.getUserModel().employeeId);
         }
     }
 
@@ -802,6 +900,8 @@ public class TaskActivity2 extends AppCompatActivity {
                                     model.lastCheckOut = strLastCheckout;
                                 }
                                 model.checkOut = 1;
+
+                                db.userDao().update(model);
                                 stopTimer();
                                 AppUtils.showSnackBar(this, csMain, "You have checked out from system at" + strLastCheckout + ".");
                             }
@@ -940,7 +1040,6 @@ public class TaskActivity2 extends AppCompatActivity {
             }
             strWorkHours = strHours + ":" + strMinutes + ":" + strSeconds;
             tvWorkingHours.setVisibility(View.VISIBLE);
-            ivWorkingHours.setVisibility(View.VISIBLE);
             tvWorkingHours.setText(strWorkHours);
         } catch (ParseException e) {
             AppUtils.showSnackBar(TaskActivity2.this, csMain, "Unable to find working hours from the app.");
@@ -1021,8 +1120,7 @@ public class TaskActivity2 extends AppCompatActivity {
                                         e.printStackTrace();
                                     }
                                     break;
-                                case 403:
-                                {
+                                case 403: {
                                     String response;
                                     try {
                                         response = new String(error.networkResponse.data, "utf-8");
@@ -1126,8 +1224,7 @@ public class TaskActivity2 extends AppCompatActivity {
                                         e.printStackTrace();
                                     }
                                     break;
-                                case 403:
-                                {
+                                case 403: {
                                     String response;
                                     try {
                                         response = new String(error.networkResponse.data, "utf-8");
@@ -1234,8 +1331,7 @@ public class TaskActivity2 extends AppCompatActivity {
                                         e.printStackTrace();
                                     }
                                     break;
-                                case 403:
-                                {
+                                case 403: {
                                     String response;
                                     try {
                                         response = new String(error.networkResponse.data, "utf-8");
@@ -1252,7 +1348,8 @@ public class TaskActivity2 extends AppCompatActivity {
                                         e.printStackTrace();
                                     }
                                     break;
-                                }                                case 404:
+                                }
+                                case 404:
                                     AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT NAME", getString(R.string.error_404));
                                     break;
                                 case 500:
@@ -1332,8 +1429,7 @@ public class TaskActivity2 extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                                 break;
-                            case 403:
-                            {
+                            case 403: {
                                 String response;
                                 try {
                                     response = new String(error.networkResponse.data, "utf-8");
@@ -1350,7 +1446,8 @@ public class TaskActivity2 extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                                 break;
-                            }                            case 404:
+                            }
+                            case 404:
                                 AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.orgname), getString(R.string.error_404));
                                 break;
                             case 500:
@@ -1425,8 +1522,7 @@ public class TaskActivity2 extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                                 break;
-                            case 403:
-                            {
+                            case 403: {
                                 String response;
                                 try {
                                     response = new String(error.networkResponse.data, "utf-8");
@@ -1443,7 +1539,8 @@ public class TaskActivity2 extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                                 break;
-                            }                            case 404:
+                            }
+                            case 404:
                                 AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.state), getString(R.string.error_404));
                                 break;
                             case 500:
@@ -1528,8 +1625,7 @@ public class TaskActivity2 extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                                 break;
-                            case 403:
-                            {
+                            case 403: {
                                 String response;
                                 try {
                                     response = new String(error.networkResponse.data, "utf-8");
@@ -1546,7 +1642,8 @@ public class TaskActivity2 extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                                 break;
-                            }                            case 404:
+                            }
+                            case 404:
                                 AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), getString(R.string.error_404));
                                 break;
                             case 500:
@@ -1627,8 +1724,7 @@ public class TaskActivity2 extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                                 break;
-                            case 403:
-                            {
+                            case 403: {
                                 String response;
                                 try {
                                     response = new String(error.networkResponse.data, "utf-8");
@@ -1645,7 +1741,8 @@ public class TaskActivity2 extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                                 break;
-                            }                            case 404:
+                            }
+                            case 404:
                                 AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), getString(R.string.error_404));
                                 break;
                             case 500:
@@ -1727,8 +1824,7 @@ public class TaskActivity2 extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                                 break;
-                            case 403:
-                            {
+                            case 403: {
                                 String response;
                                 try {
                                     response = new String(error.networkResponse.data, "utf-8");
@@ -1745,7 +1841,8 @@ public class TaskActivity2 extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                                 break;
-                            }                            case 404:
+                            }
+                            case 404:
                                 AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visitlocation), getString(R.string.error_404));
                                 break;
                             case 500:

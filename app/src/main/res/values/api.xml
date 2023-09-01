@@ -13,6 +13,7 @@
 
     <string name="api_visit_requests">&baseUrl;api/resource/Visit%20Request?</string>
     <string name="api_visit_request">&baseUrl;api/resource/Visit%20Request</string>
+    <string name="api_check_day_in">&baseUrl;api/resource/Attendance?fields=</string>
 
     <string name="api_event_sector">&baseUrl;api/resource/Event%20Sector</string>
     <string name="api_project_name">&baseUrl;api/resource/Event%20Type</string>
