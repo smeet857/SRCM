@@ -2,6 +2,7 @@ package com.techinnovators.srcm.Activity;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
@@ -590,8 +591,24 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     }
                                     break;
                                 case 403:
-                                    AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", getString(R.string.error_403));
-                                case 404:
+                                {
+                                    String response;
+                                    try {
+                                        response = new String(error.networkResponse.data, "utf-8");
+                                        JSONObject data = new JSONObject(response);
+                                        if (!data.getString("_server_messages").isEmpty()) {
+                                            final String message = data.getString("_server_messages");
+
+                                            JSONArray jsonArray = new JSONArray(message);
+                                            JSONObject jo = new JSONObject(jsonArray.getString(0));
+                                            AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
+                                        }
+                                    } catch (UnsupportedEncodingException | JSONException e) {
+                                        AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                                }                                case 404:
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", getString(R.string.error_404));
                                     break;
                                 case 500:
@@ -682,8 +699,24 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                 }
                                 break;
                             case 403:
-                                AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", getString(R.string.error_403));
-                            case 404:
+                            {
+                                String response;
+                                try {
+                                    response = new String(error.networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(response);
+                                    if (!data.getString("_server_messages").isEmpty()) {
+                                        final String message = data.getString("_server_messages");
+
+                                        JSONArray jsonArray = new JSONArray(message);
+                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
+                                        AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
+                                    }
+                                } catch (UnsupportedEncodingException | JSONException e) {
+                                    AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
+                                    e.printStackTrace();
+                                }
+                                break;
+                            }                            case 404:
                                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", getString(R.string.error_404));
                                 break;
                             case 500:
@@ -781,8 +814,24 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                 }
                                 break;
                             case 403:
-                                AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", getString(R.string.error_403));
-                            case 404:
+                            {
+                                String response;
+                                try {
+                                    response = new String(error.networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(response);
+                                    if (!data.getString("_server_messages").isEmpty()) {
+                                        final String message = data.getString("_server_messages");
+
+                                        JSONArray jsonArray = new JSONArray(message);
+                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
+                                        AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
+                                    }
+                                } catch (UnsupportedEncodingException | JSONException e) {
+                                    AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
+                                    e.printStackTrace();
+                                }
+                                break;
+                            }                            case 404:
                                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", getString(R.string.error_404));
                                 break;
                             case 500:
@@ -872,8 +921,24 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                 }
                                 break;
                             case 403:
-                                AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.orgname), getString(R.string.error_403));
-                            case 404:
+                            {
+                                String response;
+                                try {
+                                    response = new String(error.networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(response);
+                                    if (!data.getString("_server_messages").isEmpty()) {
+                                        final String message = data.getString("_server_messages");
+
+                                        JSONArray jsonArray = new JSONArray(message);
+                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
+                                        AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
+                                    }
+                                } catch (UnsupportedEncodingException | JSONException e) {
+                                    AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
+                                    e.printStackTrace();
+                                }
+                                break;
+                            }                            case 404:
                                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.orgname), getString(R.string.error_404));
                                 break;
                             case 500:
@@ -930,8 +995,24 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     }
                                     break;
                                 case 403:
-                                    AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", getString(R.string.error_403));
-                                case 404:
+                                {
+                                    String response;
+                                    try {
+                                        response = new String(error.networkResponse.data, "utf-8");
+                                        JSONObject data = new JSONObject(response);
+                                        if (!data.getString("_server_messages").isEmpty()) {
+                                            final String message = data.getString("_server_messages");
+
+                                            JSONArray jsonArray = new JSONArray(message);
+                                            JSONObject jo = new JSONObject(jsonArray.getString(0));
+                                            AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
+                                        }
+                                    } catch (UnsupportedEncodingException | JSONException e) {
+                                        AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                                }                                case 404:
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", getString(R.string.error_404));
                                     break;
                                 case 500:
@@ -1016,8 +1097,24 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                 }
                                 break;
                             case 403:
-                                AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.state), getString(R.string.error_403));
-                            case 404:
+                            {
+                                String response;
+                                try {
+                                    response = new String(error.networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(response);
+                                    if (!data.getString("_server_messages").isEmpty()) {
+                                        final String message = data.getString("_server_messages");
+
+                                        JSONArray jsonArray = new JSONArray(message);
+                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
+                                        AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
+                                    }
+                                } catch (UnsupportedEncodingException | JSONException e) {
+                                    AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
+                                    e.printStackTrace();
+                                }
+                                break;
+                            }                            case 404:
                                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.state), getString(R.string.error_404));
                                 break;
                             case 500:
@@ -1106,8 +1203,24 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                 }
                                 break;
                             case 403:
-                                AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visit_district), getString(R.string.error_403));
-                            case 404:
+                            {
+                                String response;
+                                try {
+                                    response = new String(error.networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(response);
+                                    if (!data.getString("_server_messages").isEmpty()) {
+                                        final String message = data.getString("_server_messages");
+
+                                        JSONArray jsonArray = new JSONArray(message);
+                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
+                                        AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
+                                    }
+                                } catch (UnsupportedEncodingException | JSONException e) {
+                                    AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
+                                    e.printStackTrace();
+                                }
+                                break;
+                            }                            case 404:
                                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visit_district), getString(R.string.error_404));
                                 break;
                             case 500:
@@ -1198,8 +1311,24 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                 }
                                 break;
                             case 403:
-                                AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visit_district), getString(R.string.error_403));
-                            case 404:
+                            {
+                                String response;
+                                try {
+                                    response = new String(error.networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(response);
+                                    if (!data.getString("_server_messages").isEmpty()) {
+                                        final String message = data.getString("_server_messages");
+
+                                        JSONArray jsonArray = new JSONArray(message);
+                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
+                                        AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
+                                    }
+                                } catch (UnsupportedEncodingException | JSONException e) {
+                                    AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
+                                    e.printStackTrace();
+                                }
+                                break;
+                            }                            case 404:
                                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visit_district), getString(R.string.error_404));
                                 break;
                             case 500:
@@ -1293,8 +1422,24 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                 }
                                 break;
                             case 403:
-                                AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visitlocation), getString(R.string.error_403));
-                            case 404:
+                            {
+                                String response;
+                                try {
+                                    response = new String(error.networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(response);
+                                    if (!data.getString("_server_messages").isEmpty()) {
+                                        final String message = data.getString("_server_messages");
+
+                                        JSONArray jsonArray = new JSONArray(message);
+                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
+                                        AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
+                                    }
+                                } catch (UnsupportedEncodingException | JSONException e) {
+                                    AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
+                                    e.printStackTrace();
+                                }
+                                break;
+                            }                            case 404:
                                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visitlocation), getString(R.string.error_404));
                                 break;
                             case 500:

@@ -34,7 +34,6 @@ public class NetworkUtils {
    private static ConnectivityManager.NetworkCallback networkCallback;
    public static boolean isNetworkConnected = false;
 
-
    private static boolean firstTimeCall = true;
 
     public static boolean isNetworkConnected(Context context) {
