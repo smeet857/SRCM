@@ -589,9 +589,12 @@ public class TaskActivity2 extends AppCompatActivity {
                             if (jsonArray.length() > 0) {
                                 JSONObject data = jsonArray.getJSONObject(0);
                                 String time = data.getString("first_checkin");
+                                String name = data.getString("name");
 
                                 UserModel model = Application.getUserModel();
                                 model.firstCheckin = time;
+                                model.attendanceDate = strCurrentDate;
+                                model.name = name;
                                 model.checkIn = 1;
                                 DbClient.getInstance().userDao().update(model);
 
@@ -921,7 +924,7 @@ public class TaskActivity2 extends AppCompatActivity {
                                         responseBody = new String(error.networkResponse.data, "utf-8");
                                         JSONObject data = new JSONObject(responseBody);
                                         if (!data.getString("message").isEmpty()) {
-                                            AppUtils.displayAlertMessage(this, "CHECK OUT", data.getString("message"));
+                                            AppUtils.displayAlertMessage(this, "CHECK OUT", Html.fromHtml(data.getString("message")).toString());
                                         }
                                     } catch (UnsupportedEncodingException | JSONException e) {
                                         AppUtils.displayAlertMessage(this, "CHECK OUT", e.getMessage());
@@ -953,10 +956,13 @@ public class TaskActivity2 extends AppCompatActivity {
                                     String response;
                                     try {
                                         response = new String(error.networkResponse.data, "utf-8");
+
                                         JSONObject data = new JSONObject(response);
-                                        if (!data.getString(getString(R.string._server_messages_param_key)).isEmpty()) {
-                                            AppUtils.displayAlertMessage(this, "CHECK OUT", data.getString("_server_messages"));
-                                        }
+                                        final String message = data.getString("_server_messages");
+
+                                        JSONArray jsonArray = new JSONArray(message);
+                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
+                                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
                                     } catch (UnsupportedEncodingException | JSONException e) {
                                         AppUtils.displayAlertMessage(this, "CHECK OUT", e.getMessage());
                                         e.printStackTrace();

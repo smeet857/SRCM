@@ -1038,9 +1038,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 AppUtils.displayAlertMessage(this, "PROJECT NAME", e.getMessage());
             }
         } else {
-            /// set from local storage
-            final ArrayList<String> data = AppUtils.stringToArray(Application.getUserModel().eventSector);
-            setEventTypeArrayAdapter(data);
+            AppUtils.displayAlertMessage(this, "Alert", "No internet connectivity");
         }
     }
 

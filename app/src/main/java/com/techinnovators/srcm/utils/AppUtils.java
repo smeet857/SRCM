@@ -27,6 +27,8 @@ import java.util.Calendar;
 
 public class AppUtils {
     private static ProgressDialog progressDialog;
+    private static AlertDialog.Builder builder;
+    private static AlertDialog alertDialog;
 
     public static void showProgress(Context context,String message){
         progressDialog = new ProgressDialog(context);
@@ -56,7 +58,12 @@ public class AppUtils {
     }
 
     public static void displayAlertMessage(Context context, String title, String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        try {
+            alertDialog.dismiss();
+        } catch (Exception e){
+
+        }
+        builder = new AlertDialog.Builder(context);
         builder.setTitle(title);
         builder.setMessage(message);
         builder.setCancelable(false);
@@ -64,7 +71,7 @@ public class AppUtils {
                 context.getString(R.string.OKAY),
                 (dialog, id) -> dialog.cancel());
 
-        AlertDialog alertDialog = builder.create();
+        alertDialog = builder.create();
         alertDialog.show();
     }
 
