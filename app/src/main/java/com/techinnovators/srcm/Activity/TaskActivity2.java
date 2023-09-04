@@ -110,6 +110,7 @@ public class TaskActivity2 extends AppCompatActivity {
     @Override
     protected void onResume() {
         Application.context = this;
+        getCheckInDetail();
         super.onResume();
     }
 
@@ -138,7 +139,6 @@ public class TaskActivity2 extends AppCompatActivity {
         mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.black));
 
         setCountDownTimer();
-        setAttendance();
 
         if (!PermissionUtils.hasLocationPermission()) {
             PermissionUtils.requestLocationPermission(this);
@@ -179,12 +179,11 @@ public class TaskActivity2 extends AppCompatActivity {
                             DecimalFormat df = new DecimalFormat("#.#");
                             totalWorkingHours = Double.parseDouble(df.format(totalWorkingHours));
                         }
-                        checkOut(strCurrentTime, totalWorkingHours);
-//                        if (totalWorkingHours > 0.0) {
-//                            checkOut(strCurrentTime, totalWorkingHours);
-//                        } else {
-//                            AppUtils.showSnackBar(TaskActivity2.this, csMain, "Total working hours cannot be 0 while checking out from system.");
-//                        }
+                        if (totalWorkingHours > 0.0) {
+                            checkOut(strCurrentTime, totalWorkingHours);
+                        } else {
+                            AppUtils.showSnackBar(TaskActivity2.this, csMain, "Total working hours cannot be 0 while checking out from system.");
+                        }
                     } catch (ParseException e) {
                         AppUtils.showSnackBar(TaskActivity2.this, csMain, "Unable to find working hours from the app. Please contact tech support");
                     }
@@ -578,7 +577,7 @@ public class TaskActivity2 extends AppCompatActivity {
                 String strCurrentDate = simpleDateFormat.format(new Date());
 
                 String api = getString(R.string.api_check_day_in);
-                api += "[\"name\",\"first_checkin\"]&filters=[[\"employee\", \"=\", \"" + Application.getUserModel().employeeId + "\"],[\"attendance_date\",\"=\",\"" + strCurrentDate + "\"]]";
+                api += "[\"name\",\"first_checkin,last_checkout\"]&filters=[[\"employee\", \"=\", \"" + Application.getUserModel().employeeId + "\"],[\"attendance_date\",\"=\",\"" + strCurrentDate + "\"]]";
 
                 final APIVInterface callback = new APIVInterface() {
                     @Override
@@ -590,18 +589,26 @@ public class TaskActivity2 extends AppCompatActivity {
                                 JSONObject data = jsonArray.getJSONObject(0);
                                 String time = data.getString("first_checkin");
                                 String name = data.getString("name");
+                                String checkOutTime = "";
+                                try {
+                                    checkOutTime = data.getString("last_checkout");
+                                } catch (Exception e){
+
+                                }
 
                                 UserModel model = Application.getUserModel();
                                 model.firstCheckin = time;
                                 model.attendanceDate = strCurrentDate;
                                 model.name = name;
                                 model.checkIn = 1;
+                                if(checkOutTime.equals("") || checkOutTime.equals("null")) {
+                                    model.checkOut = 0;
+                                } else {
+                                    model.checkOut = 1;
+                                }
                                 DbClient.getInstance().userDao().update(model);
 
-                                ivCheckIn.setVisibility(View.GONE);
-                                ivCheckOut.setVisibility(View.VISIBLE);
-
-                                startTimer();
+                                setAttendance();
                             }
                         } catch (JSONException jsonException) {
                             AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS", jsonException.getMessage());
@@ -610,6 +617,7 @@ public class TaskActivity2 extends AppCompatActivity {
 
                     @Override
                     public void notifyError(VolleyError error) {
+                        setAttendance();
                         if (error.networkResponse != null) {
                             switch (error.networkResponse.statusCode) {
                                 case 401:
@@ -663,9 +671,11 @@ public class TaskActivity2 extends AppCompatActivity {
                 volleyService.getDataVolley(api, null);
 
             } catch (Exception e) {
+                setAttendance();
                 AppUtils.displayAlertMessage(this, "Alert", e.getMessage());
             }
         } else {
+            setAttendance();
             //String time = Application.getUserModel().employeeId
            // getTasksList(Application.getUserModel().employeeId);
         }
@@ -906,6 +916,7 @@ public class TaskActivity2 extends AppCompatActivity {
 
                                 db.userDao().update(model);
                                 stopTimer();
+                                setAttendance();
                                 AppUtils.showSnackBar(this, csMain, "You have checked out from system at" + strLastCheckout + ".");
                             }
                         } catch (JSONException e) {

@@ -1,6 +1,5 @@
 package com.techinnovators.srcm.Activity;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.InputType;
@@ -11,7 +10,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AlertDialog;
@@ -160,7 +158,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         acEventSector.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this, arrayEventSector,"Select Event Sector", "Close");
+                spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayEventSector, "Select Event Sector", "Close");
                 spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
                     @Override
                     public void onClick(String item, int position) {
@@ -172,15 +170,15 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                         arrayEventCategory = new ArrayList<>();
                         arrayProjectType = new ArrayList<>();
 
-                        for(int i=0; i<eventCategories.size(); i++){
-                            if(Objects.equals(item.trim(), eventCategories.get(i).getName().trim())){
+                        for (int i = 0; i < eventCategories.size(); i++) {
+                            if (Objects.equals(item.trim(), eventCategories.get(i).getName().trim())) {
                                 arrayEventCategory = eventCategories.get(i).getTypes();
                                 break;
                             }
                         }
 
-                        for(int i = 0; i< projectTypes.size(); i++){
-                            if(Objects.equals(item.trim(), projectTypes.get(i).getName().trim())){
+                        for (int i = 0; i < projectTypes.size(); i++) {
+                            if (Objects.equals(item.trim(), projectTypes.get(i).getName().trim())) {
                                 arrayProjectType = projectTypes.get(i).getTypes();
                                 break;
                             }
@@ -194,7 +192,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         acEventCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this, arrayEventCategory,"Select Event Type", "Close");
+                spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayEventCategory, "Select Event Type", "Close");
                 spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
                     @Override
                     public void onClick(String item, int position) {
@@ -209,7 +207,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             @Override
             public void onClick(View v) {
 //                acProjectType.showDropDown();
-                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this, arrayProjectType,"Select Event Categories", "Close");
+                spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayProjectType, "Select Event Categories", "Close");
                 spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
                     @Override
                     public void onClick(String item, int position) {
@@ -224,7 +222,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             @Override
             public void onClick(View v) {
 //                acOrganizationName.showDropDown();
-                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayOrganizationName,"Select Organization", "Close");
+                spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayOrganizationName, "Select Organization", "Close");
                 spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
                     @Override
                     public void onClick(String item, int position) {
@@ -239,7 +237,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             @Override
             public void onClick(View v) {
 //                acVisitState.showDropDown();
-                spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayVisitState,"Select Visit State", "Close");
+                spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayVisitState, "Select Visit State", "Close");
                 spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
                     @Override
                     public void onClick(String item, int position) {
@@ -264,10 +262,10 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             @Override
             public void onClick(View v) {
 //                acDistrict.showDropDown();
-                if(acVisitState.getText().toString().isEmpty()){
-                    AppUtils.showSnackBar(AddVisitRequestActivity2.this,csMain,"Please select visit state first");
-                }else{
-                    spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayVisitDist,"Select Visit District", "Close");
+                if (acVisitState.getText().toString().isEmpty()) {
+                    AppUtils.showSnackBar(AddVisitRequestActivity2.this, csMain, "Please select visit state first");
+                } else {
+                    spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayVisitDist, "Select Visit District", "Close");
                     spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
                         @Override
                         public void onClick(String item, int position) {
@@ -286,10 +284,10 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         acTaluka.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(acDistrict.getText().toString().isEmpty()){
-                    AppUtils.showSnackBar(AddVisitRequestActivity2.this,csMain,"Please select visit district first");
-                }else{
-                    spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayVisitTaluka,"Select Visit Taluka", "Close");
+                if (acDistrict.getText().toString().isEmpty()) {
+                    AppUtils.showSnackBar(AddVisitRequestActivity2.this, csMain, "Please select visit district first");
+                } else {
+                    spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayVisitTaluka, "Select Visit Taluka", "Close");
                     spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
                         @Override
                         public void onClick(String item, int position) {
@@ -306,10 +304,10 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         acLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(acTaluka.getText().toString().isEmpty()){
-                    AppUtils.showSnackBar(AddVisitRequestActivity2.this,csMain,"Please select visit taluka first");
-                }else{
-                    spinnerDialog=new SpinnerDialog(AddVisitRequestActivity2.this,arrayVisitLocation,"Select Visit Location", "Close");
+                if (acTaluka.getText().toString().isEmpty()) {
+                    AppUtils.showSnackBar(AddVisitRequestActivity2.this, csMain, "Please select visit taluka first");
+                } else {
+                    spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayVisitLocation, "Select Visit Location", "Close");
                     spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
                         @Override
                         public void onClick(String item, int position) {
@@ -335,7 +333,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
 
                 FrameLayout container = new FrameLayout(this);
-                FrameLayout.LayoutParams params = new  FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 params.leftMargin = 30;
                 params.rightMargin = 30;
                 params.topMargin = 20;
@@ -356,12 +354,10 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 final AlertDialog dialog = builder.create();
                 dialog.show();
 
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
-                {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v)
-                    {
-                        if(input.getText().toString().isEmpty()){
+                    public void onClick(View v) {
+                        if (input.getText().toString().isEmpty()) {
                             input.setError("can not be blank");
                             return;
                         }
@@ -529,7 +525,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             finish();*/
 
             AppUtils.dismissProgress();
-            AppUtils.displayAlertMessage(this,"Alert","No internet connectivity");
+            AppUtils.displayAlertMessage(this, "Alert", "No internet connectivity");
         }
     }
 
@@ -590,8 +586,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                         e.printStackTrace();
                                     }
                                     break;
-                                case 403:
-                                {
+                                case 403: {
                                     String response;
                                     try {
                                         response = new String(error.networkResponse.data, "utf-8");
@@ -608,7 +603,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                         e.printStackTrace();
                                     }
                                     break;
-                                }                                case 404:
+                                }
+                                case 404:
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", getString(R.string.error_404));
                                     break;
                                 case 500:
@@ -651,7 +647,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                         final ArrayList<EventCategory> finalList = new ArrayList<>();
                         for (Iterator it = data.keys(); it.hasNext(); ) {
-                            String name = (String)it.next();
+                            String name = (String) it.next();
                             JSONArray arr = data.optJSONArray(name);
 
                             EventCategory eventCategory = new EventCategory();
@@ -659,7 +655,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                             ArrayList<String> type = new ArrayList<>();
 
-                            for(int i=0; i<arr.length();i++){
+                            for (int i = 0; i < arr.length(); i++) {
                                 type.add((String) arr.get(i));
                             }
 
@@ -669,7 +665,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                         }
 
                         Gson gson = new Gson();
-                        String result = gson.toJson(finalList, new TypeToken<ArrayList<EventCategory>>(){}.getType());
+                        String result = gson.toJson(finalList, new TypeToken<ArrayList<EventCategory>>() {
+                        }.getType());
                         Application.getUserModel().eventCategories = result;
                         db.userDao().update(Application.getUserModel());
 
@@ -698,8 +695,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     e.printStackTrace();
                                 }
                                 break;
-                            case 403:
-                            {
+                            case 403: {
                                 String response;
                                 try {
                                     response = new String(error.networkResponse.data, "utf-8");
@@ -716,7 +712,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     e.printStackTrace();
                                 }
                                 break;
-                            }                            case 404:
+                            }
+                            case 404:
                                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", getString(R.string.error_404));
                                 break;
                             case 500:
@@ -766,7 +763,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                         final ArrayList<EventCategory> finalList = new ArrayList<>();
                         for (Iterator it = data.keys(); it.hasNext(); ) {
-                            String name = (String)it.next();
+                            String name = (String) it.next();
                             JSONArray arr = data.optJSONArray(name);
 
                             EventCategory eventCategory = new EventCategory();
@@ -774,7 +771,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                             ArrayList<String> type = new ArrayList<>();
 
-                            for(int i=0; i<arr.length();i++){
+                            for (int i = 0; i < arr.length(); i++) {
                                 type.add((String) arr.get(i));
                             }
 
@@ -784,7 +781,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                         }
 
                         Gson gson = new Gson();
-                        String result = gson.toJson(finalList, new TypeToken<ArrayList<EventCategory>>(){}.getType());
+                        String result = gson.toJson(finalList, new TypeToken<ArrayList<EventCategory>>() {
+                        }.getType());
                         Application.getUserModel().projectTypes = result;
                         db.userDao().update(Application.getUserModel());
 
@@ -813,8 +811,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     e.printStackTrace();
                                 }
                                 break;
-                            case 403:
-                            {
+                            case 403: {
                                 String response;
                                 try {
                                     response = new String(error.networkResponse.data, "utf-8");
@@ -831,7 +828,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     e.printStackTrace();
                                 }
                                 break;
-                            }                            case 404:
+                            }
+                            case 404:
                                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", getString(R.string.error_404));
                                 break;
                             case 500:
@@ -920,8 +918,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     e.printStackTrace();
                                 }
                                 break;
-                            case 403:
-                            {
+                            case 403: {
                                 String response;
                                 try {
                                     response = new String(error.networkResponse.data, "utf-8");
@@ -938,7 +935,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     e.printStackTrace();
                                 }
                                 break;
-                            }                            case 404:
+                            }
+                            case 404:
                                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.orgname), getString(R.string.error_404));
                                 break;
                             case 500:
@@ -994,8 +992,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                         e.printStackTrace();
                                     }
                                     break;
-                                case 403:
-                                {
+                                case 403: {
                                     String response;
                                     try {
                                         response = new String(error.networkResponse.data, "utf-8");
@@ -1012,7 +1009,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                         e.printStackTrace();
                                     }
                                     break;
-                                }                                case 404:
+                                }
+                                case 404:
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", getString(R.string.error_404));
                                     break;
                                 case 500:
@@ -1094,8 +1092,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     e.printStackTrace();
                                 }
                                 break;
-                            case 403:
-                            {
+                            case 403: {
                                 String response;
                                 try {
                                     response = new String(error.networkResponse.data, "utf-8");
@@ -1112,7 +1109,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     e.printStackTrace();
                                 }
                                 break;
-                            }                            case 404:
+                            }
+                            case 404:
                                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.state), getString(R.string.error_404));
                                 break;
                             case 500:
@@ -1200,8 +1198,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     e.printStackTrace();
                                 }
                                 break;
-                            case 403:
-                            {
+                            case 403: {
                                 String response;
                                 try {
                                     response = new String(error.networkResponse.data, "utf-8");
@@ -1218,7 +1215,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     e.printStackTrace();
                                 }
                                 break;
-                            }                            case 404:
+                            }
+                            case 404:
                                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visit_district), getString(R.string.error_404));
                                 break;
                             case 500:
@@ -1308,8 +1306,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     e.printStackTrace();
                                 }
                                 break;
-                            case 403:
-                            {
+                            case 403: {
                                 String response;
                                 try {
                                     response = new String(error.networkResponse.data, "utf-8");
@@ -1326,7 +1323,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     e.printStackTrace();
                                 }
                                 break;
-                            }                            case 404:
+                            }
+                            case 404:
                                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visit_district), getString(R.string.error_404));
                                 break;
                             case 500:
@@ -1419,8 +1417,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     e.printStackTrace();
                                 }
                                 break;
-                            case 403:
-                            {
+                            case 403: {
                                 String response;
                                 try {
                                     response = new String(error.networkResponse.data, "utf-8");
@@ -1437,7 +1434,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     e.printStackTrace();
                                 }
                                 break;
-                            }                            case 404:
+                            }
+                            case 404:
                                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visitlocation), getString(R.string.error_404));
                                 break;
                             case 500:
@@ -1495,8 +1493,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
         arrayVisitDist = arrayNames;
 
-        if(arrayNames.isEmpty()){
-            AppUtils.showSnackBar(AddVisitRequestActivity2.this,findViewById(android.R.id.content),"No district of selected visit state");
+        if (arrayNames.isEmpty()) {
+            AppUtils.showSnackBar(AddVisitRequestActivity2.this, findViewById(android.R.id.content), "No district of selected visit state");
         }
 
     }
@@ -1513,8 +1511,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
         arrayVisitTaluka = arrayNames;
 
-        if(arrayNames.isEmpty()){
-            AppUtils.showSnackBar(AddVisitRequestActivity2.this,findViewById(android.R.id.content),"No taluka of selected district");
+        if (arrayNames.isEmpty()) {
+            AppUtils.showSnackBar(AddVisitRequestActivity2.this, findViewById(android.R.id.content), "No taluka of selected district");
         }
     }
 
@@ -1530,8 +1528,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
         arrayVisitLocation = arrayNames;
 
-        if(arrayNames.isEmpty()){
-            AppUtils.showSnackBar(AddVisitRequestActivity2.this,findViewById(android.R.id.content),"No Location of selected taluka");
+        if (arrayNames.isEmpty()) {
+            AppUtils.showSnackBar(AddVisitRequestActivity2.this, findViewById(android.R.id.content), "No Location of selected taluka");
         }
     }
 }
