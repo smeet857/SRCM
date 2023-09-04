@@ -9,12 +9,10 @@ import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.VolleyError;
-import com.google.android.gms.common.api.Api;
-import com.techinnovators.srcm.Activity.TaskActivity2;
+
 import com.techinnovators.srcm.Application;
 import com.techinnovators.srcm.Database.DbClient;
 import com.techinnovators.srcm.R;
@@ -27,7 +25,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 
 public class NetworkUtils {
     private static ConnectivityManager connectivityManager;
@@ -37,11 +34,10 @@ public class NetworkUtils {
    private static boolean firstTimeCall = true;
 
     public static boolean isNetworkConnected(Context context) {
-        return isNetworkConnected;
-//        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-//        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-//        //should check null because in airplane mode it will be null
-//        return (netInfo != null && netInfo.isConnected());
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        //should check null because in airplane mode it will be null
+        return (netInfo != null && netInfo.isConnected());
     }
 
     public static synchronized void startNetworkChangeListener(Context context){

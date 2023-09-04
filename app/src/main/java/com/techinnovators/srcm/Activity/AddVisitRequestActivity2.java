@@ -1,15 +1,18 @@
 package com.techinnovators.srcm.Activity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AlertDialog;
@@ -17,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.NestedScrollView;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.VolleyError;
@@ -42,8 +46,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,18 +55,9 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Objects;
 
-import in.galaxyofandroid.spinerdialog.OnSpinerItemClick;
 import in.galaxyofandroid.spinerdialog.SpinnerDialog;
 
 public class AddVisitRequestActivity2 extends AppCompatActivity implements View.OnClickListener {
-
-//    private ArrayAdapter<String> arrayAdapterProjectName,
-//            arrayAdapterProjectType,
-//            arrayAdapterOrganizationName,
-//            arrayAdapterVisitState,
-//            arrayAdapterVisitDist,
-//            arrayAdapterVisitTaluka,
-//            arrayAdapterVisitLocation;
 
     private ArrayList<EventCategory> projectTypes, eventCategories = new ArrayList<>();
     private ArrayList<String>
@@ -87,7 +82,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
     private ConstraintLayout csMain;
 
-    private AppCompatEditText /*etVisitDate,*/etVisitAssignedTo, etContPersonName, etContPersonNo;
+    private AppCompatEditText etContPersonName;
+    private AppCompatEditText etContPersonNo;
 
     private Spinner spinnerVisitType, spinnerVisitMode;
 
@@ -103,6 +99,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
     private ArrayList<VisitLocation> visitLocationList = new ArrayList<>();
 
     private SpinnerDialog spinnerDialog;
+    private NestedScrollView nestedScrollView;
+    private ProgressBar progressBar;
 
 
     @Override
@@ -123,6 +121,9 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
     }
 
     private void init() {
+        nestedScrollView = findViewById(R.id.nestedScrollView);
+        progressBar = findViewById(R.id.progress);
+
         ivBack = findViewById(R.id.ivBack);
         imgAddOrganizationName = findViewById(R.id.imgAddOrganizationName);
         btnSubmit = findViewById(R.id.btnSubmit);
@@ -141,7 +142,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         acTaluka = findViewById(R.id.acTaluka);
         acLocation = findViewById(R.id.acVLocation);
 
-        etVisitAssignedTo = findViewById(R.id.etAssignedTo);
+        AppCompatEditText etVisitAssignedTo = findViewById(R.id.etAssignedTo);
         etContPersonName = findViewById(R.id.etContPersonName);
         etContPersonNo = findViewById(R.id.etContPersonNo);
 
@@ -155,167 +156,112 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         btnSubmit.setOnClickListener(this);
 //        etVisitDate.setOnClickListener(this);
 
-        acEventSector.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayEventSector, "Select Event Sector", "Close");
-                spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
-                    @Override
-                    public void onClick(String item, int position) {
-                        acEventSector.setText(item);
+        acEventSector.setOnClickListener(v -> {
+            spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayEventSector, "Select Event Sector", "Close");
+            spinnerDialog.bindOnSpinerListener((item, position) -> {
+                acEventSector.setText(item);
 
-                        acEventCategory.setText("");
-                        acProjectType.setText("");
+                acEventCategory.setText("");
+                acProjectType.setText("");
 
-                        arrayEventCategory = new ArrayList<>();
-                        arrayProjectType = new ArrayList<>();
+                arrayEventCategory = new ArrayList<>();
+                arrayProjectType = new ArrayList<>();
 
-                        for (int i = 0; i < eventCategories.size(); i++) {
-                            if (Objects.equals(item.trim(), eventCategories.get(i).getName().trim())) {
-                                arrayEventCategory = eventCategories.get(i).getTypes();
-                                break;
-                            }
-                        }
-
-                        for (int i = 0; i < projectTypes.size(); i++) {
-                            if (Objects.equals(item.trim(), projectTypes.get(i).getName().trim())) {
-                                arrayProjectType = projectTypes.get(i).getTypes();
-                                break;
-                            }
-                        }
+                for (int i = 0; i < eventCategories.size(); i++) {
+                    if (Objects.equals(item.trim(), eventCategories.get(i).getName().trim())) {
+                        arrayEventCategory = eventCategories.get(i).getTypes();
+                        break;
                     }
-                });
-                spinnerDialog.showSpinerDialog();
-            }
+                }
+
+                for (int i = 0; i < projectTypes.size(); i++) {
+                    if (Objects.equals(item.trim(), projectTypes.get(i).getName().trim())) {
+                        arrayProjectType = projectTypes.get(i).getTypes();
+                        break;
+                    }
+                }
+            });
+            spinnerDialog.showSpinerDialog();
         });
 
-        acEventCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        acEventCategory.setOnClickListener(v -> {
+            if(acEventSector.getText().toString().isEmpty()){
+                AppUtils.showSnackBar(AddVisitRequestActivity2.this, csMain, "Please select event sector first");
+            }else{
                 spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayEventCategory, "Select Event Type", "Close");
-                spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
-                    @Override
-                    public void onClick(String item, int position) {
-                        acEventCategory.setText(item);
-                    }
-                });
+                spinnerDialog.bindOnSpinerListener((item, position) -> acEventCategory.setText(item));
                 spinnerDialog.showSpinerDialog();
             }
         });
 
-        acProjectType.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                acProjectType.showDropDown();
+        acProjectType.setOnClickListener(v -> {
+            if(acEventCategory.getText().toString().isEmpty()) {
+                AppUtils.showSnackBar(AddVisitRequestActivity2.this, csMain, "Please select event sector first");
+            }else{
                 spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayProjectType, "Select Event Categories", "Close");
-                spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
-                    @Override
-                    public void onClick(String item, int position) {
-                        acProjectType.setText(item);
-                    }
-                });
+                spinnerDialog.bindOnSpinerListener((item, position) -> acProjectType.setText(item));
                 spinnerDialog.showSpinerDialog();
             }
         });
 
-        acOrganizationName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        acOrganizationName.setOnClickListener(v -> {
 //                acOrganizationName.showDropDown();
-                spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayOrganizationName, "Select Organization", "Close");
-                spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
-                    @Override
-                    public void onClick(String item, int position) {
-                        acOrganizationName.setText(item);
-                    }
-                });
-                spinnerDialog.showSpinerDialog();
-            }
+            spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayOrganizationName, "Select Organization", "Close");
+            spinnerDialog.bindOnSpinerListener((item, position) -> acOrganizationName.setText(item));
+            spinnerDialog.showSpinerDialog();
         });
 
-        acVisitState.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        acVisitState.setOnClickListener(v -> {
 //                acVisitState.showDropDown();
-                spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayVisitState, "Select Visit State", "Close");
-                spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
-                    @Override
-                    public void onClick(String item, int position) {
-                        acVisitState.setText(item);
+            spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayVisitState, "Select Visit State", "Close");
+            spinnerDialog.bindOnSpinerListener((item, position) -> {
+                acVisitState.setText(item);
 
-                        acDistrict.getText().clear();
-                        acTaluka.getText().clear();
-                        acLocation.getText().clear();
-                        setDistrictArrayAdapter(visitDistrictList);
-                    }
+                acDistrict.getText().clear();
+                acTaluka.getText().clear();
+                acLocation.getText().clear();
+                setDistrictArrayAdapter(visitDistrictList);
+            });
+            spinnerDialog.showSpinerDialog();
+        });
+
+        acDistrict.setOnClickListener(v -> {
+            if (acVisitState.getText().toString().isEmpty()) {
+                AppUtils.showSnackBar(AddVisitRequestActivity2.this, csMain, "Please select visit state first");
+            } else {
+                spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayVisitDist, "Select Visit District", "Close");
+                spinnerDialog.bindOnSpinerListener((item, position) -> {
+                    acDistrict.setText(item);
+
+                    acTaluka.getText().clear();
+                    acLocation.getText().clear();
+                    setTalukaArrayAdapter(visitTalukaList);
                 });
                 spinnerDialog.showSpinerDialog();
             }
         });
 
-//        acVisitState.setOnItemClickListener((adapterView, view, i, l) -> {
-//            acDistrict.getText().clear();
-//            setDistrictArrayAdapter(visitDistrictList);
-//        });
-
-        acDistrict.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                acDistrict.showDropDown();
-                if (acVisitState.getText().toString().isEmpty()) {
-                    AppUtils.showSnackBar(AddVisitRequestActivity2.this, csMain, "Please select visit state first");
-                } else {
-                    spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayVisitDist, "Select Visit District", "Close");
-                    spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
-                        @Override
-                        public void onClick(String item, int position) {
-                            acDistrict.setText(item);
-
-                            acTaluka.getText().clear();
-                            acLocation.getText().clear();
-                            setTalukaArrayAdapter(visitTalukaList);
-                        }
-                    });
-                    spinnerDialog.showSpinerDialog();
-                }
+        acTaluka.setOnClickListener(v -> {
+            if (acDistrict.getText().toString().isEmpty()) {
+                AppUtils.showSnackBar(AddVisitRequestActivity2.this, csMain, "Please select visit district first");
+            } else {
+                spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayVisitTaluka, "Select Visit Taluka", "Close");
+                spinnerDialog.bindOnSpinerListener((item, position) -> {
+                    acTaluka.setText(item);
+                    acLocation.getText().clear();
+                    setVisitLocationArrayAdapter(visitLocationList);
+                });
+                spinnerDialog.showSpinerDialog();
             }
         });
 
-        acTaluka.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (acDistrict.getText().toString().isEmpty()) {
-                    AppUtils.showSnackBar(AddVisitRequestActivity2.this, csMain, "Please select visit district first");
-                } else {
-                    spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayVisitTaluka, "Select Visit Taluka", "Close");
-                    spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
-                        @Override
-                        public void onClick(String item, int position) {
-                            acTaluka.setText(item);
-                            acLocation.getText().clear();
-                            setVisitLocationArrayAdapter(visitLocationList);
-                        }
-                    });
-                    spinnerDialog.showSpinerDialog();
-                }
-            }
-        });
-
-        acLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (acTaluka.getText().toString().isEmpty()) {
-                    AppUtils.showSnackBar(AddVisitRequestActivity2.this, csMain, "Please select visit taluka first");
-                } else {
-                    spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayVisitLocation, "Select Visit Location", "Close");
-                    spinnerDialog.bindOnSpinerListener(new OnSpinerItemClick() {
-                        @Override
-                        public void onClick(String item, int position) {
-                            acLocation.setText(item);
-                        }
-                    });
-                    spinnerDialog.showSpinerDialog();
-                }
+        acLocation.setOnClickListener(v -> {
+            if (acTaluka.getText().toString().isEmpty()) {
+                AppUtils.showSnackBar(AddVisitRequestActivity2.this, csMain, "Please select visit taluka first");
+            } else {
+                spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayVisitLocation, "Select Visit Location", "Close");
+                spinnerDialog.bindOnSpinerListener((item, position) -> acLocation.setText(item));
+                spinnerDialog.showSpinerDialog();
             }
         });
     }
@@ -354,16 +300,13 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 final AlertDialog dialog = builder.create();
                 dialog.show();
 
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (input.getText().toString().isEmpty()) {
-                            input.setError("can not be blank");
-                            return;
-                        }
-                        dialog.cancel();
-                        addOrganizationName(input.getText().toString());
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v1 -> {
+                    if (input.getText().toString().isEmpty()) {
+                        input.setError("can not be blank");
+                        return;
                     }
+                    dialog.cancel();
+                    addOrganizationName(input.getText().toString());
                 });
             });
         } else {
@@ -384,17 +327,20 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
     public void onClick(View view) {
         if (view.getId() == R.id.ivBack) {
             finish();
-        }/*else if (view.getId() == R.id.etDate){
-            onDateTap();
-        }*/ else if (view.getId() == R.id.btnSubmit) {
+        }else if (view.getId() == R.id.btnSubmit) {
             onSubmitTap();
         }
     }
 
-//    private void onDateTap(){
-//        AppUtils.setDate(this, etVisitDate);
-//        AppUtils.hideKeyboard(this);
-//    }
+    private void showProgress() {
+        progressBar.setVisibility(View.VISIBLE);
+        nestedScrollView.setVisibility(View.GONE);
+    }
+
+    private void dismissProgress() {
+        progressBar.setVisibility(View.GONE);
+        nestedScrollView.setVisibility(View.VISIBLE);
+    }
 
     private void onSubmitTap() {
         if (TextUtils.isEmpty(acEventSector.getText().toString())) {
@@ -450,8 +396,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         visitRequest.setVisit_type(spinnerVisitType.getSelectedItem().toString());
         visitRequest.setVisit_mode(spinnerVisitMode.getSelectedItem().toString());
 
-        visitRequest.setContact_person_mobile_no(etContPersonNo.getText().toString());
-        visitRequest.setContact_person_name(etContPersonName.getText().toString());
+        visitRequest.setContact_person_mobile_no(Objects.requireNonNull(etContPersonNo.getText()).toString());
+        visitRequest.setContact_person_name(Objects.requireNonNull(etContPersonName.getText()).toString());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault());
 
@@ -486,12 +432,12 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                 case 401:
                                     String responseBody;
                                     try {
-                                        responseBody = new String(error.networkResponse.data, "utf-8");
+                                        responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                         JSONObject data = new JSONObject(responseBody);
                                         if (!data.getString("message").isEmpty()) {
                                             AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.create_Visit), data.getString("message"));
                                         }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
+                                    } catch (JSONException e) {
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.create_Visit), e.getMessage());
                                         e.printStackTrace();
                                     }
@@ -519,11 +465,6 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 AppUtils.displayAlertMessage(this, getString(R.string.create_Visit), e.getMessage());
             }
         } else {
-            /*visitRequest.isSync = false;
-            db.tasksDao().insert(visitRequest);
-            setResult(RESULT_OK);
-            finish();*/
-
             AppUtils.dismissProgress();
             AppUtils.displayAlertMessage(this, "Alert", "No internet connectivity");
         }
@@ -559,29 +500,32 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                     }
                                 }
                                 setEventTypeArrayAdapter(arrayList);
+                                dismissProgress();
 
                                 /// set in local storage
                                 Application.getUserModel().eventSector = arrayList.toString();
                                 db.userDao().update(Application.getUserModel());
                             }
                         } catch (JSONException jsonException) {
+                            setEventSectorFromLocal();
                             jsonException.printStackTrace();
                         }
                     }
 
                     @Override
                     public void notifyError(VolleyError error) {
+                        setEventSectorFromLocal();
                         if (error.networkResponse != null) {
                             switch (error.networkResponse.statusCode) {
                                 case 401:
                                     String responseBody;
                                     try {
-                                        responseBody = new String(error.networkResponse.data, "utf-8");
+                                        responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                         JSONObject data = new JSONObject(responseBody);
                                         if (!data.getString("message").isEmpty()) {
                                             AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", data.getString("message"));
                                         }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
+                                    } catch (JSONException e) {
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", e.getMessage());
                                         e.printStackTrace();
                                     }
@@ -589,7 +533,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                 case 403: {
                                     String response;
                                     try {
-                                        response = new String(error.networkResponse.data, "utf-8");
+                                        response = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                         JSONObject data = new JSONObject(response);
                                         if (!data.getString("_server_messages").isEmpty()) {
                                             final String message = data.getString("_server_messages");
@@ -598,7 +542,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                             JSONObject jo = new JSONObject(jsonArray.getString(0));
                                             AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
                                         }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
+                                    } catch (JSONException e) {
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
                                         e.printStackTrace();
                                     }
@@ -616,7 +560,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                     @Override
                     public void notifyNetworkParseResponse(NetworkResponse response) {
-
+                        setEventSectorFromLocal();
                     }
                 };
 
@@ -625,11 +569,21 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
             } catch (Exception e) {
                 AppUtils.displayAlertMessage(this, "PROJECT NAME", e.getMessage());
+                setEventSectorFromLocal();
             }
         } else {
-            /// set from local storage
+            setEventSectorFromLocal();
+        }
+    }
+
+    private void setEventSectorFromLocal(){
+        /// set from local storage
+        try{
             final ArrayList<String> data = AppUtils.stringToArray(Application.getUserModel().eventSector);
             setEventTypeArrayAdapter(data);
+            dismissProgress();
+        }catch(Exception e){
+            Log.e("setEventSectorFromLocal",e.toString());
         }
     }
 
@@ -646,7 +600,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                         JSONObject data = response.getJSONObject(getString(R.string.param_message));
 
                         final ArrayList<EventCategory> finalList = new ArrayList<>();
-                        for (Iterator it = data.keys(); it.hasNext(); ) {
+                        for (Iterator<String> it = data.keys(); it.hasNext(); ) {
                             String name = (String) it.next();
                             JSONArray arr = data.optJSONArray(name);
 
@@ -655,7 +609,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                             ArrayList<String> type = new ArrayList<>();
 
-                            for (int i = 0; i < arr.length(); i++) {
+                            for (int i = 0; i < Objects.requireNonNull(arr).length(); i++) {
                                 type.add((String) arr.get(i));
                             }
 
@@ -665,32 +619,32 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                         }
 
                         Gson gson = new Gson();
-                        String result = gson.toJson(finalList, new TypeToken<ArrayList<EventCategory>>() {
+                        Application.getUserModel().eventCategories = gson.toJson(finalList, new TypeToken<ArrayList<EventCategory>>() {
                         }.getType());
-                        Application.getUserModel().eventCategories = result;
                         db.userDao().update(Application.getUserModel());
 
                         eventCategories = finalList;
 
                     } catch (JSONException jsonException) {
+                        setEventCategoriesFromLocal();
                         jsonException.printStackTrace();
                     }
-
                 }
 
                 @Override
                 public void notifyError(VolleyError error) {
+                    setEventCategoriesFromLocal();
                     if (error.networkResponse != null) {
                         switch (error.networkResponse.statusCode) {
                             case 401:
                                 String responseBody;
                                 try {
-                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                     JSONObject data = new JSONObject(responseBody);
                                     if (!data.getString("message").isEmpty()) {
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", data.getString("message"));
                                     }
-                                } catch (UnsupportedEncodingException | JSONException e) {
+                                } catch (JSONException e) {
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", e.getMessage());
                                     e.printStackTrace();
                                 }
@@ -698,7 +652,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                             case 403: {
                                 String response;
                                 try {
-                                    response = new String(error.networkResponse.data, "utf-8");
+                                    response = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                     JSONObject data = new JSONObject(response);
                                     if (!data.getString("_server_messages").isEmpty()) {
                                         final String message = data.getString("_server_messages");
@@ -707,7 +661,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                         JSONObject jo = new JSONObject(jsonArray.getString(0));
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
                                     }
-                                } catch (UnsupportedEncodingException | JSONException e) {
+                                } catch (JSONException e) {
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
                                     e.printStackTrace();
                                 }
@@ -725,7 +679,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                 @Override
                 public void notifyNetworkParseResponse(NetworkResponse response) {
-
+                    setEventCategoriesFromLocal();
                 }
             };
 
@@ -739,14 +693,23 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
             } catch (Exception e) {
                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", e.getMessage());
+                setEventCategoriesFromLocal();
             }
         } else {
-            /// set from local storage
-            Gson gson = new Gson();
-            TypeToken<ArrayList<EventCategory>> token = new TypeToken<ArrayList<EventCategory>>() {
-            };
-            eventCategories = gson.fromJson(Application.getUserModel().eventCategories, token.getType());
+            setEventCategoriesFromLocal();
         }
+    }
+
+    @SuppressLint("LongLogTag")
+    private void setEventCategoriesFromLocal(){
+     try{
+         Gson gson = new Gson();
+         TypeToken<ArrayList<EventCategory>> token = new TypeToken<ArrayList<EventCategory>>() {
+         };
+         eventCategories = gson.fromJson(Application.getUserModel().eventCategories, token.getType());
+     }catch (Exception e){
+         Log.e("setEventCategoriesFromLocal",e.toString());
+     }
     }
 
     private void getAllProjectTypes() {
@@ -762,7 +725,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                         JSONObject data = response.getJSONObject(getString(R.string.param_message));
 
                         final ArrayList<EventCategory> finalList = new ArrayList<>();
-                        for (Iterator it = data.keys(); it.hasNext(); ) {
+                        for (Iterator<String> it = data.keys(); it.hasNext(); ) {
                             String name = (String) it.next();
                             JSONArray arr = data.optJSONArray(name);
 
@@ -771,7 +734,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                             ArrayList<String> type = new ArrayList<>();
 
-                            for (int i = 0; i < arr.length(); i++) {
+                            for (int i = 0; i < Objects.requireNonNull(arr).length(); i++) {
                                 type.add((String) arr.get(i));
                             }
 
@@ -781,32 +744,32 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                         }
 
                         Gson gson = new Gson();
-                        String result = gson.toJson(finalList, new TypeToken<ArrayList<EventCategory>>() {
+                        Application.getUserModel().projectTypes = gson.toJson(finalList, new TypeToken<ArrayList<EventCategory>>() {
                         }.getType());
-                        Application.getUserModel().projectTypes = result;
                         db.userDao().update(Application.getUserModel());
 
                         projectTypes = finalList;
 
                     } catch (JSONException jsonException) {
+                        setProjectTypesFromLocal();
                         jsonException.printStackTrace();
                     }
-
                 }
 
                 @Override
                 public void notifyError(VolleyError error) {
+                    setProjectTypesFromLocal();
                     if (error.networkResponse != null) {
                         switch (error.networkResponse.statusCode) {
                             case 401:
                                 String responseBody;
                                 try {
-                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                     JSONObject data = new JSONObject(responseBody);
                                     if (!data.getString("message").isEmpty()) {
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", data.getString("message"));
                                     }
-                                } catch (UnsupportedEncodingException | JSONException e) {
+                                } catch (JSONException e) {
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", e.getMessage());
                                     e.printStackTrace();
                                 }
@@ -814,7 +777,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                             case 403: {
                                 String response;
                                 try {
-                                    response = new String(error.networkResponse.data, "utf-8");
+                                    response = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                     JSONObject data = new JSONObject(response);
                                     if (!data.getString("_server_messages").isEmpty()) {
                                         final String message = data.getString("_server_messages");
@@ -823,7 +786,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                         JSONObject jo = new JSONObject(jsonArray.getString(0));
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
                                     }
-                                } catch (UnsupportedEncodingException | JSONException e) {
+                                } catch (JSONException e) {
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
                                     e.printStackTrace();
                                 }
@@ -855,13 +818,22 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
             } catch (Exception e) {
                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT TYPE", e.getMessage());
+                setProjectTypesFromLocal();
             }
         } else {
-            /// set from local storage
+            setProjectTypesFromLocal();
+        }
+    }
+
+    @SuppressLint("LongLogTag")
+    private void setProjectTypesFromLocal(){
+        try{
             Gson gson = new Gson();
             TypeToken<ArrayList<EventCategory>> token = new TypeToken<ArrayList<EventCategory>>() {
             };
             projectTypes = gson.fromJson(Application.getUserModel().projectTypes, token.getType());
+        }catch (Exception e){
+            Log.e("setProjectTypesFromLocal",e.toString());
         }
     }
 
@@ -896,6 +868,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                         }
                     } catch (JSONException jsonException) {
+                        setOrganisationNameFromLocal();
                         jsonException.printStackTrace();
                     }
 
@@ -903,17 +876,18 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                 @Override
                 public void notifyError(VolleyError error) {
+                    setOrganisationNameFromLocal();
                     if (error.networkResponse != null) {
                         switch (error.networkResponse.statusCode) {
                             case 401:
                                 String responseBody;
                                 try {
-                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                     JSONObject data = new JSONObject(responseBody);
                                     if (!data.getString("message").isEmpty()) {
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.orgname), data.getString("message"));
                                     }
-                                } catch (UnsupportedEncodingException | JSONException e) {
+                                } catch (JSONException e) {
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.orgname), e.getMessage());
                                     e.printStackTrace();
                                 }
@@ -921,7 +895,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                             case 403: {
                                 String response;
                                 try {
-                                    response = new String(error.networkResponse.data, "utf-8");
+                                    response = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                     JSONObject data = new JSONObject(response);
                                     if (!data.getString("_server_messages").isEmpty()) {
                                         final String message = data.getString("_server_messages");
@@ -930,7 +904,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                         JSONObject jo = new JSONObject(jsonArray.getString(0));
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
                                     }
-                                } catch (UnsupportedEncodingException | JSONException e) {
+                                } catch (JSONException e) {
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
                                     e.printStackTrace();
                                 }
@@ -948,7 +922,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                 @Override
                 public void notifyNetworkParseResponse(NetworkResponse response) {
-
+                    setOrganisationNameFromLocal();
                 }
             };
 
@@ -957,10 +931,20 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 mVolleyService.getDataVolley(apiUrl, null);
             } catch (Exception e) {
                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.orgname), e.getMessage());
+                setOrganisationNameFromLocal();
             }
         } else {
+            setOrganisationNameFromLocal();
+        }
+    }
+
+    @SuppressLint("LongLogTag")
+    private void setOrganisationNameFromLocal(){
+        try{
             final ArrayList<String> data = AppUtils.stringToArray(Application.getUserModel().organizationName);
             setOrganizationNameArrayAdapter(data);
+        }catch (Exception e){
+            Log.e("setOrganisationNameFromLocal",e.toString());
         }
     }
 
@@ -982,12 +966,12 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                 case 401:
                                     String responseBody;
                                     try {
-                                        responseBody = new String(error.networkResponse.data, "utf-8");
+                                        responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                         JSONObject data = new JSONObject(responseBody);
                                         if (!data.getString("message").isEmpty()) {
                                             AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", data.getString("message"));
                                         }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
+                                    } catch (JSONException e) {
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "PROJECT NAME", e.getMessage());
                                         e.printStackTrace();
                                     }
@@ -995,7 +979,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                 case 403: {
                                     String response;
                                     try {
-                                        response = new String(error.networkResponse.data, "utf-8");
+                                        response = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                         JSONObject data = new JSONObject(response);
                                         if (!data.getString("_server_messages").isEmpty()) {
                                             final String message = data.getString("_server_messages");
@@ -1004,7 +988,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                             JSONObject jo = new JSONObject(jsonArray.getString(0));
                                             AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
                                         }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
+                                    } catch (JSONException e) {
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
                                         e.printStackTrace();
                                     }
@@ -1070,24 +1054,25 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                         }
                     } catch (JSONException jsonException) {
+                        setVisitStateFromLocal();
                         jsonException.printStackTrace();
                     }
-
                 }
 
                 @Override
                 public void notifyError(VolleyError error) {
+                    setVisitStateFromLocal();
                     if (error.networkResponse != null) {
                         switch (error.networkResponse.statusCode) {
                             case 401:
                                 String responseBody;
                                 try {
-                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                     JSONObject data = new JSONObject(responseBody);
                                     if (!data.getString("message").isEmpty()) {
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.state), data.getString("message"));
                                     }
-                                } catch (UnsupportedEncodingException | JSONException e) {
+                                } catch (JSONException e) {
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.state), e.getMessage());
                                     e.printStackTrace();
                                 }
@@ -1095,7 +1080,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                             case 403: {
                                 String response;
                                 try {
-                                    response = new String(error.networkResponse.data, "utf-8");
+                                    response = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                     JSONObject data = new JSONObject(response);
                                     if (!data.getString("_server_messages").isEmpty()) {
                                         final String message = data.getString("_server_messages");
@@ -1104,7 +1089,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                         JSONObject jo = new JSONObject(jsonArray.getString(0));
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
                                     }
-                                } catch (UnsupportedEncodingException | JSONException e) {
+                                } catch (JSONException e) {
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
                                     e.printStackTrace();
                                 }
@@ -1122,7 +1107,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                 @Override
                 public void notifyNetworkParseResponse(NetworkResponse response) {
-
+                    setVisitStateFromLocal();
                 }
             };
 
@@ -1131,10 +1116,20 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 mVolleyService.getDataVolley(apiUrl, null);
             } catch (Exception e) {
                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.state), e.getMessage());
+                setVisitStateFromLocal();
             }
         } else {
+            setVisitStateFromLocal();
+        }
+    }
+
+    @SuppressLint("LongLogTag")
+    private void setVisitStateFromLocal(){
+        try{
             final ArrayList<String> data = AppUtils.stringToArray(Application.getUserModel().visitState);
             setVisitStateArrayAdapter(data);
+        }catch (Exception e){
+            Log.e("setVisitStateFromLocal",e.toString());
         }
     }
 
@@ -1176,6 +1171,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                         }
                     } catch (
                             JSONException jsonException) {
+                        setDistrictFromLocal();
                         jsonException.printStackTrace();
                     }
 
@@ -1183,17 +1179,18 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                 @Override
                 public void notifyError(VolleyError error) {
+                    setDistrictFromLocal();
                     if (error.networkResponse != null) {
                         switch (error.networkResponse.statusCode) {
                             case 401:
                                 String responseBody;
                                 try {
-                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                     JSONObject data = new JSONObject(responseBody);
                                     if (!data.getString("message").isEmpty()) {
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visit_district), data.getString("message"));
                                     }
-                                } catch (UnsupportedEncodingException | JSONException e) {
+                                } catch (JSONException e) {
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visit_district), e.getMessage());
                                     e.printStackTrace();
                                 }
@@ -1201,7 +1198,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                             case 403: {
                                 String response;
                                 try {
-                                    response = new String(error.networkResponse.data, "utf-8");
+                                    response = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                     JSONObject data = new JSONObject(response);
                                     if (!data.getString("_server_messages").isEmpty()) {
                                         final String message = data.getString("_server_messages");
@@ -1210,7 +1207,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                         JSONObject jo = new JSONObject(jsonArray.getString(0));
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
                                     }
-                                } catch (UnsupportedEncodingException | JSONException e) {
+                                } catch (JSONException e) {
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
                                     e.printStackTrace();
                                 }
@@ -1228,7 +1225,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                 @Override
                 public void notifyNetworkParseResponse(NetworkResponse response) {
-
+                    setDistrictFromLocal();
                 }
             };
 
@@ -1236,9 +1233,17 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 VolleyService mVolleyService = new VolleyService(callback, AddVisitRequestActivity2.this);
                 mVolleyService.getDataVolley(apiUrl, null);
             } catch (Exception e) {
+                setDistrictFromLocal();
                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visit_district), e.getMessage());
             }
         } else {
+            setDistrictFromLocal();
+        }
+    }
+
+    @SuppressLint("LongLogTag")
+    private void setDistrictFromLocal(){
+        try{
             final ArrayList<String> data = AppUtils.jsonArrayStringToStringArray(Application.getUserModel().district);
             Gson gson = new Gson();
 
@@ -1246,6 +1251,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 final String str = data.get(i);
                 visitDistrictList.add(gson.fromJson(str, VisitDistrict.class));
             }
+        }catch (Exception e){
+            Log.e("setDistrictFromLocal",e.toString());
         }
     }
 
@@ -1285,23 +1292,25 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                             }
                         }
                     } catch (JSONException jsonException) {
+                        setTalukaFromLocal();
                         jsonException.printStackTrace();
                     }
                 }
 
                 @Override
                 public void notifyError(VolleyError error) {
+                    setTalukaFromLocal();
                     if (error.networkResponse != null) {
                         switch (error.networkResponse.statusCode) {
                             case 401:
                                 String responseBody;
                                 try {
-                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                     JSONObject data = new JSONObject(responseBody);
                                     if (!data.getString("message").isEmpty()) {
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visit_district), data.getString("message"));
                                     }
-                                } catch (UnsupportedEncodingException | JSONException e) {
+                                } catch (JSONException e) {
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visit_district), e.getMessage());
                                     e.printStackTrace();
                                 }
@@ -1309,7 +1318,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                             case 403: {
                                 String response;
                                 try {
-                                    response = new String(error.networkResponse.data, "utf-8");
+                                    response = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                     JSONObject data = new JSONObject(response);
                                     if (!data.getString("_server_messages").isEmpty()) {
                                         final String message = data.getString("_server_messages");
@@ -1318,7 +1327,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                         JSONObject jo = new JSONObject(jsonArray.getString(0));
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
                                     }
-                                } catch (UnsupportedEncodingException | JSONException e) {
+                                } catch (JSONException e) {
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
                                     e.printStackTrace();
                                 }
@@ -1336,7 +1345,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                 @Override
                 public void notifyNetworkParseResponse(NetworkResponse response) {
-
+                    setTalukaFromLocal();
                 }
             };
 
@@ -1344,9 +1353,17 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 VolleyService mVolleyService = new VolleyService(callback, AddVisitRequestActivity2.this);
                 mVolleyService.getDataVolley(apiUrl, null);
             } catch (Exception e) {
+                setTalukaFromLocal();
                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visit_district), e.getMessage());
             }
         } else {
+            setTalukaFromLocal();
+        }
+    }
+
+    @SuppressLint("LongLogTag")
+    private void setTalukaFromLocal(){
+        try{
             final ArrayList<String> data = AppUtils.jsonArrayStringToStringArray(Application.getUserModel().taluka);
 
             Gson gson = new Gson();
@@ -1355,7 +1372,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 final String str = data.get(i);
                 visitTalukaList.add(gson.fromJson(str, Taluka.class));
             }
-
+        }catch (Exception e){
+            Log.e("setTalukaFromLocal",e.toString());
         }
     }
 
@@ -1395,6 +1413,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                             }
                         }
                     } catch (JSONException jsonException) {
+                        setLocationOfVisitFromLocal();
                         jsonException.printStackTrace();
                     }
 
@@ -1402,17 +1421,18 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                 @Override
                 public void notifyError(VolleyError error) {
+                    setLocationOfVisitFromLocal();
                     if (error.networkResponse != null) {
                         switch (error.networkResponse.statusCode) {
                             case 401:
                                 String responseBody;
                                 try {
-                                    responseBody = new String(error.networkResponse.data, "utf-8");
+                                    responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                     JSONObject data = new JSONObject(responseBody);
                                     if (!data.getString("message").isEmpty()) {
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visit_district), data.getString("message"));
                                     }
-                                } catch (UnsupportedEncodingException | JSONException e) {
+                                } catch (JSONException e) {
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visitlocation), e.getMessage());
                                     e.printStackTrace();
                                 }
@@ -1420,7 +1440,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                             case 403: {
                                 String response;
                                 try {
-                                    response = new String(error.networkResponse.data, "utf-8");
+                                    response = new String(error.networkResponse.data, StandardCharsets.UTF_8);
                                     JSONObject data = new JSONObject(response);
                                     if (!data.getString("_server_messages").isEmpty()) {
                                         final String message = data.getString("_server_messages");
@@ -1429,7 +1449,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                                         JSONObject jo = new JSONObject(jsonArray.getString(0));
                                         AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
                                     }
-                                } catch (UnsupportedEncodingException | JSONException e) {
+                                } catch (JSONException e) {
                                     AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, "Alert", getString(R.string.error_403));
                                     e.printStackTrace();
                                 }
@@ -1447,7 +1467,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
                 @Override
                 public void notifyNetworkParseResponse(NetworkResponse response) {
-
+                    setLocationOfVisitFromLocal();
                 }
             };
 
@@ -1455,9 +1475,17 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 VolleyService mVolleyService = new VolleyService(callback, AddVisitRequestActivity2.this);
                 mVolleyService.getDataVolley(apiUrl, null);
             } catch (Exception e) {
+                setLocationOfVisitFromLocal();
                 AppUtils.displayAlertMessage(AddVisitRequestActivity2.this, getString(R.string.visitlocation), e.getMessage());
             }
         } else {
+            setLocationOfVisitFromLocal();
+        }
+    }
+
+    @SuppressLint("LongLogTag")
+    private void setLocationOfVisitFromLocal(){
+        try{
             final ArrayList<String> data = AppUtils.jsonArrayStringToStringArray(Application.getUserModel().locationOfVisit);
 
             Gson gson = new Gson();
@@ -1466,6 +1494,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 final String str = data.get(i);
                 visitLocationList.add(gson.fromJson(str, VisitLocation.class));
             }
+        }catch (Exception e){
+            Log.e("setLocationOfVisitFromLocal",e.toString());
         }
     }
 
