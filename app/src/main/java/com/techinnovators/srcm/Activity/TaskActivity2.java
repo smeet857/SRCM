@@ -693,7 +693,11 @@ public class TaskActivity2 extends AppCompatActivity {
     }
 
     private void onAddTap() {
-        startActivityForResult(new Intent(this, AddVisitRequestActivity2.class), 100);
+        if(NetworkUtils.isNetworkConnected(this)) {
+            startActivityForResult(new Intent(this, AddVisitRequestActivity2.class), 100);
+        } else {
+            AppUtils.showSnackBar(TaskActivity2.this, csMain, getString(R.string.internet_off));
+        }
     }
 
     private void setTasksList(ArrayList<Tasks> data) {
