@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -31,6 +32,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.VolleyError;
 import com.sangcomz.fishbun.FishBun;
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter;
+import com.techinnovators.srcm.Activity.TaskActivity2;
 import com.techinnovators.srcm.Application;
 import com.techinnovators.srcm.Database.DbClient;
 import com.techinnovators.srcm.R;
@@ -40,12 +42,15 @@ import com.techinnovators.srcm.utils.NetworkUtils;
 import com.techinnovators.srcm.volleyhelper.APIVInterface;
 import com.techinnovators.srcm.volleyhelper.VolleyService;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -269,8 +274,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                         @Override
                         public void notifyError(VolleyError error) {
                             AppUtils.dismissProgress();
-
-                            AppUtils.displayAlertMessage(context, "Alert", error.getMessage());
+                            _handleError(error);
                         }
 
                         @Override
@@ -448,8 +452,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                         @Override
                         public void notifyError(VolleyError error) {
                             AppUtils.dismissProgress();
-                            AppUtils.displayAlertMessage(context, "Alert", error.getMessage());
-
+                            _handleError(error);
                         }
 
                         @Override
@@ -503,7 +506,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                     public void notifyError(VolleyError error) {
                         imageListener.setValue(new ArrayList<>());
                         AppUtils.dismissProgress();
-                        AppUtils.displayAlertMessage(context, "Alert", error.getMessage());
+                        _handleError(error);
                     }
 
                     @Override
@@ -528,6 +531,50 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                 volleyService.putDataVolley(api, new JSONObject(map));
             } else {
                 AppUtils.displayAlertMessage(context, "Check Out", "Successfully");
+            }
+        }
+    }
+
+    private void _handleError(VolleyError error) {
+        if (error.networkResponse != null) {
+            switch (error.networkResponse.statusCode) {
+                case 401:
+                    String responseBody;
+                    try {
+                        responseBody = new String(error.networkResponse.data, "utf-8");
+                        JSONObject data = new JSONObject(responseBody);
+                        if (!data.getString("message").isEmpty()) {
+                            AppUtils.displayAlertMessage(context, "Alert", data.getString("message"));
+                        }
+                    } catch (UnsupportedEncodingException | JSONException e) {
+                        AppUtils.displayAlertMessage(context, "Alert", e.getMessage());
+                        e.printStackTrace();
+                    }
+                    break;
+                case 403: {
+                    String response;
+                    try {
+                        response = new String(error.networkResponse.data, "utf-8");
+                        JSONObject data = new JSONObject(response);
+                        if (!data.getString("_server_messages").isEmpty()) {
+                            final String message = data.getString("_server_messages");
+
+                            JSONArray jsonArray = new JSONArray(message);
+                            JSONObject jo = new JSONObject(jsonArray.getString(0));
+                            AppUtils.displayAlertMessage(context, "Alert", Html.fromHtml(jo.getString("message")).toString());
+                        }
+                    } catch (UnsupportedEncodingException | JSONException e) {
+                        AppUtils.displayAlertMessage(context, "Alert", context.getString(R.string.error_403));
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+                case 404:
+                    AppUtils.displayAlertMessage(context, "Alert", context.getString(R.string.error_404));
+                    break;
+                case 500:
+                    AppUtils.displayAlertMessage(context, "Alert", context.getString(R.string.error_500));
+                    break;
             }
         }
     }
