@@ -162,20 +162,22 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         }
 
         if (!TextUtils.isEmpty(data.contact_person_name)) {
-            holder.tvCPerson.setVisibility(View.VISIBLE);
-            holder.ivCPerson.setVisibility(View.VISIBLE);
+          /*  holder.tvCPerson.setVisibility(View.VISIBLE);
+            holder.ivCPerson.setVisibility(View.VISIBLE);*/
             holder.tvCPerson.setText(tasks.get(position).getContact_person_name());
         } else {
-            holder.ivCPerson.setVisibility(View.GONE);
-            holder.tvCPerson.setVisibility(View.GONE);
+           /* holder.ivCPerson.setVisibility(View.GONE);
+            holder.tvCPerson.setVisibility(View.GONE);*/
+            holder.tvCPerson.setText("-");
         }
         if (!TextUtils.isEmpty(data.contact_person_mobile_no)) {
-            holder.ivCPersonNo.setVisibility(View.VISIBLE);
-            holder.tvCPersonNo.setVisibility(View.VISIBLE);
+            /*holder.ivCPersonNo.setVisibility(View.VISIBLE);
+            holder.tvCPersonNo.setVisibility(View.VISIBLE);*/
             holder.tvCPersonNo.setText(tasks.get(position).getContact_person_mobile_no());
         } else {
-            holder.ivCPersonNo.setVisibility(View.GONE);
-            holder.tvCPersonNo.setVisibility(View.GONE);
+            /*holder.ivCPersonNo.setVisibility(View.GONE);
+            holder.tvCPersonNo.setVisibility(View.GONE);*/
+            holder.tvCPersonNo.setText("-");
         }
 
 

@@ -387,34 +387,11 @@ public class TaskActivity2 extends AppCompatActivity {
                         if (error.networkResponse != null) {
                             switch (error.networkResponse.statusCode) {
                                 case 401:
-                                    String responseBody;
-                                    try {
-                                        responseBody = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(responseBody);
-                                        if (!data.getString("message").isEmpty()) {
-                                            AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS", data.getString("message"));
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS", e.getMessage());
-                                        e.printStackTrace();
-                                    }
+                                    _errorMessage(error);
                                     break;
-                                case 403: {
-                                    String response;
-                                    try {
-                                        response = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(response);
-                                        if (!data.getString("_server_messages").isEmpty()) {
-                                            final String message = data.getString("_server_messages");
-
-                                            JSONArray jsonArray = new JSONArray(message);
-                                            JSONObject jo = new JSONObject(jsonArray.getString(0));
-                                            AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", getString(R.string.error_403));
-                                        e.printStackTrace();
-                                    }
+                                case 403:
+                                case 417: {
+                                    _serverMessage(error);
                                     break;
                                 }
                                 case 404:
@@ -524,18 +501,13 @@ public class TaskActivity2 extends AppCompatActivity {
                         if (error.networkResponse != null) {
                             switch (error.networkResponse.statusCode) {
                                 case 401:
-                                    String responseBody;
-                                    try {
-                                        responseBody = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(responseBody);
-                                        if (!data.getString("message").isEmpty()) {
-                                            AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS", data.getString("message"));
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS", e.getMessage());
-                                        e.printStackTrace();
-                                    }
+                                    _errorMessage(error);
                                     break;
+                                case 403:
+                                case 417: {
+                                    _serverMessage(error);
+                                    break;
+                                }
                                 case 404:
                                     AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS",
                                             getString(R.string.error_404));
@@ -592,7 +564,7 @@ public class TaskActivity2 extends AppCompatActivity {
                                 String checkOutTime = "";
                                 try {
                                     checkOutTime = data.getString("last_checkout");
-                                } catch (Exception e){
+                                } catch (Exception e) {
 
                                 }
 
@@ -601,7 +573,7 @@ public class TaskActivity2 extends AppCompatActivity {
                                 model.attendanceDate = strCurrentDate;
                                 model.name = name;
                                 model.checkIn = 1;
-                                if(checkOutTime.equals("") || checkOutTime.equals("null")) {
+                                if (checkOutTime.equals("") || checkOutTime.equals("null")) {
                                     model.checkOut = 0;
                                 } else {
                                     model.checkOut = 1;
@@ -621,34 +593,11 @@ public class TaskActivity2 extends AppCompatActivity {
                         if (error.networkResponse != null) {
                             switch (error.networkResponse.statusCode) {
                                 case 401:
-                                    String responseBody;
-                                    try {
-                                        responseBody = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(responseBody);
-                                        if (!data.getString("message").isEmpty()) {
-                                            AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS", data.getString("message"));
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "TASKS", e.getMessage());
-                                        e.printStackTrace();
-                                    }
+                                    _errorMessage(error);
                                     break;
-                                case 403: {
-                                    String response;
-                                    try {
-                                        response = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(response);
-                                        if (!data.getString("_server_messages").isEmpty()) {
-                                            final String message = data.getString("_server_messages");
-
-                                            JSONArray jsonArray = new JSONArray(message);
-                                            JSONObject jo = new JSONObject(jsonArray.getString(0));
-                                            AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", getString(R.string.error_403));
-                                        e.printStackTrace();
-                                    }
+                                case 403:
+                                case 417: {
+                                    _serverMessage(error);
                                     break;
                                 }
                                 case 404:
@@ -677,7 +626,7 @@ public class TaskActivity2 extends AppCompatActivity {
         } else {
             setAttendance();
             //String time = Application.getUserModel().employeeId
-           // getTasksList(Application.getUserModel().employeeId);
+            // getTasksList(Application.getUserModel().employeeId);
         }
     }
 
@@ -693,7 +642,7 @@ public class TaskActivity2 extends AppCompatActivity {
     }
 
     private void onAddTap() {
-        if(NetworkUtils.isNetworkConnected(this)) {
+        if (NetworkUtils.isNetworkConnected(this)) {
             startActivityForResult(new Intent(this, AddVisitRequestActivity2.class), 100);
         } else {
             AppUtils.showSnackBar(TaskActivity2.this, csMain, getString(R.string.internet_off));
@@ -784,59 +733,16 @@ public class TaskActivity2 extends AppCompatActivity {
                         String errorMessage = "";
                         switch (error.networkResponse.statusCode) {
                             case 401:
-                                String responseBody;
-                                try {
-                                    responseBody = new String(error.networkResponse.data, "utf-8");
-                                    JSONObject data = new JSONObject(responseBody);
-                                    if (!data.getString("message").isEmpty()) {
-                                        errorMessage = data.getString("message");
-                                    }
-                                } catch (UnsupportedEncodingException | JSONException e) {
-                                    errorMessage = e.getMessage();
-                                    e.printStackTrace();
-                                }
+                                _errorMessage(error);
                                 break;
-                            case 403: {
-                                String response;
-                                try {
-                                    response = new String(error.networkResponse.data, "utf-8");
-                                    JSONObject data = new JSONObject(response);
-                                    if (!data.getString("_server_messages").isEmpty()) {
-                                        final String message = data.getString("_server_messages");
-
-                                        JSONArray jsonArray = new JSONArray(message);
-                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
-
-                                        errorMessage = Html.fromHtml(jo.getString("message")).toString();
-                                    }
-                                } catch (UnsupportedEncodingException | JSONException e) {
-                                    errorMessage = getString(R.string.error_403);
-                                    e.printStackTrace();
-                                }
+                            case 403:
+                            case 417: {
+                                _serverMessage(error);
                                 break;
                             }
                             case 404:
                                 errorMessage = getString(R.string.error_404);
                                 break;
-                            case 417: {
-                                String response;
-                                try {
-                                    response = new String(error.networkResponse.data, "utf-8");
-                                    JSONObject data = new JSONObject(response);
-                                    if (!data.getString("_server_messages").isEmpty()) {
-                                        final String message = data.getString("_server_messages");
-
-                                        JSONArray jsonArray = new JSONArray(message);
-                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
-
-                                        errorMessage = Html.fromHtml(jo.getString("message")).toString();
-                                    }
-                                } catch (UnsupportedEncodingException | JSONException e) {
-                                    errorMessage = e.getMessage();
-                                    e.printStackTrace();
-                                }
-                                break;
-                            }
                             case 500:
                                 errorMessage = getString(R.string.error_500);
                                 break;
@@ -934,54 +840,15 @@ public class TaskActivity2 extends AppCompatActivity {
                         if (error.networkResponse != null) {
                             switch (error.networkResponse.statusCode) {
                                 case 401:
-                                    String responseBody;
-                                    try {
-                                        responseBody = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(responseBody);
-                                        if (!data.getString("message").isEmpty()) {
-                                            AppUtils.displayAlertMessage(this, "CHECK OUT", Html.fromHtml(data.getString("message")).toString());
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(this, "CHECK OUT", e.getMessage());
-                                        e.printStackTrace();
-                                    }
+                                    _errorMessage(error);
                                     break;
-                                case 403: {
-                                    String response;
-                                    try {
-                                        response = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(response);
-                                        if (!data.getString("_server_messages").isEmpty()) {
-                                            final String message = data.getString("_server_messages");
-
-                                            JSONArray jsonArray = new JSONArray(message);
-                                            JSONObject jo = new JSONObject(jsonArray.getString(0));
-                                            AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", getString(R.string.error_403));
-                                        e.printStackTrace();
-                                    }
+                                case 403:
+                                case 417: {
+                                    _serverMessage(error);
                                     break;
                                 }
                                 case 404:
                                     AppUtils.displayAlertMessage(this, "CHECK OUT", getString(R.string.error_404));
-                                    break;
-                                case 417:
-                                    String response;
-                                    try {
-                                        response = new String(error.networkResponse.data, "utf-8");
-
-                                        JSONObject data = new JSONObject(response);
-                                        final String message = data.getString("_server_messages");
-
-                                        JSONArray jsonArray = new JSONArray(message);
-                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(this, "CHECK OUT", e.getMessage());
-                                        e.printStackTrace();
-                                    }
                                     break;
                                 case 500:
                                     AppUtils.displayAlertMessage(this, "CHECK OUT", getString(R.string.error_500));
@@ -1129,34 +996,11 @@ public class TaskActivity2 extends AppCompatActivity {
                         if (error.networkResponse != null) {
                             switch (error.networkResponse.statusCode) {
                                 case 401:
-                                    String responseBody;
-                                    try {
-                                        responseBody = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(responseBody);
-                                        if (!data.getString("message").isEmpty()) {
-                                            AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT NAME", data.getString("message"));
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT NAME", e.getMessage());
-                                        e.printStackTrace();
-                                    }
+                                    _errorMessage(error);
                                     break;
-                                case 403: {
-                                    String response;
-                                    try {
-                                        response = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(response);
-                                        if (!data.getString("_server_messages").isEmpty()) {
-                                            final String message = data.getString("_server_messages");
-
-                                            JSONArray jsonArray = new JSONArray(message);
-                                            JSONObject jo = new JSONObject(jsonArray.getString(0));
-                                            AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", getString(R.string.error_403));
-                                        e.printStackTrace();
-                                    }
+                                case 403:
+                                case 417: {
+                                    _serverMessage(error);
                                     break;
                                 }
                                 case 404:
@@ -1233,34 +1077,11 @@ public class TaskActivity2 extends AppCompatActivity {
                         if (error.networkResponse != null) {
                             switch (error.networkResponse.statusCode) {
                                 case 401:
-                                    String responseBody;
-                                    try {
-                                        responseBody = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(responseBody);
-                                        if (!data.getString("message").isEmpty()) {
-                                            AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT NAME", data.getString("message"));
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT NAME", e.getMessage());
-                                        e.printStackTrace();
-                                    }
+                                    _errorMessage(error);
                                     break;
-                                case 403: {
-                                    String response;
-                                    try {
-                                        response = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(response);
-                                        if (!data.getString("_server_messages").isEmpty()) {
-                                            final String message = data.getString("_server_messages");
-
-                                            JSONArray jsonArray = new JSONArray(message);
-                                            JSONObject jo = new JSONObject(jsonArray.getString(0));
-                                            AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", getString(R.string.error_403));
-                                        e.printStackTrace();
-                                    }
+                                case 403:
+                                case 417: {
+                                    _serverMessage(error);
                                     break;
                                 }
                                 case 404:
@@ -1340,34 +1161,11 @@ public class TaskActivity2 extends AppCompatActivity {
                         if (error.networkResponse != null) {
                             switch (error.networkResponse.statusCode) {
                                 case 401:
-                                    String responseBody;
-                                    try {
-                                        responseBody = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(responseBody);
-                                        if (!data.getString("message").isEmpty()) {
-                                            AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT NAME", data.getString("message"));
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "PROJECT NAME", e.getMessage());
-                                        e.printStackTrace();
-                                    }
+                                    _errorMessage(error);
                                     break;
-                                case 403: {
-                                    String response;
-                                    try {
-                                        response = new String(error.networkResponse.data, "utf-8");
-                                        JSONObject data = new JSONObject(response);
-                                        if (!data.getString("_server_messages").isEmpty()) {
-                                            final String message = data.getString("_server_messages");
-
-                                            JSONArray jsonArray = new JSONArray(message);
-                                            JSONObject jo = new JSONObject(jsonArray.getString(0));
-                                            AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
-                                        }
-                                    } catch (UnsupportedEncodingException | JSONException e) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", getString(R.string.error_403));
-                                        e.printStackTrace();
-                                    }
+                                case 403:
+                                case 417: {
+                                    _serverMessage(error);
                                     break;
                                 }
                                 case 404:
@@ -1438,34 +1236,10 @@ public class TaskActivity2 extends AppCompatActivity {
                     if (error.networkResponse != null) {
                         switch (error.networkResponse.statusCode) {
                             case 401:
-                                String responseBody;
-                                try {
-                                    responseBody = new String(error.networkResponse.data, "utf-8");
-                                    JSONObject data = new JSONObject(responseBody);
-                                    if (!data.getString("message").isEmpty()) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.orgname), data.getString("message"));
-                                    }
-                                } catch (UnsupportedEncodingException | JSONException e) {
-                                    AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.orgname), e.getMessage());
-                                    e.printStackTrace();
-                                }
+                                _errorMessage(error);
                                 break;
                             case 403: {
-                                String response;
-                                try {
-                                    response = new String(error.networkResponse.data, "utf-8");
-                                    JSONObject data = new JSONObject(response);
-                                    if (!data.getString("_server_messages").isEmpty()) {
-                                        final String message = data.getString("_server_messages");
-
-                                        JSONArray jsonArray = new JSONArray(message);
-                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
-                                    }
-                                } catch (UnsupportedEncodingException | JSONException e) {
-                                    AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", getString(R.string.error_403));
-                                    e.printStackTrace();
-                                }
+                                _serverMessage(error);
                                 break;
                             }
                             case 404:
@@ -1531,34 +1305,11 @@ public class TaskActivity2 extends AppCompatActivity {
                     if (error.networkResponse != null) {
                         switch (error.networkResponse.statusCode) {
                             case 401:
-                                String responseBody;
-                                try {
-                                    responseBody = new String(error.networkResponse.data, "utf-8");
-                                    JSONObject data = new JSONObject(responseBody);
-                                    if (!data.getString("message").isEmpty()) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.state), data.getString("message"));
-                                    }
-                                } catch (UnsupportedEncodingException | JSONException e) {
-                                    AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.state), e.getMessage());
-                                    e.printStackTrace();
-                                }
+                                _errorMessage(error);
                                 break;
-                            case 403: {
-                                String response;
-                                try {
-                                    response = new String(error.networkResponse.data, "utf-8");
-                                    JSONObject data = new JSONObject(response);
-                                    if (!data.getString("_server_messages").isEmpty()) {
-                                        final String message = data.getString("_server_messages");
-
-                                        JSONArray jsonArray = new JSONArray(message);
-                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
-                                    }
-                                } catch (UnsupportedEncodingException | JSONException e) {
-                                    AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", getString(R.string.error_403));
-                                    e.printStackTrace();
-                                }
+                            case 403:
+                            case 417: {
+                                _serverMessage(error);
                                 break;
                             }
                             case 404:
@@ -1634,34 +1385,10 @@ public class TaskActivity2 extends AppCompatActivity {
                     if (error.networkResponse != null) {
                         switch (error.networkResponse.statusCode) {
                             case 401:
-                                String responseBody;
-                                try {
-                                    responseBody = new String(error.networkResponse.data, "utf-8");
-                                    JSONObject data = new JSONObject(responseBody);
-                                    if (!data.getString("message").isEmpty()) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), data.getString("message"));
-                                    }
-                                } catch (UnsupportedEncodingException | JSONException e) {
-                                    AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), e.getMessage());
-                                    e.printStackTrace();
-                                }
+                                _errorMessage(error);
                                 break;
                             case 403: {
-                                String response;
-                                try {
-                                    response = new String(error.networkResponse.data, "utf-8");
-                                    JSONObject data = new JSONObject(response);
-                                    if (!data.getString("_server_messages").isEmpty()) {
-                                        final String message = data.getString("_server_messages");
-
-                                        JSONArray jsonArray = new JSONArray(message);
-                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
-                                    }
-                                } catch (UnsupportedEncodingException | JSONException e) {
-                                    AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", getString(R.string.error_403));
-                                    e.printStackTrace();
-                                }
+                                _serverMessage(error);
                                 break;
                             }
                             case 404:
@@ -1733,34 +1460,10 @@ public class TaskActivity2 extends AppCompatActivity {
                     if (error.networkResponse != null) {
                         switch (error.networkResponse.statusCode) {
                             case 401:
-                                String responseBody;
-                                try {
-                                    responseBody = new String(error.networkResponse.data, "utf-8");
-                                    JSONObject data = new JSONObject(responseBody);
-                                    if (!data.getString("message").isEmpty()) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), data.getString("message"));
-                                    }
-                                } catch (UnsupportedEncodingException | JSONException e) {
-                                    AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), e.getMessage());
-                                    e.printStackTrace();
-                                }
+                                _errorMessage(error);
                                 break;
                             case 403: {
-                                String response;
-                                try {
-                                    response = new String(error.networkResponse.data, "utf-8");
-                                    JSONObject data = new JSONObject(response);
-                                    if (!data.getString("_server_messages").isEmpty()) {
-                                        final String message = data.getString("_server_messages");
-
-                                        JSONArray jsonArray = new JSONArray(message);
-                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
-                                    }
-                                } catch (UnsupportedEncodingException | JSONException e) {
-                                    AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", getString(R.string.error_403));
-                                    e.printStackTrace();
-                                }
+                                _serverMessage(error);
                                 break;
                             }
                             case 404:
@@ -1833,34 +1536,11 @@ public class TaskActivity2 extends AppCompatActivity {
                     if (error.networkResponse != null) {
                         switch (error.networkResponse.statusCode) {
                             case 401:
-                                String responseBody;
-                                try {
-                                    responseBody = new String(error.networkResponse.data, "utf-8");
-                                    JSONObject data = new JSONObject(responseBody);
-                                    if (!data.getString("message").isEmpty()) {
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visit_district), data.getString("message"));
-                                    }
-                                } catch (UnsupportedEncodingException | JSONException e) {
-                                    AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visitlocation), e.getMessage());
-                                    e.printStackTrace();
-                                }
+                                _errorMessage(error);
                                 break;
-                            case 403: {
-                                String response;
-                                try {
-                                    response = new String(error.networkResponse.data, "utf-8");
-                                    JSONObject data = new JSONObject(response);
-                                    if (!data.getString("_server_messages").isEmpty()) {
-                                        final String message = data.getString("_server_messages");
-
-                                        JSONArray jsonArray = new JSONArray(message);
-                                        JSONObject jo = new JSONObject(jsonArray.getString(0));
-                                        AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
-                                    }
-                                } catch (UnsupportedEncodingException | JSONException e) {
-                                    AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", getString(R.string.error_403));
-                                    e.printStackTrace();
-                                }
+                            case 403:
+                            case 417: {
+                                _serverMessage(error);
                                 break;
                             }
                             case 404:
@@ -1885,6 +1565,38 @@ public class TaskActivity2 extends AppCompatActivity {
             } catch (Exception e) {
                 AppUtils.displayAlertMessage(TaskActivity2.this, getString(R.string.visitlocation), e.getMessage());
             }
+        }
+    }
+
+    private void _errorMessage(VolleyError error) {
+        String responseBody;
+        try {
+            responseBody = new String(error.networkResponse.data, "utf-8");
+            JSONObject data = new JSONObject(responseBody);
+            if (!data.getString("message").isEmpty()) {
+                AppUtils.displayAlertMessage(TaskActivity2.this, "Info", data.getString("message"));
+            }
+        } catch (UnsupportedEncodingException | JSONException e) {
+            AppUtils.displayAlertMessage(TaskActivity2.this, "Info", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void _serverMessage(VolleyError error) {
+        String response;
+        try {
+            response = new String(error.networkResponse.data, "utf-8");
+            JSONObject data = new JSONObject(response);
+            if (!data.getString("_server_messages").isEmpty()) {
+                final String message = data.getString("_server_messages");
+
+                JSONArray jsonArray = new JSONArray(message);
+                JSONObject jo = new JSONObject(jsonArray.getString(0));
+                AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", Html.fromHtml(jo.getString("message")).toString());
+            }
+        } catch (UnsupportedEncodingException | JSONException e) {
+            AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", getString(R.string.error_403));
+            e.printStackTrace();
         }
     }
 }
