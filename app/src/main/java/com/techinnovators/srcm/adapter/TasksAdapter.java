@@ -487,7 +487,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
         private String getCheckInCheckOutDate() {
             final Date date = Calendar.getInstance().getTime();
-            final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             return dateFormat.format(date);
         }
 
@@ -551,7 +551,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                         e.printStackTrace();
                     }
                     break;
-                case 403: {
+                case 403:
+                case 417: {
                     String response;
                     try {
                         response = new String(error.networkResponse.data, "utf-8");
