@@ -1,5 +1,8 @@
 package com.techinnovators.srcm.adapter;
 
+import static com.techinnovators.srcm.Activity.TaskActivity2.lati;
+import static com.techinnovators.srcm.Activity.TaskActivity2.longi;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -383,7 +386,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                     Tasks tasksModel = new Tasks();
                     tasksModel.visit_checkout = getCheckInCheckOutDate();
                     tasksModel.visitCompleted = 1;
-                    tasksModel.visitMapLocation = "https://maps.google.com?=3243443,4343243";
+                    tasksModel.visitMapLocation = "https://maps.google.com?=" + lati.toString() + "," + longi.toString();
                     tasksModel.totalParticipants = etTotalParticipant.getText().toString();
                     tasksModel.trainerName = etTrainerName.getText().toString();
                     tasksModel.dataTaken = check.isChecked();

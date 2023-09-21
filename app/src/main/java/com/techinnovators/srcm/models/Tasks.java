@@ -49,6 +49,10 @@ public class Tasks {
     @ColumnInfo(name = "visit_location")
     @Expose
     public String visit_location = "";
+    @SerializedName("visit_location_to_be")
+    @ColumnInfo(name = "visit_location_to_be")
+    @Expose
+    public String visit_location_to_be = "";
     @SerializedName("visit_date")
     @ColumnInfo(name = "visit_date")
     @Expose
@@ -196,6 +200,10 @@ public class Tasks {
 
     public void setVisit_location(String visit_location) {
         this.visit_location = visit_location;
+    }
+
+    public void setVisit_location_to_be(String visit_location_to_be) {
+        this.visit_location_to_be = visit_location_to_be;
     }
 
     public String getVisit_date() {

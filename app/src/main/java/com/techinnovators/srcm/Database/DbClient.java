@@ -17,7 +17,7 @@ import com.techinnovators.srcm.Database.Dao.UserDao;
 import com.techinnovators.srcm.models.Tasks;
 import com.techinnovators.srcm.models.UserModel;
 
-@Database(entities = {Tasks.class, UserModel.class}, version = 7, exportSchema = false)
+@Database(entities = {Tasks.class, UserModel.class}, version = 8, exportSchema = false)
 public abstract class DbClient extends RoomDatabase {
     public abstract TasksDao tasksDao();
     public abstract UserDao userDao();

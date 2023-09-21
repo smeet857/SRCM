@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/csMain"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".AddVisitRequestActivity">
+    android:layout_height="match_parent">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -238,6 +237,29 @@
                     android:layout_marginStart="@dimen/_10sdp"/>
             </androidx.appcompat.widget.LinearLayoutCompat>
 
+            <TextView
+                android:id="@+id/tvVisitLocationToBe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_regular"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_4sdp"
+                android:text="@string/visit_location_to_be"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12ssp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spin_activity" />
+
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/acVisitLocationToBe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_background"
+                android:fontFamily="@font/poppins_regular"
+                android:focusable="false"
+                android:padding="@dimen/_8sdp"
+                android:textSize="@dimen/_12ssp" />
 
             <TextView
                 android:id="@+id/tvState"

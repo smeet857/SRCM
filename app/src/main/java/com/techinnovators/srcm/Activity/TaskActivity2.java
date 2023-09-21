@@ -1,6 +1,9 @@
 package com.techinnovators.srcm.Activity;
 
+import static com.example.easywaylocation.EasyWayLocation.LOCATION_SETTING_REQUEST_CODE;
+
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -27,6 +30,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.easywaylocation.EasyWayLocation;
+import com.example.easywaylocation.Listener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sangcomz.fishbun.FishBun;
@@ -67,13 +72,16 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-public class TaskActivity2 extends AppCompatActivity {
+public class TaskActivity2 extends AppCompatActivity implements Listener {
 
     private RecyclerView rvTasks;
     TasksAdapter tasksAdapter;
     ArrayList<Tasks> data;
     ArrayList<Uri> path;
     MutableLiveData<ArrayList<Uri>> imagePathsListener = new MutableLiveData<>();
+
+    EasyWayLocation easyWayLocation;
+    public static Double lati, longi;
 
     private LinearLayout llEmptyView;
 
@@ -102,6 +110,8 @@ public class TaskActivity2 extends AppCompatActivity {
         setContentView(R.layout.activity_tasks);
         Application.context = this;
 
+        easyWayLocation = new EasyWayLocation(this, false, false, this);
+
         init();
         initClickListener();
         initData();
@@ -110,10 +120,17 @@ public class TaskActivity2 extends AppCompatActivity {
     @Override
     protected void onResume() {
         Application.context = this;
+        easyWayLocation.startLocation();
         getCheckInDetail();
         super.onResume();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        easyWayLocation.endUpdates();
+
+    }
 
     private void init() {
         db = DbClient.getInstance();
@@ -949,6 +966,8 @@ public class TaskActivity2 extends AppCompatActivity {
             // you can get an image path(ArrayList<Uri>) on 0.6.2 and later
             Log.e("images", path.toString());
             imagePathsListener.setValue(path);
+        } else if (requestCode == LOCATION_SETTING_REQUEST_CODE) {
+            easyWayLocation.onActivityResult(resultCode);
         }
     }
 
@@ -1598,5 +1617,26 @@ public class TaskActivity2 extends AppCompatActivity {
             AppUtils.displayAlertMessage(TaskActivity2.this, "Alert", getString(R.string.error_403));
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void locationOn() {
+
+    }
+
+    @Override
+    public void currentLocation(Location location) {
+        lati = location.getLatitude();
+        longi = location.getLongitude();
+    }
+
+    @Override
+    public void locationCancelled() {
+
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        super.onPointerCaptureChanged(hasCapture);
     }
 }

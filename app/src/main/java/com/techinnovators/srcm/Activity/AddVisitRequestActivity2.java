@@ -68,7 +68,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             arrayVisitState,
             arrayVisitDist,
             arrayVisitTaluka,
-            arrayVisitLocation = new ArrayList<>();
+            arrayVisitLocation,
+            arrayVisitLocationToBe = new ArrayList<>();
 
     private AutoCompleteTextView
             acEventSector,
@@ -78,7 +79,8 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             acVisitState,
             acDistrict,
             acTaluka,
-            acLocation;
+            acLocation,
+            acVisitLocationToBe;
 
     private ConstraintLayout csMain;
 
@@ -141,6 +143,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         acDistrict = findViewById(R.id.acDistrict);
         acTaluka = findViewById(R.id.acTaluka);
         acLocation = findViewById(R.id.acVLocation);
+        acVisitLocationToBe = findViewById(R.id.acVisitLocationToBe);
 
         AppCompatEditText etVisitAssignedTo = findViewById(R.id.etAssignedTo);
         etContPersonName = findViewById(R.id.etContPersonName);
@@ -264,6 +267,15 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
                 spinnerDialog.showSpinerDialog();
             }
         });
+
+        arrayVisitLocationToBe.add("Existing");
+        arrayVisitLocationToBe.add("New");
+
+        acVisitLocationToBe.setOnClickListener(v -> {
+                spinnerDialog = new SpinnerDialog(AddVisitRequestActivity2.this, arrayVisitLocationToBe, "Select Visit Location To Be", "Close");
+                spinnerDialog.bindOnSpinerListener((item, position) -> acVisitLocationToBe.setText(item));
+                spinnerDialog.showSpinerDialog();
+        });
     }
 
     private void initData() {
@@ -375,6 +387,10 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
             AppUtils.showSnackBar(this, csMain, getString(R.string.visitlocation_empty_msg));
             return;
         }
+        if (TextUtils.isEmpty(acVisitLocationToBe.getText().toString())) {
+            AppUtils.showSnackBar(this, csMain, getString(R.string.visitlocationToBe_empty_msg));
+            return;
+        }
 
         apiCreateTask();
     }
@@ -386,6 +402,7 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
 
         visitRequest.setVisit_district(acDistrict.getText().toString());
         visitRequest.setVisit_location(acLocation.getText().toString());
+        visitRequest.setVisit_location_to_be(acVisitLocationToBe.getText().toString());
         visitRequest.setVisit_taluka(acTaluka.getText().toString());
         visitRequest.setVisit_state(acVisitState.getText().toString());
         visitRequest.setProject_type(acEventCategory.getText().toString().trim());
@@ -405,7 +422,6 @@ public class AddVisitRequestActivity2 extends AppCompatActivity implements View.
         final String strDate = dateFormat.format(visitDate);
 
         visitRequest.setVisit_date(strDate);
-
 
         if (NetworkUtils.isNetworkConnected(this)) {
             try {

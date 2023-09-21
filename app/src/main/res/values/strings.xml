@@ -2,7 +2,7 @@
     <string name="app_name">SRCM</string>
     <string name="location_title">LOCATION SETTINGS</string>
     <string name="location_service_msg">Please turn on location services before using the app.</string>
-    <string name="version">1.0.9</string>
+    <string name="version">1.1.0</string>
     <string name="sign_in">SIGN IN</string>
     <string name="OKAY">OKAY</string>
     <string name="api_url">https://srcm.techinnovators.co.in/</string>
@@ -99,6 +99,7 @@
     <string name="visitdist_empty_msg">Please select visit district</string>
     <string name="visittaluka_empty_msg">Please select visit taluka</string>
     <string name="visitlocation_empty_msg">Please select visit location</string>
+    <string name="visitlocationToBe_empty_msg">Please select visit location to be</string>
     <string name="project_type_villageconnect">Village Connect</string>
     <string name="create_Visit">CREATE VISIT REQUEST</string>
     <string name="state_param_key">state</string>
@@ -109,4 +110,5 @@
     <string name="submit">Submit</string>
     <string name="remarks">Remarks</string>
     <string name="select_images">Select Images</string>
+    <string name="visit_location_to_be">Visit Location To Be</string>
 </resources>
